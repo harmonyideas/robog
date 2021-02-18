@@ -1,0 +1,65 @@
+\\w2k12-dc1\home$\mike\temp\Translations.xml
+\\w2k12-dc1\home$\mike\temp\RoboG.exe.config
+\\w2k12-dc1\home$\mike\temp\RoboG.exe
+\\w2k12-dc1\home$\mike\temp\RoboG.pdb
+\\w2k12-dc1\home$\mike\temp\Debug\RoboG.exe.config
+\\w2k12-dc1\home$\mike\temp\Debug\Translations.xml
+\\w2k12-dc1\home$\mike\temp\Debug\RoboG.exe
+\\w2k12-dc1\home$\mike\temp\Debug\RoboG.pdb
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.csprojResolveAssemblyReference.cache
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSelectLanguage.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmNewSourceAdvanced.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmAdvancedSettings.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmErrorSummary.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmExcludeFile.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmNewSource.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmAbout.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmMain.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSelectDate.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSettings.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.Properties.Resources.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.csproj.GenerateResource.Cache
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.exe
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.pdb
+Z:\temp\Debug\RoboG.exe.config
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.exe
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.pdb
+Z:\temp\Debug\Translations.xml
+Z:\temp\Debug\RoboG.exe
+Z:\temp\Debug\RoboG.pdb
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.csprojResolveAssemblyReference.cache
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSelectLanguage.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmNewSourceAdvanced.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmAdvancedSettings.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmErrorSummary.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmExcludeFile.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmNewSource.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmAbout.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmMain.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSelectDate.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSettings.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.Properties.Resources.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.csproj.GenerateResource.Cache
+Z:\My Documents\VS OUTPUT\Debug\Translations.xml
+Z:\My Documents\VS OUTPUT\Debug\RoboG.exe.config
+Z:\My Documents\VS OUTPUT\Debug\RoboG.exe
+Z:\My Documents\VS OUTPUT\Debug\RoboG.pdb
+D:\VS OUTPUT\Debug\RoboG.exe.config
+D:\GitHub\RoboG\obj\Debug\RoboG.exe
+D:\GitHub\RoboG\obj\Debug\RoboG.pdb
+D:\VS OUTPUT\Debug\Translations.xml
+D:\VS OUTPUT\Debug\RoboG.exe
+D:\VS OUTPUT\Debug\RoboG.pdb
+D:\GitHub\RoboG\obj\Debug\RoboG.csprojResolveAssemblyReference.cache
+D:\GitHub\RoboG\obj\Debug\RoboG.frmSelectLanguage.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmNewSourceAdvanced.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmAdvancedSettings.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmErrorSummary.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmExcludeFile.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmNewSource.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmAbout.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmMain.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmSelectDate.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.frmSettings.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.Properties.Resources.resources
+D:\GitHub\RoboG\obj\Debug\RoboG.csproj.GenerateResource.Cache

@@ -1,0 +1,27 @@
+\\w2k12-dc1\home$\temp\Translations.xml
+\\w2k12-dc1\home$\temp\RoboG.exe.config
+\\w2k12-dc1\home$\temp\RoboG.exe
+\\w2k12-dc1\home$\temp\RoboG.pdb
+\\w2k12-dc1\home$\mike\temp\RoboG.exe.config
+\\w2k12-dc1\home$\mike\temp\Translations.xml
+\\w2k12-dc1\home$\mike\temp\RoboG.exe
+\\w2k12-dc1\home$\mike\temp\RoboG.pdb
+\\w2k12-dc1\home$\mike\temp\Release\Translations.xml
+\\w2k12-dc1\home$\mike\temp\Release\RoboG.exe.config
+\\w2k12-dc1\home$\mike\temp\Release\RoboG.exe
+\\w2k12-dc1\home$\mike\temp\Release\RoboG.pdb
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmSelectLanguage.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmNewSourceAdvanced.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmAdvancedSettings.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmErrorSummary.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmExcludeFile.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmNewSource.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmAbout.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmMain.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmSelectDate.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.frmSettings.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.Properties.Resources.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.csproj.GenerateResource.Cache
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.exe
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.pdb
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Release\RoboG.csprojResolveAssemblyReference.cache

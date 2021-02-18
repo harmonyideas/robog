@@ -1,0 +1,63 @@
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmSelectLanguage.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmNewSourceAdvanced.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmAdvancedSettings.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmErrorSummary.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmInitializeDrive.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmExcludeFile.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmNewSource.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmAbout.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmMain.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmSelectDate.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.frmSettings.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.Properties.Resources.resources
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.csproj.GenerateResource.Cache
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.csprojResolveAssemblyReference.cache
+C:\temp\Translations.xml
+C:\temp\SaBackup.exe.config
+C:\temp\SaBackup.exe
+C:\temp\SaBackup.pdb
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.exe
+C:\Users\mike.VM-DOM1\Downloads\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\sabackup2-code-d49bf04aa96632500cd486d38f9b77ec008fb284\obj\Debug\SaBackup.pdb
+Z:\temp\SaBackup.exe.config
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.exe
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.pdb
+Z:\temp\Translations.xml
+Z:\temp\SaBackup.exe
+Z:\temp\SaBackup.pdb
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.csprojResolveAssemblyReference.cache
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmSelectLanguage.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmNewSourceAdvanced.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmAdvancedSettings.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmErrorSummary.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmInitializeDrive.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmExcludeFile.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmNewSource.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmAbout.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmMain.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmSelectDate.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.frmSettings.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.Properties.Resources.resources
+Z:\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.csproj.GenerateResource.Cache
+\\w2k12-dc1\home$\temp\SaBackup.exe.config
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.exe
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.pdb
+\\w2k12-dc1\home$\temp\Translations.xml
+\\w2k12-dc1\home$\temp\SaBackup.exe
+\\w2k12-dc1\home$\temp\SaBackup.pdb
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\SaBackup.csproj.GenerateResource.Cache
+\\w2k12-dc1\home$\mike\temp\Translations.xml
+\\w2k12-dc1\home$\mike\temp\SaBackup.exe.config
+\\w2k12-dc1\home$\mike\temp\SaBackup.exe
+\\w2k12-dc1\home$\mike\temp\SaBackup.pdb
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSelectLanguage.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmNewSourceAdvanced.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmAdvancedSettings.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmErrorSummary.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmInitializeDrive.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmExcludeFile.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmNewSource.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmAbout.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmMain.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSelectDate.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.frmSettings.resources
+\\w2k12-dc1\home$\mike\My Documents\Visual Studio 2010\Projects\RoboG\obj\Debug\RoboG.Properties.Resources.resources
