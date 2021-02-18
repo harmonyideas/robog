@@ -1,0 +1,769 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Translations>
+	<en-US name="English">
+		<!--Multiple files-->
+		<Cancel>Cancel</Cancel>
+		<Close>Close</Close>
+		<WrongFileSystem1>You have to format drive "</WrongFileSystem1>
+		<WrongFileSystem2>" with the NTFS file system to use it as a backup drive.</WrongFileSystem2>
+		<DirectoryNotWriteable1>The directory </DirectoryNotWriteable1>
+		<DirectoryNotWriteable2> is not writeable.</DirectoryNotWriteable2>
+		<Error>Error:</Error>
+		<BackupCompleted>Backup completed</BackupCompleted>
+		<!--frmAbout-->
+		<frmAbout>About</frmAbout>
+		<Author>Author: </Author>
+		<IconsBy>Icons by Crystal Project - Everaldo Coelho</IconsBy>
+		<!--frmErrorSummary-->
+		<frmErrorSummary>Errors</frmErrorSummary>
+		<lblErrorsCaption>Errors occured while processing these files:</lblErrorsCaption>
+		<lblErrorMessageCaption>Error message:</lblErrorMessageCaption>
+		<!--frmExcludeFile-->
+		<frmExcludeFile>Exclude File</frmExcludeFile>
+		<lblFileToExcludeCaption>File:</lblFileToExcludeCaption>
+		<lblWildcards>Allowed wildcards: * ?</lblWildcards>
+		<lblExample>Examples: *.txt  *.xls  tmp*  tmp??  unwanted  C:\Unwanted\unwanted.txt</lblExample>
+		<!--frmInitializeDrive-->
+		<frmInitializeDrive>Initialize Backup Drive</frmInitializeDrive>
+		<lblDrive>Select drive to initialize:</lblDrive>
+		<NoDrive>Please select a drive</NoDrive>
+		<DriveInformationError>Could not read drive information. Is the device ready?</DriveInformationError>
+		<!--frmSelectLanguage-->
+		<SelectLanguage>Select Language</SelectLanguage>
+		<Language>Language:</Language>
+		<NoLanguage>Please select a language</NoLanguage>
+		<!--frmMain-->
+		<lblStatusCaption>Status:</lblStatusCaption>
+		<lblDirectoryCaption>Source Dir:</lblDirectoryCaption>
+		<lblFileCaption>File:</lblFileCaption>
+		<lblSizeCaption>Size:</lblSizeCaption>
+		<bnDetails>Show details</bnDetails>
+		<bnDetails2>Hide details</bnDetails2>
+		<bnErrors>Show errors</bnErrors>
+		<StartingProgram>Starting program/script: </StartingProgram>
+		<StartingVSS>Starting Volume Shadow Copy services</StartingVSS>
+		<DeletingSnapshots>Deleting snapshots</DeletingSnapshots>
+		<StoppingVSS>Stopping Volume Shadow Copy services</StoppingVSS>
+		<CompletedWithErrors>Backup completed with errors</CompletedWithErrors>
+		<Done>Done</Done>
+		<CreatingSnapshots>Creating snapshots</CreatingSnapshots>
+		<AbortQuestion>Do you really want to abort the backup?</AbortQuestion>
+		<DeleteSourceDirectory>Are you sure you want to delete selected source directory?</DeleteSourceDirectory>
+		<CreateNewProfile>Do you want to delete current profile settings and create a new one?</CreateNewProfile>
+		<Aborting>Aborting</Aborting>
+		<NoRobocopy>Robocopy is not installed. Please download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx in order to use RoboG.</NoRobocopy>
+		<RobocopyTooOld>Your version of Robocopy is too old (version " + RobocopyVersion + "). Please download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy version XP026) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx in order to use RoboG.</RobocopyTooOld>
+		<NoSources>No backup sources defined. Please check the settings file.</NoSources>
+		<LookingForDrive>Looking for backup drive</LookingForDrive>
+		<NoBackupDrive>Could not find backup drive. Do you want to initialize a backup drive now?</NoBackupDrive>
+		<DriveNotInitialized>Drive could not be initialized: </DriveNotInitialized>
+		<!--Backup.cs-->
+		<DirectoryNoAttributes1>The directory </DirectoryNoAttributes1>
+		<DirectoryNoAttributes2> doesn't support file attributes. If this directory is on a linux file share, please make sure, it is possible to set Dos file attributes. For more information visit: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
+		<HardLinksNotSupported>The file system on the backup drive does not support hard links. Please make sure the backup hard disk is formatted with the NTFS file system. If the backup location is a network share, make sure it supports hard links.</HardLinksNotSupported>
+		<LookingForChanges>Looking for changes...</LookingForChanges>
+		<NoChanges>No changes.</NoChanges>
+		<SpaceNeeded>Space needed: </SpaceNeeded>
+		<NotEnoughSpace1>Not enough space</NotEnoughSpace1>
+		<NotEnoughSpace2>You need </NotEnoughSpace2>
+		<NotEnoughSpace3> more space on your backup drive.</NotEnoughSpace3>
+		<NotEnoughSpace4> Should I delete the oldest backups to free space?</NotEnoughSpace4>
+		<MovingOldBackups>Moving old backups...</MovingOldBackups>
+		<CreatingHardLinks>Creating hard links to previously backed up files...</CreatingHardLinks>
+		<BackingUp>Backing up </BackingUp>
+		<BackingUpSource>Backing up directory </BackingUpSource>
+		<WarningMIR>Job(s) detected in this profile with Mirror Mode selected. Files WILL be deleted on Target Directorie(s) not found in source. Continue?</WarningMIR>
+		<CantAbort>Can't abort while creating hard links. Please wait.</CantAbort>
+		<WrongDirFormat1>The name of directory "</WrongDirFormat1>
+		<WrongDirFormat2>" has not the correct name format and could not be renamed. Please move or delete the directory manually.</WrongDirFormat2>
+		<!--File.cs-->
+		<DeletingFile>Deleting file </DeletingFile>
+		<!--frmSettings-->
+		<rbnLocalDrive>Backup to external hard disk</rbnLocalDrive>
+		<rbnLocalDriveToolTip>You can select which drive to use when you start the backup.</rbnLocalDriveToolTip>
+		<lblSubfolder>Subfolder:</lblSubfolder>
+		<SubfolderToolTip>The folder where the backups are stored on the backup drive. Can be empty</SubfolderToolTip>
+		<rbnNetworkShare>Backup to network share</rbnNetworkShare>
+		<rbnNetworkShareToolTip>This can be a Windows or Samba file share.</rbnNetworkShareToolTip>
+		<txtNetworkShareToolTip>Path to Windows or Samba file share</txtNetworkShareToolTip>
+		<bnAboutToolTip>About</bnAboutToolTip>
+		<gbBackupSources>Current list of Robocopy jobs for this profile</gbBackupSources>
+		<bnAddSourceToolTip>Add directory</bnAddSourceToolTip>
+		<bnEditSourceToolTip>Edit directory</bnEditSourceToolTip>
+		<bnDeleteSourceToolTip>Delete directory</bnDeleteSourceToolTip>
+		<bnSourceUpToolTip>Move item up</bnSourceUpToolTip>
+		<bnSourceDownToolTip>Move item down</bnSourceDownToolTip>
+		<bnDuplicateToolTip>Duplicate selected item</bnDuplicateToolTip>
+		<bnBackupToolTip>Start backup</bnBackupToolTip>
+		<bnAdvancedSettings>Advanced settings</bnAdvancedSettings>
+		<ExitAnyway>Do you want to exit anyway?</ExitAnyway>
+		<Copy>- copy</Copy>
+		<!--frmAdvancedSettings-->
+		<chkIncrementalBackup>Create incremental backups</chkIncrementalBackup>
+		<chkIncrementalBackupToolTip>If this option is disabled, files will only be synchronized with the target location</chkIncrementalBackupToolTip>
+		<chkIncrementalBackupWarning>If this option is changed, all old backups will be deleted. Do you want to continue?</chkIncrementalBackupWarning>
+		<chkDeleteFilesBeforeCopying>Delete files on backup target location before copying (default)</chkDeleteFilesBeforeCopying>
+		<chkDeleteFilesBeforeCopyingToolTip>This is necessary when hard links are used on the target location to create incremental backups</chkDeleteFilesBeforeCopyingToolTip>
+		<AdvancedSettings>Advanced Settings</AdvancedSettings>
+		<lblRetries>Number of retries on failed operations:</lblRetries>
+		<lblWaitBetweenRetries>Wait time between retries:</lblWaitBetweenRetries>
+		<lblSecond>sec.</lblSecond>
+		<chkAutoExit>Close program automatically, when backup finished without errors</chkAutoExit>
+		<chkAutoExit2>Always close program automatically, when backup is finished</chkAutoExit2>
+		<chkSilentMode>Silent mode (don't show error messages, just log them)</chkSilentMode>
+		<gbProgramBeforeBackup>Run program or script before backup</gbProgramBeforeBackup>
+		<lblProgram>Program/Script:</lblProgram>
+		<ProgramToolTip>The program or script to run (without arguments)</ProgramToolTip>
+		<lblArguments>Arguments:</lblArguments>
+		<ArgumentsToolTip>Arguments</ArgumentsToolTip>
+		<chkAdmin>Start as administrator</chkAdmin>
+		<gbProgramAfterBackup>Run program or script after backup</gbProgramAfterBackup>
+		<SelectProgram>Select program or script</SelectProgram>
+		<ExecutableFile>Executable file</ExecutableFile>
+		<gbProgramOnError>Run program or script on errors after backup</gbProgramOnError>
+		<!--frmNewSource-->
+		<frmNewSource>Add directory to backup</frmNewSource>
+		<frmNewSourceEdit>Edit Robocopy Job</frmNewSourceEdit>
+		<lblName>Name:</lblName>
+		<NameToolTip>Name of the backup source. This will be used as the folder name on the backup drive.</NameToolTip>
+		<lblDirectory>Source Dir.:</lblDirectory>
+		<DirectoryToolTip>The directory to backup</DirectoryToolTip>
+		<chkShadowCopy>Use shadow copies (to backup files in use, recommended)</chkShadowCopy>
+		<chkLogOnly>Use "/L - Log Only" (no changes will be made)</chkLogOnly>
+		<bnAdvanced>Advanced</bnAdvanced>
+		<SelectDirectoryToBackup>Select directory to backup</SelectDirectoryToBackup>
+		<SelectTargetDirectory>Select target directory</SelectTargetDirectory>
+		<ShadowCopiesNotPossible>It is not possible to create shadow copies on this drive, so files in use can't be backed up. Shadow copies only work on local disks formatted with the NTFS file system.</ShadowCopiesNotPossible>
+		<ErrorNoName>You need to enter a name.</ErrorNoName>
+		<ErrorNameInUse>The entered name is already in use.</ErrorNameInUse>
+		<ErrorNoDirectory>You need to enter a directory to backup.</ErrorNoDirectory>
+		<ErrorNoTargetDirectory>You must enter a destination for a target directory</ErrorNoTargetDirectory>
+		<ErrorResetArchive>It is not possible to use the option "backup only files with the archive attribute set and reset it" together with shadow copies, as shadow copies are read only.</ErrorResetArchive>
+		<!--frmNewSourceAdvanced-->
+		<frmNewSourceAdvanced>Advanced Backup Options</frmNewSourceAdvanced>
+		<gbAttributes>Attributes</gbAttributes>
+		<gbIncludeAttributes>Include only files with any of the given attributes set:</gbIncludeAttributes>
+		<gbExcludeAttributes>Exclude files with any of the given attributes set:</gbExcludeAttributes>
+		<gbAddAttributes>Add these attributes to backed up files:</gbAddAttributes>
+		<gbRemoveAttributes>Remove these attributes from backed up files:</gbRemoveAttributes>
+		<chkM>Backup only files with the archive attribute set and reset it</chkM>
+		<chkMToolTip>Can only be used when shadow copies are disabled, because shadow copies are read only.</chkMToolTip>
+		<AReadOnly>Read only</AReadOnly>
+		<AArchive>Archive</AArchive>
+		<ASystem>System</ASystem>
+		<AHidden>Hidden</AHidden>
+		<AOffline>Offline</AOffline>
+		<ACompressed>Compressed</ACompressed>
+		<ANotIndexed>Not indexed</ANotIndexed>
+		<ATemporary>Temporary</ATemporary>
+		<AEncrypted>Encrypted</AEncrypted>
+		<gbExcludeFiles>Exclude files</gbExcludeFiles>
+		<bnEcludeFileToolTip>Add file to exclude</bnEcludeFileToolTip>
+		<bnDeleteExcludedFileToolTip>Remove excluded file</bnDeleteExcludedFileToolTip>
+		<lblMAX>Exclude files bigger than</lblMAX>
+		<lblMIN>Exclude files smaller than</lblMIN>
+		<ClickToSet>Click to set</ClickToSet>
+		<lblMAXAGE>Exclude files older than</lblMAXAGE>
+		<MAXAGEToolTip>Exludes files with a Last Modified Date older than n days or specified date.</MAXAGEToolTip>
+		<lblMINAGE>Exclude files newer than</lblMINAGE>
+		<MINAGEToolTip>Excludes files with a Last Modified Date newer than n days or specified date.</MINAGEToolTip>
+		<lblMAXLAD>Exclude files unused since</lblMAXLAD>
+		<MAXLADToolTip>Excludes files with a Last Access Date older than n days or specified date.</MAXLADToolTip>
+		<lblMINLAD>Exclude files used since</lblMINLAD>
+		<MINLADToolTip>Excludes files with a Last Access Date newer than n days or specified date.</MINLADToolTip>
+		<lblLADINFO>These two options evaluate "Last Access Date". Be careful using it.</lblLADINFO>
+		<gbExcludeFolders>Exclude folders</gbExcludeFolders>
+		<bnExcludeFolderToolTip>Add folder to exclude</bnExcludeFolderToolTip>
+		<bnDeleteExcludedFolderToolTip>Remove excluded folder</bnDeleteExcludedFolderToolTip>
+		<gbFileOptions>Files</gbFileOptions>
+		<chkXC>Exclude files of different size</chkXC>
+		<chkXN>Exclude newer files</chkXN>
+		<chkXL>Exclude files not in destination folder</chkXL>
+		<chkIT>Include files with changed attributes</chkIT>
+		<chkMIR>Use Mirror mode to synchronize files. (Files will be deleted on target that are not found in source)</chkMIR>
+		<chkCOPY_S>Back up NTFS security information (ACLs)</chkCOPY_S>
+		<chkCOPY_O>Back up NTFS ownership information</chkCOPY_O>
+		<chkCOPY_U>Back up NTFS auditing information</chkCOPY_U>
+		<chkB>Use "backup mode"</chkB>
+		<chkBToolTip>Backup files you otherwise wouldn't have access to. To use this, make the backup user a member of the group "Backup Operators".</chkBToolTip>
+		<lblBInfo1>(requires "back up files and directories"</lblBInfo1>
+		<lblBInfo2> privilege)</lblBInfo2>
+		<SelectDirectoryToExclude>Select directory to exclude</SelectDirectoryToExclude>
+		<!--frmSelectDate-->
+		<frmSelectDate>Select Days / Date</frmSelectDate>
+		<rdbNotSet>Not set</rdbNotSet>
+		<lblDays>days</lblDays>
+		<rdbDate>Date:</rdbDate>
+		<!--HelperFunctions.cs-->
+		<ErrorIn>Error in </ErrorIn>
+		<!--IO.cs-->
+		<CreateDirectoryError1>Could not create directory "</CreateDirectoryError1>
+		<CreateDirectoryError2>". Make sure, "</CreateDirectoryError2>
+		<CreateDirectoryError3>" is writeable for RoboG.</CreateDirectoryError3>
+		<DeletingDirectory>Deleting Directory </DeletingDirectory>
+		<DriveTooSmall>There is still not enough space available on the backup drive.</DriveTooSmall>
+		<StartingRobocopy>Starting Robocopy...</StartingRobocopy>
+		<RobocopyError>Error in Robocopy. Please make sure Robocopy (at least version XP026) is installed. If not download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx.</RobocopyError>
+		<Aborted>Aborted</Aborted>
+		<ExitCode>Exitcode </ExitCode>
+		<ExitCode16>Serious error. Robocopy did not copy any files. This is either a usage error or an error due to insufficient access privileges on the source or destination directories. </ExitCode16>
+		<ExitCode8>Some files or directories could not be copied (copy errors occurred and the retry limit was exceeded). Check these errors further. </ExitCode8>
+		<ExitCode4>Some mismatched files or directories were detected. Examine the output log. Housekeeping is probably necessary. </ExitCode4>
+		<ExitCode2>Some extra files or directories were detected. </ExitCode2>
+		<ExitCode1>One or more files were copied successfully (that is, new files have arrived). </ExitCode1>
+		<ExitCode-1>Unknown error. See log for more details.</ExitCode-1>
+		<ErrorInRobocopy>Error in Robocopy: </ErrorInRobocopy>
+		<DirMoveError1>Could not move directory "</DirMoveError1>
+		<DirMoveError2>". Please make sure no other program is accessing it. Do you want to try moving it again?</DirMoveError2>
+		<Win32ErrorCode>Win32 error code: </Win32ErrorCode>
+		<HardLinkError>Could not create hard link. </HardLinkError>
+		<HardLinkError2>Could not create hard link to file </HardLinkError2>
+		<DeleteFileError>Could not delete file</DeleteFileError>
+		<DeleteNonTargetFolders>Deleting folders not belonging in backup directory...</DeleteNonTargetFolders>
+		<!--Service.cs-->
+		<StartingVSService>Starting VSS...</StartingVSService>
+		<StoppingVSService>Stopping VSS...</StoppingVSService>
+		<VSSStartError>Could not start Volume Shadow Copy Service. If not done so, please start RoboG as Administrator or disable the use of shadow copies.</VSSStartError>
+		<!--Settings.cs-->
+		<SettingsSaveError>Could not save settings.</SettingsSaveError>
+		<InvalidSource>Invalid source.</InvalidSource>
+		<SaveError>Could not save settings. Please make sure, the settings file is writeable. Error: </SaveError>
+		<LoadError1>Could not load file "</LoadError1>
+		<LoadError2>". Please make sure, the file is readable. Error: </LoadError2>
+		<!--ShadowCopy.cs-->
+		<WrongVersion64>To use shadow copies install the x64 version of the program.</WrongVersion64>
+		<WrongVersion32>To use shadow copies install the x86 version of the program.</WrongVersion32>
+		<LoadingVSSImplementation>Loading VSS implementation...</LoadingVSSImplementation>
+		<ShadowCopyError>Could not create shadow copy.</ShadowCopyError>
+		<VCRedist64>Please make sure, the Microsoft Visual C++ 2010 Redistributable Package (x64) is installed: http://www.microsoft.com/download/en/details.aspx?id=13523</VCRedist64>
+		<VCRedistIA64>Please make sure, the Microsoft Visual C++ 2010 Redistributable Package (IA64) is installed: http://www.microsoft.com/download/en/details.aspx?id=21051</VCRedistIA64>
+		<VCRedist32>Please make sure, the Microsoft Visual C++ 2010 Redistributable Package (x86) is installed: http://www.microsoft.com/download/en/details.aspx?id=8328</VCRedist32>
+		<CreatingBackupComponents>Creating VSS backup components...</CreatingBackupComponents>
+		<InitializingVSSBackup>Initializing VSS backup...</InitializingVSSBackup>
+		<SettingVSSContext>Setting VSS context...</SettingVSSContext>
+		<SettingVSSBackupState>Setting VSS backup state...</SettingVSSBackupState>
+		<GatheringWriterMetadata>Gathering writer metadata...</GatheringWriterMetadata>
+		<CreatingSnapshotSet>Creating snapshot set...</CreatingSnapshotSet>
+		<AddingToSnapshotSet1>Adding "</AddingToSnapshotSet1>
+		<AddingToSnapshotSet2>" to snapshot set...</AddingToSnapshotSet2>
+		<SavingSnapshotSetID>Saving snapshot set id...</SavingSnapshotSetID>
+		<PreparingVSSBackup>Preparing VSS backup...</PreparingVSSBackup>
+		<CreatingVSSSnapshots>Creating snapshots...</CreatingVSSSnapshots>
+		<ExposingSnapshots>Exposing snapshots...</ExposingSnapshots>
+		<ExposingSnapshotsDirError>Could not create directory for exposing snapshots.</ExposingSnapshotsDirError>
+		<SnapshotSuccessful>Snapshot successfully created.</SnapshotSuccessful>
+		<LoadingSnapshotIDs>Loading snapshot set ids of last backup...</LoadingSnapshotIDs>
+		<DeletingOldSnapshots>Deleting old snapshots...</DeletingOldSnapshots>
+		<QueryingSnapshots>Querying snapshots...</QueryingSnapshots>
+		<Unexposing>Unexposing </Unexposing>
+		<DeletingSnapshot>Deleting </DeletingSnapshot>
+		<DeletingSnapshotSet>Deleting snapshot set...</DeletingSnapshotSet>
+		<SnapshotSetDeleted>Snapshot set deleted.</SnapshotSetDeleted>
+	</en-US>
+	<de-DE name="Deutsch">
+		<!--Multiple files-->
+		<Cancel>Abbrechen</Cancel>
+		<Close>Schließen</Close>
+		<WrongFileSystem1>Laufwerk "</WrongFileSystem1>
+		<WrongFileSystem2>" muss mit dem NTFS-Dateisystem formatiert werden, um als Sicherungslaufwerk genutzt werden zu können.</WrongFileSystem2>
+		<DirectoryNotWriteable1>Das Verzeichnis </DirectoryNotWriteable1>
+		<DirectoryNotWriteable2> ist schreibgeschützt.</DirectoryNotWriteable2>
+		<Error>Fehler:</Error>
+		<BackupCompleted>Sicherung abgeschlossen</BackupCompleted>
+		<!--frmAbout-->
+		<frmAbout>Über</frmAbout>
+		<Author>Autor: </Author>
+		<IconsBy>Icons von Susumu Yoshida und Oliver Twardowski</IconsBy>
+		<!--frmErrorSummary-->
+		<frmErrorSummary>Fehler</frmErrorSummary>
+		<lblErrorsCaption>Beim Verarbeiten folgender Dateien sind Fehler aufgetreten:</lblErrorsCaption>
+		<lblErrorMessageCaption>Fehlermeldung:</lblErrorMessageCaption>
+		<!--frmExcludeFile-->
+		<frmExcludeFile>Datei auschließen</frmExcludeFile>
+		<lblFileToExcludeCaption>Datei:</lblFileToExcludeCaption>
+		<lblWildcards>Erlaubte Platzhalter: * ?</lblWildcards>
+		<lblExample>Beispiele: *.txt  *.xls  tmp*  tmp??  unerwünscht  C:\Unerwünscht\unerwünscht.txt</lblExample>
+		<!--frmInitializeDrive-->
+		<frmInitializeDrive>Sicherungslaufwerk initialisieren</frmInitializeDrive>
+		<lblDrive>Zu initialisierendes Laufwerk:</lblDrive>
+		<NoDrive>Bitte wählen Sie ein Laufwerk aus.</NoDrive>
+		<DriveInformationError>Laufwerksinformationen konnten nicht gelesen werden. Ist das Laufwerk bereit?</DriveInformationError>
+		<!--frmSelectLanguage-->
+		<SelectLanguage>Sprache wählen</SelectLanguage>
+		<Language>Sprache:</Language>
+		<NoLanguage>Bitte wählen Sie eine Sprache</NoLanguage>
+		<!--frmMain-->
+		<lblStatusCaption>Status:</lblStatusCaption>
+		<lblDirectoryCaption>Verzeichnis:</lblDirectoryCaption>
+		<lblFileCaption>Datei:</lblFileCaption>
+		<lblSizeCaption>Größe:</lblSizeCaption>
+		<bnDetails>Details einblenden</bnDetails>
+		<bnDetails2>Details ausblenden</bnDetails2>
+		<bnErrors>Fehler anzeigen</bnErrors>
+		<StartingProgram>Starte Programm/Script: </StartingProgram>
+		<StartingVSS>Starte Volumenschattenkopie-Dienste</StartingVSS>
+		<DeletingSnapshots>Lösche Snapshots</DeletingSnapshots>
+		<StoppingVSS>Stoppe Volumenschattenkopie-Dienste</StoppingVSS>
+		<CompletedWithErrors>Sicherung mit Fehlern abgeschlossen</CompletedWithErrors>
+		<Done>Fertig</Done>
+		<CreatingSnapshots>Erstelle Schnappschüsse</CreatingSnapshots>
+		<AbortQuestion>Möchten Sie die Sicherung wirklich abbrechen?</AbortQuestion>
+		<Aborting>Breche ab</Aborting>
+		<NoRobocopy>Robocopy ist nicht installiert. Bitte downloaden und installieren Sie "Utility Spotlight - Robocopy GUI" (enthält Robocopy) von http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx, um RoboG nutzen zu können.</NoRobocopy>
+		<RobocopyTooOld>Ihre Robocopy-Version ist zu alt (Version " + RobocopyVersion + "). Bitte downloaden und installieren Sie "Utility Spotlight - Robocopy GUI" (enthält Robocopy Version XP026) von http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx, um RoboG nutzen zu können.</RobocopyTooOld>
+		<NoSources>Keine Sicherungs-Quellen definiert. Bitte überprüfen Sie die Einstellungen.</NoSources>
+		<LookingForDrive>Suche Sicherungslaufwerk</LookingForDrive>
+		<NoBackupDrive>Es konnte kein Sicherungslaufwerk gefunden werden. Soll ein neues Sicherungslaufwerk initialisiert werden?</NoBackupDrive>
+		<DriveNotInitialized>Sicherungslaufwerk konnte nicht initialisiert werden: </DriveNotInitialized>
+		<!--Backup.cs-->
+		<DirectoryNoAttributes1>Das Verzeichnis </DirectoryNoAttributes1>
+		<DirectoryNoAttributes2> unterstützt keine Dateiattribute. Fall sich das Verzeichnis auf einem Linux-Server befindet, stellen Sie bitte sicher, dass Dos-Dateiattribute unterstützt werden. Weitere Informationen finden Sie hier: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
+		<HardLinksNotSupported>Das Dateisystem des Sicherungslaufwerks unterstützt keine Hardlinks. Bitte stellen Sie sicher, dass der Sicherungsdatenträger mit dem NTFS-Dateisystem formatiert wurde.</HardLinksNotSupported>
+		<LookingForChanges>Suche nach Änderungen...</LookingForChanges>
+		<NoChanges>Keine Änderungen.</NoChanges>
+		<SpaceNeeded>Benötigter Speicherplatz: </SpaceNeeded>
+		<NotEnoughSpace1>Nicht genügend Speicherplatz</NotEnoughSpace1>
+		<NotEnoughSpace2>Sie benötigen </NotEnoughSpace2>
+		<NotEnoughSpace3> mehr Speicherplatz auf dem Sicherungsdatenträger.</NotEnoughSpace3>
+		<NotEnoughSpace4> Sollen die ältesten Sicherungen gelöscht werden, um Speicherplatz zu schaffen?</NotEnoughSpace4>
+		<MovingOldBackups>Verschiebe alte Sicherungen...</MovingOldBackups>
+		<CreatingHardLinks>Erstelle Hardlinks zur letzten Sicherung...</CreatingHardLinks>
+		<BackingUp>Sichere </BackingUp>
+		<BackingUpSource>Sichere Verzeichnis </BackingUpSource>
+		<CantAbort>Sie können die Sicherung nicht Abbrechen, während Hardlinks zur letzten Sicherung erzeugt werden. Bitte gedulden Sie sich ein wenig.</CantAbort>
+		<WrongDirFormat1>Der Name des Verzeichnis "</WrongDirFormat1>
+		<WrongDirFormat2>" hat ein falsches Format und konnte nicht geändert werden. Bitte verschieben oder löschen Sie das Verzeichnis manuell.</WrongDirFormat2>
+		<!--File.cs-->
+		<DeletingFile>Lösche Datei </DeletingFile>
+		<!--frmSettings-->
+		<rbnLocalDrive>Auf externe Festplatte sichern</rbnLocalDrive>
+		<rbnLocalDriveToolTip>Sie können nach dem Klick auf "Starte Sicherung" ein Laufwerk auswählen.</rbnLocalDriveToolTip>
+		<lblSubfolder>Unterordner:</lblSubfolder>
+		<SubfolderToolTip>Der Ordner auf dem Sicherungslaufwerk, in dem die Sicherungen angelegt werden (optional)</SubfolderToolTip>
+		<rbnNetworkShare>Auf Netzlaufwerk sichern</rbnNetworkShare>
+		<rbnNetworkShareToolTip>Windows- und Samba-Freigaben sind erlaubt.</rbnNetworkShareToolTip>
+		<txtNetworkShareToolTip>Pfad zur Windows- oder Samba-Freigabe</txtNetworkShareToolTip>
+		<bnAboutToolTip>Über</bnAboutToolTip>
+		<gbBackupSources>Zu sichernde Verzeichnisse</gbBackupSources>
+		<bnAddSourceToolTip>Verzeichnis hinzufügen</bnAddSourceToolTip>
+		<bnEditSourceToolTip>Augewähltes Verzeichnis bearbeiten</bnEditSourceToolTip>
+		<bnDeleteSourceToolTip>Ausgewähltes Verzeichnis entfernen</bnDeleteSourceToolTip>
+		<bnSourceUpToolTip>Ausgewähltes Verzeichnis nach oben verschieben</bnSourceUpToolTip>
+		<bnSourceDownToolTip>Ausgewähltes Verzeichnis nach unten verschieben</bnSourceDownToolTip>
+		<bnDuplicateToolTip>Ausgewähltes Element duplizieren</bnDuplicateToolTip>
+		<bnBackupToolTip>Starte Sicherung</bnBackupToolTip>
+		<bnAdvancedSettings>Erweiterte Einstellungen</bnAdvancedSettings>
+		<ExitAnyway>Möchten Sie RoboG dennoch beenden?</ExitAnyway>
+		<Copy>- Kopie</Copy>
+		<!--frmAdvancedSettings-->
+		<chkIncrementalBackup>Inkrementelle Sicherungen anlegen</chkIncrementalBackup>
+		<chkIncrementalBackupToolTip>Bei Deaktivierung dieser Option, werden Dateien mit dem Zielverzeichnis ausschließlich synchronisiert.</chkIncrementalBackupToolTip>
+		<chkIncrementalBackupWarning>Wenn Sie diese Option deaktivieren, werden alle vorhergehenden Sicherung auf dem Sicherungsdatenträger gelöscht. Wollen Sie wirklich fortfahren?</chkIncrementalBackupWarning>
+		<chkDeleteFilesBeforeCopying>Lösche Dateien vor dem Kopieren im Zielverzeichnis (standard)</chkDeleteFilesBeforeCopying>
+		<chkDeleteFilesBeforeCopyingToolTip>Dies ist notwendig, wenn Hard links im Zielverzeichnis zum Erstellen inkrementeller Backups verwendet werden</chkDeleteFilesBeforeCopyingToolTip>
+		<AdvancedSettings>Erweiterte Einstellungen</AdvancedSettings>
+		<lblRetries>Wiederholungsversuche bei fehlerhaften Dateioperationen:</lblRetries>
+		<lblWaitBetweenRetries>Wartezeit zwischen Wiederholungsversuchen:</lblWaitBetweenRetries>
+		<lblSecond>Sek.</lblSecond>
+		<chkAutoExit>Programm nach fehlerfreiem Abschluss der Sicherung automatisch schließen</chkAutoExit>
+		<chkAutoExit2>Programm nach Abschluss der Sicherung immer automatisch schließen (auch bei Fehlern)</chkAutoExit2>
+		<chkSilentMode>Stiller Modus (Fehlermeldungen werden nicht angezeigt, nur geloggt)</chkSilentMode>
+		<gbProgramBeforeBackup>Programm oder Script vor der Sicherung ausführen</gbProgramBeforeBackup>
+		<lblProgram>Programm/Script:</lblProgram>
+		<ProgramToolTip>Auszuführendes Programm oder Script (ohne Argumente)</ProgramToolTip>
+		<lblArguments>Argumente:</lblArguments>
+		<ArgumentsToolTip>Argumente</ArgumentsToolTip>
+		<chkAdmin>Als Administrator ausführen</chkAdmin>
+		<gbProgramAfterBackup>Programm oder Script nach der Sicherung ausführen</gbProgramAfterBackup>
+		<SelectProgram>Programm oder Script auswählen</SelectProgram>
+		<ExecutableFile>Ausführbare Datei</ExecutableFile>
+		<gbProgramOnError>Programm oder Script bei Fehlern nach der Sicherung ausführen</gbProgramOnError>
+		<!--frmNewSource-->
+		<frmNewSource>Neue Sicherungsquelle</frmNewSource>
+		<frmNewSourceEdit>Sicherungsquelle bearbeiten</frmNewSourceEdit>
+		<lblName>Name:</lblName>
+		<NameToolTip>Name der Sicherungsquelle. Wird als Ordnername auf dem Sicherungsdatenträger verwendet.</NameToolTip>
+		<lblDirectory>Verzeichnis:</lblDirectory>
+		<DirectoryToolTip>Das zu sichernde Verzeichnis</DirectoryToolTip>
+		<chkShadowCopy>Verwende Schattenkopien (empfohlen, ermöglicht Sicherung von Dateien in Verwendung)</chkShadowCopy>
+		<bnAdvanced>Erweitert</bnAdvanced>
+		<SelectDirectoryToBackup>Bitte wählen Sie ein Verzeichnis aus, das gesichert werden soll</SelectDirectoryToBackup>
+		<ShadowCopiesNotPossible>Es ist nicht möglich, Schattenkopien dieses Datenträgers zu erzeugen. Schattenkopien funktionieren ausschließlich auf an den Computer direkt angeschlossenen Datenträgern, welche mit dem NTFS-Dateisystem formatiert sind.</ShadowCopiesNotPossible>
+		<ErrorNoName>Bitte geben Sie einen Namen ein.</ErrorNoName>
+		<ErrorNameInUse>Der eingegebene Name wird bereits verwendet.</ErrorNameInUse>
+		<ErrorNoDirectory>Bitte wählen Sie ein Verzeichnis aus.</ErrorNoDirectory>
+		<ErrorResetArchive>Es ist nicht möglich die Option "nur Dateien mit gesetztem Archivattribut sichern und das Archivattribut zurücksetzen" zusammen mit Schattenkopien zu verwenden, da Schattenkopien schreibgeschützt sind.</ErrorResetArchive>
+		<!--frmNewSourceAdvanced-->
+		<frmNewSourceAdvanced>Erweiterte Sicherungsoptionen</frmNewSourceAdvanced>
+		<gbAttributes>Attribute</gbAttributes>
+		<gbIncludeAttributes>Nur Dateien einschließen, bei denen eines der folgenden Attribute gesetzt ist:</gbIncludeAttributes>
+		<gbExcludeAttributes>Dateien ausschließen, bei denen eines der folgenden Attribute gesetzt ist:</gbExcludeAttributes>
+		<gbAddAttributes>Diese Attribute bei gesicherten Dateien setzen:</gbAddAttributes>
+		<gbRemoveAttributes>Diese Attribute von gesicherten Dateien entfernen:</gbRemoveAttributes>
+		<chkM>Nur Dateien mit gesetztem Archivattribut sichern und das Archivattribut zurücksetzen</chkM>
+		<chkMToolTip>Kann nicht zusammen mit Schattenkopien verwendet werden, da Schattenkopien schreibgeschützt sind.</chkMToolTip>
+		<AReadOnly>Schreibgeschützt</AReadOnly>
+		<AArchive>Archiv</AArchive>
+		<ASystem>System</ASystem>
+		<AHidden>Versteckt</AHidden>
+		<AOffline>Offline</AOffline>
+		<ACompressed>Komprimiert</ACompressed>
+		<ANotIndexed>Nicht indiziert</ANotIndexed>
+		<ATemporary>Temporär</ATemporary>
+		<AEncrypted>Verschlüsselt</AEncrypted>
+		<gbExcludeFiles>Dateien ausschließen</gbExcludeFiles>
+		<bnEcludeFileToolTip>Auszuschließende Datei hinzufügen</bnEcludeFileToolTip>
+		<bnDeleteExcludedFileToolTip>Ausgeschlossene Datei entfernen</bnDeleteExcludedFileToolTip>
+		<lblMAX>Ausschließen, wenn größer als</lblMAX>
+		<lblMIN>Ausschließen, wenn kleiner als</lblMIN>
+		<ClickToSet>Setzen</ClickToSet>
+		<lblMAXAGE>Ausschließen, wenn älter als</lblMAXAGE>
+		<MAXAGEToolTip>Dateien ausschließen, die ein Änderungsdatum älter als n Tage oder das angegebene Datum aufweisen.</MAXAGEToolTip>
+		<lblMINAGE>Ausschließen, wenn neuer als</lblMINAGE>
+		<MINAGEToolTip>Dateien ausschließen, die ein Änderungsdatum jünger als n Tage oder das angegebene Datum aufweisen.</MINAGEToolTip>
+		<lblMAXLAD>Ausschließen, wenn ungenutzt seit</lblMAXLAD>
+		<MAXLADToolTip>Dateien ausschließen, die ein Zugriffsdatum älter als n Tage oder das angegebene Datum aufweisen.</MAXLADToolTip>
+		<lblMINLAD>Ausschließen, wenn genutzt seit</lblMINLAD>
+		<MINLADToolTip>Dateien ausschließen, die ein Zugriffsdatum jünger als n Tage oder das angegebene Datum aufweisen.</MINLADToolTip>
+		<lblLADINFO>Diese beiden Optionen analysieren das Datum des letzten Zugriffs. Seien Sie vorsichtig mit der Nutzung.</lblLADINFO>
+		<gbExcludeFolders>Verzeichnisse ausschließen</gbExcludeFolders>
+		<bnExcludeFolderToolTip>Auszuschließenden Ordner hinzufügen</bnExcludeFolderToolTip>
+		<bnDeleteExcludedFolderToolTip>Ausgeschlossenen Ordner entfernen</bnDeleteExcludedFolderToolTip>
+		<gbFileOptions>Dateien</gbFileOptions>
+		<chkXC>Ausschließen bei Größenunterschied</chkXC>
+		<chkXN>Ausschließen, wenn neuer</chkXN>
+		<chkXL>Ausschließen, wenn nicht am Zielort</chkXL>
+		<chkIT>Einschließen, wenn Attribute geändert</chkIT>
+		<chkCOPY_S>Sichere NTFS-Sicherheitsinformationen (ACLs)</chkCOPY_S>
+		<chkCOPY_O>Sichere NTFS-Besitzinformationen</chkCOPY_O>
+		<chkCOPY_U>Sichere NTFS-Überwachungsinformationen</chkCOPY_U>
+		<chkB>Nutze "Sicherungsmodus"</chkB>
+		<chkBToolTip>Dateien Sichern, auf die der sichernde Benutzer keinen Zugriff besitzt. Machen Sie für diese Option den Benutzer zu einem Mitglied der Gruppe "Sicherungsoperatoren".</chkBToolTip>
+		<lblBInfo1>(benötigt Berechtigung "Sichern von</lblBInfo1>
+		<lblBInfo2> Dateien und Verzeichnissen")</lblBInfo2>
+		<SelectDirectoryToExclude>Wählen Sie ein Verzeichnis aus, das ausgeschlossen werden soll</SelectDirectoryToExclude>
+		<!--frmSelectDate-->
+		<frmSelectDate>Tage / Datum</frmSelectDate>
+		<rdbNotSet>Nicht gesetzt</rdbNotSet>
+		<lblDays>Tage</lblDays>
+		<rdbDate>Datum:</rdbDate>
+		<!--HelperFunctions.cs-->
+		<ErrorIn>Fehler in </ErrorIn>
+		<!--IO.cs-->
+		<CreateDirectoryError1>Konnte das Verzeichnis "</CreateDirectoryError1>
+		<CreateDirectoryError2>" nich anlegen. Stellen Sie sicher, dass "</CreateDirectoryError2>
+		<CreateDirectoryError3>" für RoboG beschreibbar ist.</CreateDirectoryError3>
+		<DeletingDirectory>Lösche Verzeichnis </DeletingDirectory>
+		<DriveTooSmall>Auf dem Sicherungslaufwerk ist nach wie vor nicht genügend Speicherplatz für die Sicherung vorhanden.</DriveTooSmall>
+		<StartingRobocopy>Starte Robocopy...</StartingRobocopy>
+		<RobocopyError>Error in Robocopy. Please make sure Robocopy (at least version XP026) is installed. If not download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx.</RobocopyError>
+		<Aborted>Abgebrochen</Aborted>
+		<ExitCode>Rückgabecode </ExitCode>
+		<ExitCode16>Schwerwiegender Fehler. Robocopy hat keine Dateien kopiert. Dies ist entweder ein Nutzungsfehler oder ein Fehler aufgrund mangelnder Berechtigungen für das Quell- oder Zielverzeichnis. </ExitCode16>
+		<ExitCode8>Einige Dateien oder Verzeichnisse konnten nicht kopiert werden (Kopierfehler sind aufgetreten und das Wiederholungslimit wurde überschritten). Siehe Log für weitere Informationen. </ExitCode8>
+		<ExitCode4>Es wurden Diskrepanzen zwischen Quell- und Zielverzeichnis festgestellt. Siehe Log für weitere Informationen. Manuelles Aufräumen ist vermutlich erforderlich. </ExitCode4>
+		<ExitCode2>Einige Extradateien oder -Verzeichnisse wurden gefunden. </ExitCode2>
+		<ExitCode1>Eine oder mehr Dateien wurden erfolgreich kopiert. </ExitCode1>
+		<ExitCode-1>Unbekannter Fehler. Siehe Log für weitere Informationen.</ExitCode-1>
+		<ErrorInRobocopy>Fehler in Robocopy: </ErrorInRobocopy>
+		<DirMoveError1>Konnte Verzeichnis "</DirMoveError1>
+		<DirMoveError2>" nicht verschieben. Bitte stellen Sie sicher das kein anderes Programm auf dieses zugreift. Soll erneut versucht werden, das Verzeichnis zu verschieben?</DirMoveError2>
+		<Win32ErrorCode>Win32 Fehlercode: </Win32ErrorCode>
+		<HardLinkError>Hardlink konnte nicht erzeugt werden. </HardLinkError>
+		<HardLinkError2>Konnte keinen Hardlink zu folgender Datei erzeugen: </HardLinkError2>
+		<DeleteFileError>Datei konnte nicht gelöscht werden</DeleteFileError>
+		<DeleteNonTargetFolders>Lösche Verzeichnisse, welche nicht in das Sicherungsverzeichnis gehören...</DeleteNonTargetFolders>
+		<!--Service.cs-->
+		<StartingVSService>Starte VSS...</StartingVSService>
+		<StoppingVSService>Stoppe VSS...</StoppingVSService>
+		<VSSStartError>Konnte Volumenschattenkopie-Dienste nicht starten. Falls nicht der Fall, starten Sie RoboG mit Administratorrechten oder deaktivieren Sie die Nutzung von Schattenkopien.</VSSStartError>
+		<!--Settings.cs-->
+		<SettingsSaveError>Konnte Einstellungen nicht speichern.</SettingsSaveError>
+		<InvalidSource>Ungültige Quelle.</InvalidSource>
+		<SaveError>Konnte Einstellungen nicht speichern. Bitte stellen Sie sicher, dass die Einstellungsdatei nicht schreibgeschützt ist. Fehler: </SaveError>
+		<LoadError1>Konnte Datei "</LoadError1>
+		<LoadError2>" nicht laden. Bitte stellen Sie sicher, dass die Datei lesbar ist. Fehler: </LoadError2>
+		<!--ShadowCopy.cs-->
+		<WrongVersion64>Installieren Sie bitte die 64-Bit-Version des Programmes, um Schattenkopien nutzen zu können.</WrongVersion64>
+		<WrongVersion32>Installieren Sie bitte die 32-Bit-Version des Programmes, um Schattenkopien nutzen zu können.</WrongVersion32>
+		<LoadingVSSImplementation>Lade VSS-Implementierung...</LoadingVSSImplementation>
+		<ShadowCopyError>Konnte Schattenkopien nicht anlegen.</ShadowCopyError>
+		<VCRedist64>Bitte stellen Sie sicher, dass das "Microsoft Visual C++ 2010 Redistributable Package (x64)" installiert ist: http://www.microsoft.com/download/en/details.aspx?id=13523</VCRedist64>
+		<VCRedistIA64>Bitte stellen Sie sicher, dass das "Microsoft Visual C++ 2010 Redistributable Package (IA64)" installiert ist: http://www.microsoft.com/download/en/details.aspx?id=21051</VCRedistIA64>
+		<VCRedist32>Bitte stellen Sie sicher, dass das "Microsoft Visual C++ 2010 Redistributable Package (x86)" installiert ist: http://www.microsoft.com/download/en/details.aspx?id=8328</VCRedist32>
+		<CreatingBackupComponents>Erstelle VSS-Sicherungskomponenten...</CreatingBackupComponents>
+		<InitializingVSSBackup>Initialisiere VSS-Sicherung...</InitializingVSSBackup>
+		<SettingVSSContext>Setze VSS-Kontext...</SettingVSSContext>
+		<SettingVSSBackupState>Setze VSS-Sicherungsstatus...</SettingVSSBackupState>
+		<GatheringWriterMetadata>Sammle Writer-Metadaten...</GatheringWriterMetadata>
+		<CreatingSnapshotSet>Erstelle Schnappschuss-Satz...</CreatingSnapshotSet>
+		<AddingToSnapshotSet1>Füge "</AddingToSnapshotSet1>
+		<AddingToSnapshotSet2>" zum Schnappschuss-Satz hinzu...</AddingToSnapshotSet2>
+		<SavingSnapshotSetID>Speichere Schnappschuss-Satz-ID...</SavingSnapshotSetID>
+		<PreparingVSSBackup>Bereite VSS-Sicherung vor...</PreparingVSSBackup>
+		<CreatingVSSSnapshots>Erstelle Schnappschüsse...</CreatingVSSSnapshots>
+		<ExposingSnapshots>Mappe Schnappschuss...</ExposingSnapshots>
+		<ExposingSnapshotsDirError>Das Verzeichnis zum Mappen des Schnappschusses konnte nicht angelegt werden.</ExposingSnapshotsDirError>
+		<SnapshotSuccessful>Schnappschuss erfolgreich erstellt.</SnapshotSuccessful>
+		<LoadingSnapshotIDs>Lade Schnappschuss-Satz-IDs der letzten Sicherung...</LoadingSnapshotIDs>
+		<DeletingOldSnapshots>Lösche alte Schnappschüsse...</DeletingOldSnapshots>
+		<QueryingSnapshots>Suche Schnappschüsse...</QueryingSnapshots>
+		<Unexposing>Lösche Schappschuss-Mappings </Unexposing>
+		<DeletingSnapshot>Lösche </DeletingSnapshot>
+		<DeletingSnapshotSet>Lösche Schnappschuss-Satz...</DeletingSnapshotSet>
+		<SnapshotSetDeleted>Schnappschuss-Satz gelöscht.</SnapshotSetDeleted>
+	</de-DE>
+	<fr-FR name="Français">
+		<!--Multiple files-->
+		<Cancel>Annuler</Cancel>
+		<Close>Fermer</Close>
+		<WrongFileSystem1>Vous devez formatter le disque "</WrongFileSystem1>
+		<WrongFileSystem2>" en NTFS pour l'utiliser comme disque de sauvegarde.</WrongFileSystem2>
+		<DirectoryNotWriteable1>Le répertoire </DirectoryNotWriteable1>
+		<DirectoryNotWriteable2> est en lecture seule.</DirectoryNotWriteable2>
+		<Error>Erreur:</Error>
+		<BackupCompleted>Sauvegarde terminée</BackupCompleted>
+		<!--frmAbout-->
+		<frmAbout>A propos</frmAbout>
+		<Author>Auteur: </Author>
+		<IconsBy>Icones de Susumu Yoshida et Oliver Twardowski</IconsBy>
+		<!--frmErrorSummary-->
+		<frmErrorSummary>Erreurs</frmErrorSummary>
+		<lblErrorsCaption>Erreurs lors du traitement de ces fichiers:</lblErrorsCaption>
+		<lblErrorMessageCaption>Message d'erreur:</lblErrorMessageCaption>
+		<!--frmExcludeFile-->
+		<frmExcludeFile>Fichiers exclus</frmExcludeFile>
+		<lblFileToExcludeCaption>Fichier:</lblFileToExcludeCaption>
+		<lblWildcards>Wildcards autorisés: * ?</lblWildcards>
+		<lblExample>Exemples: *.txt  *.xls  tmp*  tmp??  Liste  C:\Exclus\exclus.txt</lblExample>
+		<!--frmInitializeDrive-->
+		<frmInitializeDrive>Initialisation du disque de sauvegarde</frmInitializeDrive>
+		<lblDrive>Sélectionnez le disque à initialiser:</lblDrive>
+		<NoDrive>Sélectionnez un disque</NoDrive>
+		<DriveInformationError>Lecture du disque impossible. Le disque est-il prêt ?</DriveInformationError>
+		<!--frmSelectLanguage-->
+		<SelectLanguage>Sélection de langue</SelectLanguage>
+		<Language>Langue:</Language>
+		<NoLanguage>Sélectionnez une langue</NoLanguage>
+		<!--frmMain-->
+		<lblStatusCaption>Statut:</lblStatusCaption>
+		<lblDirectoryCaption>Répertoire:</lblDirectoryCaption>
+		<lblFileCaption>Fichier:</lblFileCaption>
+		<lblSizeCaption>Taille:</lblSizeCaption>
+		<bnDetails>Afficher les détails</bnDetails>
+		<bnDetails2>Masquer les détails</bnDetails2>
+		<bnErrors>Afficher les erreurs</bnErrors>
+		<StartingProgram>Démarrage programme/script: </StartingProgram>
+		<StartingVSS>Démarrage du service Volume Shadow Copy</StartingVSS>
+		<DeletingSnapshots>Suppression des snapshots</DeletingSnapshots>
+		<StoppingVSS>Arrêt du service Volume Shadow Copy</StoppingVSS>
+		<CompletedWithErrors>Sauvegarde terminée avec erreurs</CompletedWithErrors>
+		<Done>Terminé</Done>
+		<CreatingSnapshots>Creation des snapshots</CreatingSnapshots>
+		<AbortQuestion>Voulez-vous annuler la sauvegarde ?</AbortQuestion>
+		<Aborting>Annulation</Aborting>
+		<NoRobocopy>Robocopy n'est pas installé. Téléchargez et installez "Utility Spotlight - Robocopy GUI" (incluant Robocopy) depuis http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx pour utiliser RoboG.</NoRobocopy>
+		<RobocopyTooOld>Votre version de Robocopy est trop ancienne (version " + RobocopyVersion + "). Téléchargez et installez "Utility Spotlight - Robocopy GUI" (incluant Robocopy version XP026) depuis http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx pour utiliser RoboG.</RobocopyTooOld>
+		<NoSources>Aucune source définie. Vérifiez le fichier settings.</NoSources>
+		<LookingForDrive>Recherche d'un disque de sauvegarde</LookingForDrive>
+		<NoBackupDrive>Disque de sauvegarde non trouvé. Voulez-vous initialiser un disque maintenant ?</NoBackupDrive>
+		<DriveNotInitialized>Le disque ne peut être initialisé: </DriveNotInitialized>
+		<!--Backup.cs-->
+		<DirectoryNoAttributes1>Le répertoire </DirectoryNoAttributes1>
+		<DirectoryNoAttributes2> ne supporte pas les attributs de fichiers. Si le répertoire est un partage linux, vérifiez qu'il supporte les attributs de fichiers Dos. Pour plus d'informations visitez: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
+		<HardLinksNotSupported>Le système de fichiers du disque de sauvegarde ne supporte pas les liens physiques. vérifiez que le disque soit formaté en NTFS. Si la destination de sauvegarde est un partage réseau, vérifiez qu'il supporte les liens physiques.</HardLinksNotSupported>
+		<LookingForChanges>Recherche de changements...</LookingForChanges>
+		<NoChanges>Pas de changements.</NoChanges>
+		<SpaceNeeded>Espace nécessaire: </SpaceNeeded>
+		<NotEnoughSpace1>Espace insuffisant</NotEnoughSpace1>
+		<NotEnoughSpace2>Vous avez </NotEnoughSpace2>
+		<NotEnoughSpace3> besoin de plus d'espace sur votre disque de sauvgarde.</NotEnoughSpace3>
+		<NotEnoughSpace4> Supprimer les plus anciennes sauvegardes pour libérer de l'espace ?</NotEnoughSpace4>
+		<MovingOldBackups>Déplacement des anciennes sauvegardes...</MovingOldBackups>
+		<CreatingHardLinks>Creation de liens vers les fichiers précédemment sauvegardés...</CreatingHardLinks>
+		<BackingUp>Sauvegarde </BackingUp>
+		<BackingUpSource>Répertoire de sauvegarde </BackingUpSource>
+		<CantAbort>Annulation impossible pendant la création de liens. Patientez.</CantAbort>
+		<WrongDirFormat1>Le nom du répertoire "</WrongDirFormat1>
+		<WrongDirFormat2>" n'est pas au bon format et ne peut être renommé. Déplacez ou supprimez le répertoire manuellement.</WrongDirFormat2>
+		<!--File.cs-->
+		<DeletingFile>Suppression du fichier </DeletingFile>
+		<!--frmSettings-->
+		<rbnLocalDrive>Sauvegarde sur disque externe</rbnLocalDrive>
+		<rbnLocalDriveToolTip>Vous pouvez choisir le disque à utiliser au démarrage de la sauvegarde.</rbnLocalDriveToolTip>
+		<lblSubfolder>Répertoire:</lblSubfolder>
+		<SubfolderToolTip>Le répertoire de destination où sont stockées les sauvegardes sur le disque. Il peut être vierge</SubfolderToolTip>
+		<rbnNetworkShare>Sauvegarde sur partage réseau</rbnNetworkShare>
+		<rbnNetworkShareToolTip>Celui-ci peut être un partage Windows ou Samba.</rbnNetworkShareToolTip>
+		<txtNetworkShareToolTip>Chemin du partage Windows ou Samba</txtNetworkShareToolTip>
+		<bnAboutToolTip>A propos</bnAboutToolTip>
+		<gbBackupSources>Répertoires à sauvegarder</gbBackupSources>
+		<bnAddSourceToolTip>Ajouter un répertoire</bnAddSourceToolTip>
+		<bnEditSourceToolTip>Modifier le répertoire</bnEditSourceToolTip>
+		<bnDeleteSourceToolTip>Supprimer le répertoire</bnDeleteSourceToolTip>
+		<bnSourceUpToolTip>Déplacer vers le haut</bnSourceUpToolTip>
+		<bnSourceDownToolTip>Déplacer vers le bas</bnSourceDownToolTip>
+		<bnDuplicateToolTip>Dupliquer l'élement séléctionné</bnDuplicateToolTip>
+		<bnBackupToolTip>Démarrer la sauvegarde</bnBackupToolTip>
+		<bnAdvancedSettings>Paramètres Avancés</bnAdvancedSettings>
+		<ExitAnyway>Voulez-vous quitter ?</ExitAnyway>
+		<Copy>- copie</Copy>
+		<!--frmAdvancedSettings-->
+		<chkIncrementalBackup>Créer des sauvegardes incrémentales</chkIncrementalBackup>
+		<chkIncrementalBackupToolTip>Si cette option est désactivée, les fichiers seront synchronisés avec la destination cible</chkIncrementalBackupToolTip>
+		<chkIncrementalBackupWarning>Si cette option est modifiée, toutes les anciennes sauvegardes seront supprimées. Voulez-vous continuer ?</chkIncrementalBackupWarning>
+		<chkDeleteFilesBeforeCopying>Suppimer les fichiers sur la destination cible avant la copie (défaut)</chkDeleteFilesBeforeCopying>
+		<chkDeleteFilesBeforeCopyingToolTip>Ceci est nécessaire lorsque des liens physiques sont utilisés sur la destination cible pour créer des sauvegardes incrémentales</chkDeleteFilesBeforeCopyingToolTip>
+		<AdvancedSettings>Paramètres Avancés</AdvancedSettings>
+		<lblRetries>Nombre d'essais en cas d'échec:</lblRetries>
+		<lblWaitBetweenRetries>Temps entre deux essais:</lblWaitBetweenRetries>
+		<lblSecond>sec.</lblSecond>
+		<chkAutoExit>Fermer le programme après une sauvegarde terminée sans erreurs</chkAutoExit>
+		<chkAutoExit2>Toujours fermer le programme après une sauvegarde</chkAutoExit2>
+		<chkSilentMode>Mode silencieux (ne pas afficher les erreurs, seulement les écrire dans le fichier de log)</chkSilentMode>
+		<gbProgramBeforeBackup>Lancer un programme ou un script avant la sauvegarde</gbProgramBeforeBackup>
+		<lblProgram>Programme/Script:</lblProgram>
+		<ProgramToolTip>Le programme ou script à lancer (sans arguments)</ProgramToolTip>
+		<lblArguments>Arguments:</lblArguments>
+		<ArgumentsToolTip>Arguments</ArgumentsToolTip>
+		<chkAdmin>Exécuter en tant qu'administrateur</chkAdmin>
+		<gbProgramAfterBackup>Lancer un programme ou un script après la sauvegarde</gbProgramAfterBackup>
+		<SelectProgram>Selection du programme ou du script</SelectProgram>
+		<ExecutableFile>Fichier exécutable</ExecutableFile>
+		<gbProgramOnError>Lancer un programme ou un script, en cas d'erreurs, après la sauvegarde</gbProgramOnError>
+		<!--frmNewSource-->
+		<frmNewSource>Ajouter un répertoire à sauvegarder</frmNewSource>
+		<frmNewSourceEdit>Modifier le répertoire</frmNewSourceEdit>
+		<lblName>Nom:</lblName>
+		<NameToolTip>Nom du répertoire à sauvegarder. Il sera utilisé comme nom de répertoire sur le disque de sauvegarde.</NameToolTip>
+		<lblDirectory>Répertoire:</lblDirectory>
+		<DirectoryToolTip>Le répertoire à sauvegarder</DirectoryToolTip>
+		<chkShadowCopy>Utiliser les clichés instantanés (pour les fichiers en cours d'utilisation, recommandé)</chkShadowCopy>
+		<bnAdvanced>Avancé</bnAdvanced>
+		<SelectDirectoryToBackup>Selectionnez le répertoire à sauvegarder</SelectDirectoryToBackup>
+		<ShadowCopiesNotPossible>Création de clichés instantanés impossible, les fichiers en cours d'utilisation ne seront pas sauvegardés. Les clichés instantanés sont uniquement utilisables sur les disques locaux formatés en NTFS.</ShadowCopiesNotPossible>
+		<ErrorNoName>Vous devez indiquer un nom.</ErrorNoName>
+		<ErrorNameInUse>Le nom indiqué est déjà utilisé.</ErrorNameInUse>
+		<ErrorNoDirectory>Vous devez indiquer un répertoire à sauvegarder.</ErrorNoDirectory>
+		<ErrorResetArchive>Il est impossible d'utiliser l'option "Sauvegarder uniquement les fichiers avec l'attribut d'archive et le resetter" avec les clichés instantanés, car les clichés instantanés sont en lecture seule.</ErrorResetArchive>
+		<!--frmNewSourceAdvanced-->
+		<frmNewSourceAdvanced>Options avancées de sauvegarde</frmNewSourceAdvanced>
+		<gbAttributes>Attributs</gbAttributes>
+		<gbIncludeAttributes>Inclure uniquement les fichiers avec ces attributs:</gbIncludeAttributes>
+		<gbExcludeAttributes>Exclure les fichiers avec ces attributs:</gbExcludeAttributes>
+		<gbAddAttributes>Ajouter ces attributs aux fichiers sauvegardés:</gbAddAttributes>
+		<gbRemoveAttributes>Remove these attributes from backed up files:</gbRemoveAttributes>
+		<chkM>Sauvegarder uniquement les fichiers avec l'attribut d'archive et le resetter</chkM>
+		<chkMToolTip>Peut être utilisé uniquement lorsque les clichés instantanés sont désactivés, car les clichés instantanés sont en lecture seule.</chkMToolTip>
+		<AReadOnly>Lecture seule</AReadOnly>
+		<AArchive>Archive</AArchive>
+		<ASystem>Système</ASystem>
+		<AHidden>Caché</AHidden>
+		<AOffline>Hors-ligne</AOffline>
+		<ACompressed>Compressé</ACompressed>
+		<ANotIndexed>Non-indexé</ANotIndexed>
+		<ATemporary>Temporaire</ATemporary>
+		<AEncrypted>Crypté</AEncrypted>
+		<gbExcludeFiles>Fichiers exclus</gbExcludeFiles>
+		<bnEcludeFileToolTip>Ajouter un fichier à exclure</bnEcludeFileToolTip>
+		<bnDeleteExcludedFileToolTip>Supprimer le fichier exclu</bnDeleteExcludedFileToolTip>
+		<lblMAX>Exclure les fichiers supérieurs à</lblMAX>
+		<lblMIN>Exclure les fichiers inférieurs à</lblMIN>
+		<ClickToSet>Paramétrer</ClickToSet>
+		<lblMAXAGE>Exclure les fichiers antérieurs à</lblMAXAGE>
+		<MAXAGEToolTip>Exclure les fichiers avec une Date de Dernière Modification antérieure à n jours ou à une date spécifiée.</MAXAGEToolTip>
+		<lblMINAGE>Exclure les fichiers postérieurs à</lblMINAGE>
+		<MINAGEToolTip>Exclure les fichiers avec une Date de Dernière Modification postérieure à n jours ou à une date spécifiée.</MINAGEToolTip>
+		<lblMAXLAD>Exclure les fichiers inutilsés depuis</lblMAXLAD>
+		<MAXLADToolTip>Exclure les fichiers avec une Date d'Accès antérieure à n jours ou à une date spécifiée.</MAXLADToolTip>
+		<lblMINLAD>Exclure les fichiers utilsés depuis</lblMINLAD>
+		<MINLADToolTip>Exclure les fichiers avec une Date de Dernier Accès postérieure à n jours ou à une date spécifiée.</MINLADToolTip>
+		<lblLADINFO>Ces deux options estime la "Date d'Accès". Faites attention à son usage.</lblLADINFO>
+		<gbExcludeFolders>Répertoires exclus</gbExcludeFolders>
+		<bnExcludeFolderToolTip>Ajouter un répertoire à exclure</bnExcludeFolderToolTip>
+		<bnDeleteExcludedFolderToolTip>Supprimer le répertoire exclu</bnDeleteExcludedFolderToolTip>
+		<gbFileOptions>Fichiers</gbFileOptions>
+		<chkXC>Exclure les fichiers de taille differente</chkXC>
+		<chkXN>Exclure les nouveaux fichiers</chkXN>
+		<chkXL>Exclure les fichiers absents de la destination</chkXL>
+		<chkIT>Inclure les fichiers avec attributs modifiés</chkIT>
+		<chkCOPY_S>Sauvegarder les infos de sécurité NTFS (ACLs)</chkCOPY_S>
+		<chkCOPY_O>Sauvegarder les infos de propriétaire NTFS</chkCOPY_O>
+		<chkCOPY_U>Sauvegarder les infos d'audit NTFS</chkCOPY_U>
+		<chkB>Utilser "backup mode"</chkB>
+		<chkBToolTip>Sauvegarde les fichiers dont vous n'avez pas l'accès. Pour utiliser cette option, l'utilisateur qui réalise la sauvegarde doit être membre du groupe "Backup Operators".</chkBToolTip>
+		<lblBInfo1>(nécessite "back up files and directories"</lblBInfo1>
+		<lblBInfo2> comme privilège)</lblBInfo2>
+		<SelectDirectoryToExclude>Sélection du répertoire à exclure</SelectDirectoryToExclude>
+		<!--frmSelectDate-->
+		<frmSelectDate>Selection Jours / Date</frmSelectDate>
+		<rdbNotSet>Non indiqué</rdbNotSet>
+		<lblDays>jours</lblDays>
+		<rdbDate>Date:</rdbDate>
+		<!--HelperFunctions.cs-->
+		<ErrorIn>Erreur de </ErrorIn>
+		<!--IO.cs-->
+		<CreateDirectoryError1>Création du répertoire impossible "</CreateDirectoryError1>
+		<CreateDirectoryError2>". Vérifiez, "</CreateDirectoryError2>
+		<CreateDirectoryError3>" qu'il est accessible pour RoboG.</CreateDirectoryError3>
+		<DeletingDirectory>Suppression du répertoire </DeletingDirectory>
+		<DriveTooSmall>Espace insuffisant sur le disque de sauvegarde.</DriveTooSmall>
+		<StartingRobocopy>Démarrage de Robocopy...</StartingRobocopy>
+		<RobocopyError>Erreur de Robocopy. Vérifiez que Robocopy (version minimum XP026) est installé. Si ce n'est pas le cas, téléchargez et installez "Utility Spotlight - Robocopy GUI" (incluant Robocopy) depuis http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx.</RobocopyError>
+		<Aborted>Annulé</Aborted>
+		<ExitCode>Code de sortie </ExitCode>
+		<ExitCode16>Erreur grave. Robocopy n'a copié aucun fichier. Ceci est causé par une erreur d'utilisation ou par des privilèges insuffisants sur la source ou la destination. </ExitCode16>
+		<ExitCode8>Des fichiers ou répertoires n'ont pu être copiés (erreurs de copie et nombre d'essais atteint). Vérifiez ces erreurs. </ExitCode8>
+		<ExitCode4>Des fichiers ou répertoires ne correspondent pas. Examiner le log. Un nettoyage est probablement nécessaire. </ExitCode4>
+		<ExitCode2>Des fichiers ou répertoires supplémentaires ont été détectés. </ExitCode2>
+		<ExitCode1>Un ou plusieurs fichiers ont été copiés avec succès (de nouveaux fichiers sont arrivés). </ExitCode1>
+		<ExitCode-1>Erreur inconnue. Analysez le log pour plus de détails.</ExitCode-1>
+		<ErrorInRobocopy>Erreur de Robocopy: </ErrorInRobocopy>
+		<DirMoveError1>Déplacement du répertoire impossible "</DirMoveError1>
+		<DirMoveError2>". Vérifiez qu'aucun autre programme n'y accède. Voulez-vous réessayer ?</DirMoveError2>
+		<Win32ErrorCode>Code d'erreur Win32: </Win32ErrorCode>
+		<HardLinkError>Création de lien physique impossible </HardLinkError>
+		<HardLinkError2>Création de lien physique vers fichier impossible </HardLinkError2>
+		<DeleteFileError>Suppression de fichier impossible</DeleteFileError>
+		<DeleteNonTargetFolders>Suppression des réperoires n'appartenants pas au répertoire de sauvegarde...</DeleteNonTargetFolders>
+		<!--Service.cs-->
+		<StartingVSService>Démarrage de VSS...</StartingVSService>
+		<StoppingVSService>Arrêt de VSS...</StoppingVSService>
+		<VSSStartError>Impossible de démarrer le Service de Cliché Instantané. Si ce n'est pas le cas, exécutez RoboG en tant qu'Administrateur ou désactivez l'utilisation des clichés instantanés.</VSSStartError>
+		<!--Settings.cs-->
+		<SettingsSaveError>Sauvegarde des paramètres impossible.</SettingsSaveError>
+		<InvalidSource>Source invalide.</InvalidSource>
+		<SaveError>Sauvegarde des paramètres impossible. Vérifiez que les paramètres sont accessibles. Erreur: </SaveError>
+		<LoadError1>Chargement du fichier impossible "</LoadError1>
+		<LoadError2>". Vérifiez que le fichier est accessible en lecture. Erreur: </LoadError2>
+		<!--ShadowCopy.cs-->
+		<WrongVersion64>Pour utiliser les clichés instantanés, installez la version 64 bits du programme.</WrongVersion64>
+		<WrongVersion32>Pour utiliser les clichés instantanés, installez la version 32 bits du programme.</WrongVersion32>
+		<LoadingVSSImplementation>Chargement de l'implémentation VSS...</LoadingVSSImplementation>
+		<ShadowCopyError>Création du cliché instantané impossible.</ShadowCopyError>
+		<VCRedist64>Vérifiez que le Package Redistribuable Microsoft Visual C++ 2010 (x64) est installé: http://www.microsoft.com/download/en/details.aspx?id=13523</VCRedist64>
+		<VCRedistIA64>Vérifiez que le Package Redistribuable Microsoft Visual C++ 2010 (IA64) is installed: http://www.microsoft.com/download/en/details.aspx?id=21051</VCRedistIA64>
+		<VCRedist32>Vérifiez que le Package Redistribuable Microsoft Visual C++ 2010 (x86) is installed: http://www.microsoft.com/download/en/details.aspx?id=8328</VCRedist32>
+		<CreatingBackupComponents>Creation des composants VSS...</CreatingBackupComponents>
+		<InitializingVSSBackup>Initialisation VSS...</InitializingVSSBackup>
+		<SettingVSSContext>Définition du contexte VSS...</SettingVSSContext>
+		<SettingVSSBackupState>Définition de l'état VSS...</SettingVSSBackupState>
+		<GatheringWriterMetadata>Récolte des métadonnées d'écriture...</GatheringWriterMetadata>
+		<CreatingSnapshotSet>Creation du jeu de cliché...</CreatingSnapshotSet>
+		<AddingToSnapshotSet1>Ajout "</AddingToSnapshotSet1>
+		<AddingToSnapshotSet2>" du jeu de clichés...</AddingToSnapshotSet2>
+		<SavingSnapshotSetID>Sauvegarde de l'Id du jeu de cliché...</SavingSnapshotSetID>
+		<PreparingVSSBackup>Préparation VSS...</PreparingVSSBackup>
+		<CreatingVSSSnapshots>Creation des clichés...</CreatingVSSSnapshots>
+		<ExposingSnapshots>Montage des clichés...</ExposingSnapshots>
+		<ExposingSnapshotsDirError>Création des répertoires pour le montage des clichés impossible.</ExposingSnapshotsDirError>
+		<SnapshotSuccessful>Cliché crée avec succès.</SnapshotSuccessful>
+		<LoadingSnapshotIDs>Chargement des Ids de jeu de clichés de la dernière sauvegarde...</LoadingSnapshotIDs>
+		<DeletingOldSnapshots>Suppression des anciens clichés...</DeletingOldSnapshots>
+		<QueryingSnapshots>Recherche des clichés...</QueryingSnapshots>
+		<Unexposing>Démontage </Unexposing>
+		<DeletingSnapshot>Suppression </DeletingSnapshot>
+		<DeletingSnapshotSet>Suppression des jeux de clichés...</DeletingSnapshotSet>
+		<SnapshotSetDeleted>Jeu de clichés supprimé.</SnapshotSetDeleted>
+	</fr-FR>
+</Translations>
