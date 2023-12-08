@@ -15,6 +15,7 @@ Data integrity: Preserves timestamps, permissions, and other vital file attribut
 User-friendly interface: Simple and intuitive design for seamless file replication.
 Unleash RoboCopy's power: Access RoboCopy's advanced features without the command-line hassle.
 
+* Support VSS/Shadow copy volume service
 * Simple and intuitive GUI.
 * Compose and Save the options as a profile for reuse.
 * Run multiple instances of robocopy jobs or save them as scripts to run in a cmd window.
