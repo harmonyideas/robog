@@ -24,7 +24,7 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 * The ability to run the RoboCopy within the GUI.
 
 
-# Screen Shots
+# Screenshots
 ![robog-screenshot1](/screenshots/robog-screenshot1.png "Main Form")
 ![robog-screenshot2](/screenshots/robog-screenshot2.png "Advanced Backup Settings")
 ![robog-screenshot3](/screenshots/robog-screenshot3.png "Advanced Settings")
