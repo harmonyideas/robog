@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (C) 2014 
 
 This program is free software: you can redistribute it and/or modify
@@ -22,25 +22,24 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-
-namespace RoboG
-{
-	public static class GlobalData
-	{
-		public const String BackupPrefix = "Backup";
-		public static bool Admin = false;
-		public static bool AutoExitCmd = false;
-		public static System.Windows.Forms.Form MainWindow;
-		public static String BackupVolume = "C:\\TEMP";
-		public static String LogPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\RoboG";
-		public static Dictionary<String, String> ShadowCopyMounts = new Dictionary<String, String>();
-		public const Int64 BufferSpace = 5368709120;
-		public static string SystemXMLFile = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Settings.xml";
-		public static int SourceVolumeCount = 0;
-		public static List<String> SourceVolumes = new List<String>();
-		public static bool SettingsInAppData = false;
-		public static String RobocopyPath = "";
-		public static String RobocopyVersion = "";
-		public static bool NoPreviousBackup = true;
-	}
+namespace RoboG {
+  public static class GlobalData {
+    public
+    const String BackupPrefix = "Backup";
+    public static bool Admin = false;
+    public static bool AutoExitCmd = false;
+    public static System.Windows.Forms.Form MainWindow;
+    public static String BackupVolume = "C:\\TEMP";
+    public static String LogPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\RoboG";
+    public static Dictionary < String, String > ShadowCopyMounts = new Dictionary < String, String > ();
+    public
+    const Int64 BufferSpace = 5368709120;
+    public static string SystemXMLFile = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Settings.xml";
+    public static int SourceVolumeCount = 0;
+    public static List < String > SourceVolumes = new List < String > ();
+    public static bool SettingsInAppData = false;
+    public static String RobocopyPath = "";
+    public static String RobocopyVersion = "";
+    public static bool NoPreviousBackup = true;
+  }
 }
