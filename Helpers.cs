@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (C) 2014 
 
 This program is free software: you can redistribute it and/or modify
@@ -22,28 +22,21 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RoboG
-{
-	public class BackupForm : Form
-	{
-		public delegate void ClosingEventHandler(object Sender, EventArgs e);
+namespace RoboG {
+  public class BackupForm: Form {
+    public delegate void ClosingEventHandler(object Sender, EventArgs e);
 
+    public delegate void ShowFormEventHandler(object Sender, BackupForm Form);
+    public virtual event ShowFormEventHandler ShowForm;
 
-		public delegate void ShowFormEventHandler(object Sender, BackupForm Form);
-		public virtual event ShowFormEventHandler ShowForm;
+    private delegate void NoParameterDelegate();
 
-		private delegate void NoParameterDelegate();
-
-		public void CloseForm()
-		{
-			if (this.InvokeRequired)
-			{
-				Invoke(new NoParameterDelegate(CloseForm));
-			}
-			else
-			{
-				this.Close();
-			}
-		}
-	}
+    public void CloseForm() {
+      if (this.InvokeRequired) {
+        Invoke(new NoParameterDelegate(CloseForm));
+      } else {
+        this.Close();
+      }
+    }
+  }
 }
