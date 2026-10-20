@@ -329,46 +329,6 @@ namespace RoboG {
       _Abort = true;
     }
 
-    public static bool FreeSpace(Int64 SpaceNeeded, List < String > BackupDirectories) {
-      try {
-        if (!Settings.IncrementalBackup) return false;
-        while (SpaceNeeded + GlobalData.BufferSpace > GetFreeSpace(GlobalData.BackupVolume) && BackupDirectories.Count > 1) {
-          if (_Abort) return false;
-          string LastDirectory = BackupDirectories[BackupDirectories.Count - 1];
-          HelperFunctions.WriteLog(Translations.Get("DeletingDirectory") + LastDirectory + "...");
-          try {
-            Directory.Delete(GlobalData.BackupVolume + Settings.Subfolder + LastDirectory);
-          } catch(Exception ex) {
-            HelperFunctions.ShowError(ex.Message);
-          }
-          BackupDirectories.RemoveAt(BackupDirectories.Count - 1);
-        }
-        if (SpaceNeeded + GlobalData.BufferSpace > GetFreeSpace(GlobalData.BackupVolume) && BackupDirectories.Count == 1) {
-          HelperFunctions.ShowError(Translations.Get("DriveTooSmall"));
-          return false;
-        }
-        return true;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return false;
-    }
-
-    public static Int64 GetFreeSpace(string Drive) {
-      try {
-        uint SectorsPerCluster;
-        uint BytesPerSector;
-        uint NumberOfFreeClusters;
-        uint TotalNumberOfClusters;
-        WinAPI.GetDiskFreeSpace(Drive, out SectorsPerCluster, out BytesPerSector, out NumberOfFreeClusters, out TotalNumberOfClusters);
-        Int64 BytesPerCluster = BytesPerSector * SectorsPerCluster;
-        return NumberOfFreeClusters * BytesPerCluster;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return 0;
-    }
-
     public static Int64 GetSpaceNeeded(BackupSource BackupSource) {
       try {
         if (BackupSource.DisableJob) {
@@ -839,7 +799,7 @@ namespace RoboG {
             for (int i = 0; i < RobocopyPaths.Count; i++) {
               FileVersionInfo FileVersionInfo = FileVersionInfo.GetVersionInfo(RobocopyPaths[i]);
               Version = FileVersionInfo.ProductVersion;
-              if (Version.ToUpper() == "XP026" || Version.ToUpper() == "XP027" || Version.StartsWith("6.2.") || Version.StartsWith("6.3.")) {
+              if (Version.ToUpper() == "XP026" || Version.ToUpper() == "XP027" || Version.StartsWith("6.2.") || Version.StartsWith("6.3.") || Version.StartsWith("10.")) {
                 GlobalData.RobocopyPath = RobocopyPaths[i];
                 return true;
               }

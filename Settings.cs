@@ -292,7 +292,16 @@ namespace RoboG {
 				try
 				{
 
-					if (!System.IO.Directory.Exists(new FileInfo(_Path).DirectoryName)) Directory.Create(_Dir);
+					String SettingsDirectory = new FileInfo(_Path).DirectoryName;
+					if (!System.IO.Directory.Exists(SettingsDirectory))
+					{
+						if (String.IsNullOrEmpty(SettingsDirectory))
+						{
+							HelperFunctions.ShowError(Translations.Get("SettingsSaveError"));
+							return false;
+						}
+						Directory.Create(SettingsDirectory);
+					}
 					if (System.IO.File.Exists(_Path + ".test")) File.Delete(_Path + ".test");
 					using (System.IO.File.Create(_Path + ".test")) { }
 					File.Delete(_Path + ".test");
@@ -519,7 +528,7 @@ namespace RoboG {
 									{
 										try
 										{
-											if (Property.PropertyType == typeof(List<String>)) Property.SetValue(BackupSource, new List<String>(Rd.ReadString().Split('|')), null);
+											if (Property.PropertyType == typeof(List<String>)) Property.SetValue(BackupSource, new List<String>(Array.ConvertAll(Rd.ReadString().Split('|'), EntryText => EntryText.Trim())), null);
 											if (Property.PropertyType == typeof(String)) Property.SetValue(BackupSource, Rd.ReadString(), null);
 											if (Property.PropertyType == typeof(int)) Property.SetValue(BackupSource, int.Parse(Rd.ReadString()), null);
 											if (Property.PropertyType == typeof(long)) Property.SetValue(BackupSource, long.Parse(Rd.ReadString()), null);

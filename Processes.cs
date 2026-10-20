@@ -378,7 +378,7 @@ namespace RoboG
 			while (cb <= cbNeeded)
 			{
 				cb *= 2;
-				ProcessIDs = new uint[((int)(cb / 4)) - 1];
+				ProcessIDs = new uint[(int)(cb / 4)];
 				lRet = EnumProcesses(ProcessIDs, cb, out cbNeeded);
 			}
 			NumElements = (int)(cbNeeded / 4);
