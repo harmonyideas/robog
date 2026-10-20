@@ -143,6 +143,23 @@ namespace RoboG
 				MessageBox.Show(this, Translations.Get("ErrorNoTargetDirectory"));
 				return;
 			}
+			String SourceFull;
+			String TargetFull;
+			try
+			{
+				SourceFull = System.IO.Path.GetFullPath(txtSourceDir.Text.Trim()).TrimEnd('\\');
+				TargetFull = System.IO.Path.GetFullPath(txtTargetDir.Text.Trim()).TrimEnd('\\');
+			}
+			catch (Exception)
+			{
+				MessageBox.Show(this, "The source or target directory is not a valid path.");
+				return;
+			}
+			if (TargetFull.EndsWith(":") || String.Equals(SourceFull, TargetFull, StringComparison.OrdinalIgnoreCase) || TargetFull.StartsWith(SourceFull + "\\", StringComparison.OrdinalIgnoreCase) || SourceFull.StartsWith(TargetFull + "\\", StringComparison.OrdinalIgnoreCase))
+			{
+				MessageBox.Show(this, "The target directory must not be a drive root, the same as the source directory, inside the source directory, or a directory that contains the source directory.");
+				return;
+			}
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 			_BackupSource.Name = txtName.Text;
 			_BackupSource.SourcePath = txtSourceDir.Text.Trim();

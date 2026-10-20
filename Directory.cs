@@ -31,7 +31,7 @@ namespace RoboG {
       String UNCPath = GetUNCPath(Path);
       List < String > Directories = new List < String > ();
       WinAPI.WIN32_FIND_DATA FindData;
-      using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @ "\*", out FindData)) {
+      using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @"\*", out FindData)) {
         if (!FindHandle.IsInvalid) {
           do {
             if ((FindData.dwFileAttributes & (uint) System.IO.FileAttributes.Directory) != 0) {
@@ -59,7 +59,7 @@ namespace RoboG {
         if (Path.EndsWith("\\")) Path = Path.Substring(0, Path.Length - 1);
         String UNCPath = GetUNCPath(Path);
         WinAPI.WIN32_FIND_DATA FindData;
-        using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @ "\*", out FindData)) {
+        using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @"\*", out FindData)) {
           if (!FindHandle.IsInvalid) {
             do {
               if ((FindData.dwFileAttributes & (uint) System.IO.FileAttributes.Directory) != 0) {
@@ -82,7 +82,7 @@ namespace RoboG {
       if (Path.EndsWith("\\")) Path = Path.Substring(0, Path.Length - 1);
       String UNCPath = GetUNCPath(Path);
       WinAPI.WIN32_FIND_DATA FindData;
-      using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @ "\*", out FindData)) {
+      using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @"\*", out FindData)) {
         if (!FindHandle.IsInvalid) {
           do {
             if ((FindData.dwFileAttributes & (uint) System.IO.FileAttributes.Directory) == 0) {
@@ -148,13 +148,13 @@ namespace RoboG {
     }
 
     public static String GetUNCPath(String Path) {
-      if (Path.StartsWith(@ "\\?\")) {
+      if (Path.StartsWith(@"\\?\")) {
             return Path;
           } else {
-            if (Path.StartsWith(@ "\\")) {
-              return @ "\\?\UNC" + Path.Substring(1);
+            if (Path.StartsWith(@"\\")) {
+              return @"\\?\UNC" + Path.Substring(1);
             } else {
-              return @ "\\?\" + Path;
+              return @"\\?\" + Path;
             }
           }
         }

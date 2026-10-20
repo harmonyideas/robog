@@ -52,7 +52,8 @@ namespace RoboG {
             GlobalData.Admin = true;
             break;
           case "/Settings":
-            if (SplittedArgs.Length > 1) Settings.CommonAppDataFile = SplittedArgs[1];
+            // Take everything after the first colon so drive letters (C:\...) survive.
+            if (SplittedArgs.Length > 1) Settings.CommonAppDataFile = Args[i].Substring(Args[i].IndexOf(':') + 1);
             break;
           case "/User":
             if (SplittedArgs.Length > 1) Settings.Username = SplittedArgs[1];

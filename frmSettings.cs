@@ -250,6 +250,7 @@ namespace RoboG
 					{
 						e.Cancel = true;
 						_Saved = false;
+						return;
 					}
 				}
 			}
@@ -477,7 +478,7 @@ namespace RoboG
 						_ActiveXMLFile = GlobalData.SystemXMLFile;
 					}
 
-					System.IO.File.WriteAllText(_ScriptFile, System.Windows.Forms.Application.StartupPath + "\\RoboG.EXE /s /Settings " + _ActiveXMLFile + " /User " + HelperFunctions.GetUserName());
+					System.IO.File.WriteAllText(_ScriptFile, System.Windows.Forms.Application.StartupPath + "\\RoboG.EXE /s /Settings:\"" + _ActiveXMLFile + "\" /User " + HelperFunctions.GetUserName());
 
 				}
 

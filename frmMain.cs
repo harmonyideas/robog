@@ -539,7 +539,10 @@ namespace RoboG
 				HelperFunctions.ShowError(ex);
 				return false;
 			}
-			_CreatingSnapshot = false;
+			finally
+			{
+				_CreatingSnapshot = false;
+			}
 			return true;
 		}
 

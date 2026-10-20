@@ -329,46 +329,6 @@ namespace RoboG {
       _Abort = true;
     }
 
-    public static bool FreeSpace(Int64 SpaceNeeded, List < String > BackupDirectories) {
-      try {
-        if (!Settings.IncrementalBackup) return false;
-        while (SpaceNeeded + GlobalData.BufferSpace > GetFreeSpace(GlobalData.BackupVolume) && BackupDirectories.Count > 1) {
-          if (_Abort) return false;
-          string LastDirectory = BackupDirectories[BackupDirectories.Count - 1];
-          HelperFunctions.WriteLog(Translations.Get("DeletingDirectory") + LastDirectory + "...");
-          try {
-            Directory.Delete(GlobalData.BackupVolume + Settings.Subfolder + LastDirectory);
-          } catch(Exception ex) {
-            HelperFunctions.ShowError(ex.Message);
-          }
-          BackupDirectories.RemoveAt(BackupDirectories.Count - 1);
-        }
-        if (SpaceNeeded + GlobalData.BufferSpace > GetFreeSpace(GlobalData.BackupVolume) && BackupDirectories.Count == 1) {
-          HelperFunctions.ShowError(Translations.Get("DriveTooSmall"));
-          return false;
-        }
-        return true;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return false;
-    }
-
-    public static Int64 GetFreeSpace(string Drive) {
-      try {
-        uint SectorsPerCluster;
-        uint BytesPerSector;
-        uint NumberOfFreeClusters;
-        uint TotalNumberOfClusters;
-        WinAPI.GetDiskFreeSpace(Drive, out SectorsPerCluster, out BytesPerSector, out NumberOfFreeClusters, out TotalNumberOfClusters);
-        Int64 BytesPerCluster = BytesPerSector * SectorsPerCluster;
-        return NumberOfFreeClusters * BytesPerCluster;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return 0;
-    }
-
     public static Int64 GetSpaceNeeded(BackupSource BackupSource) {
       try {
         if (BackupSource.DisableJob) {
@@ -382,27 +342,20 @@ namespace RoboG {
         _CurrentRealSourceDir = BackupSource.SourcePath;
         _CurrentTargetDir = Target;
         if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1);
-        if (Source.Contains(" ")) //For some reason robocopy quotes accepted only if space in the path name
-        {
-          Source = "\"" + Source + "\"";
-        }
         if (Target.EndsWith("\\") && Target.Length > 3) Target = Target.Substring(0, Target.Length - 1);
-        if (Target.Contains(" ")) {
-          Target = "\"" + Target + "\"";
-        }
         HelperFunctions.WriteLogLine();
         HelperFunctions.WriteLog(Translations.Get("StartingRobocopy"));
         _Cmd = new Process();
-        _Cmd.StartInfo.FileName = "cmd.exe";
+        _Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
         if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) _Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         if (Alphaleonis.Win32.Vss.OperatingSystemInfo.OSVersionName <= Alphaleonis.Win32.Vss.OSVersionName.WindowsServer2003) {
           _FirstLines = 1;
-          _Cmd.StartInfo.Arguments = "/U /S /C \"\"" + GlobalData.RobocopyPath + "\" " + Source + " " + Target + " " + BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /L /NP /NJH /BYTES /XJ" + BackupSource.GetRobocopyParameters() + "\"";
+          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /L /NP /NJH /BYTES /XJ" + BackupSource.GetRobocopyParameters());
           _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.Unicode;
           _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.Unicode;
         } else {
-          _FirstLines = 2;
-          _Cmd.StartInfo.Arguments = "/U /C chcp 65001 & \"" + GlobalData.RobocopyPath + "\" " + Source + " " + Target + " " + BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /L /NP /NJH /BYTES /XJ" + BackupSource.GetRobocopyParameters();
+          _FirstLines = 1;
+          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /L /NP /NJH /BYTES /XJ" + BackupSource.GetRobocopyParameters());
           _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
           _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
         }
@@ -438,6 +391,31 @@ namespace RoboG {
       return - 1;
     }
 
+    // Quotes one command line argument for CreateProcess (Arguments string, .NET Framework 4.0 has no ArgumentList).
+    // Quoting is applied only here, so a path cannot end its argument early and inject further switches.
+    private static String QuoteRobocopyArgument(String Argument) {
+      if (Argument.Length > 0 && Argument.IndexOf(' ') < 0 && Argument.IndexOf('\t') < 0 && Argument.IndexOf('"') < 0) return Argument;
+      System.Text.StringBuilder Quoted = new System.Text.StringBuilder("\"");
+      int Backslashes = 0;
+      foreach (char C in Argument) {
+        if (C == '\\') {
+          Backslashes++;
+          continue;
+        }
+        if (C == '"') Quoted.Append('\\', Backslashes * 2 + 1);
+        else Quoted.Append('\\', Backslashes);
+        Backslashes = 0;
+        Quoted.Append(C);
+      }
+      Quoted.Append('\\', Backslashes * 2);
+      Quoted.Append('"');
+      return Quoted.ToString();
+    }
+
+    private static String BuildRobocopyArguments(String Source, String Target, String Switches) {
+      return "/U" + " " + QuoteRobocopyArgument(Source) + " " + QuoteRobocopyArgument(Target) + " " + Switches;
+    }
+
     public static String GetRobocopyReadableExitCode(int ExitCode) {
       String ExitCodeString = "";
       if ((_Cmd.ExitCode & 16) == 16) ExitCodeString += Translations.Get("ExitCode16");
@@ -462,27 +440,20 @@ namespace RoboG {
         _CurrentSourceDir = Source;
         _CurrentTargetDir = Target;
         if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1); //Error in backup of an entire drive
-        if (Source.Contains(" ")) //For some reason robocopy quotes accepted only if space in the path name
-        {
-          Source = "\"" + Source + "\"";
-        }
         if (Target.EndsWith("\\")) Target = Target.Substring(0, Target.Length - 1);
-        if (Target.Contains(" ") && Target.Length > 3) {
-          Target = "\"" + Target + "\"";
-        }
         HelperFunctions.WriteLogLine();
         HelperFunctions.WriteLog(Translations.Get("StartingRobocopy"));
         _Cmd = new Process();
-        _Cmd.StartInfo.FileName = "cmd.exe";
+        _Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
         if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) _Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         if (Alphaleonis.Win32.Vss.OperatingSystemInfo.OSVersionName <= Alphaleonis.Win32.Vss.OSVersionName.WindowsServer2003) {
           _FirstLines = 1;
-          _Cmd.StartInfo.Arguments = "/U /S /C \"\"" + GlobalData.RobocopyPath + "\" " + Source + " " + Target + " " + BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NJS /BYTES /XJ" + BackupSource.GetRobocopyParameters() + "\""; // /NC /NS /NFL /NDL /NJH /TEE
+          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NJS /BYTES /XJ" + BackupSource.GetRobocopyParameters());
           _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.Unicode;
           _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.Unicode;
         } else {
-          _FirstLines = 2;
-          _Cmd.StartInfo.Arguments = "/U /C chcp 65001 & \"" + GlobalData.RobocopyPath + "\" " + Source + " " + Target + " " + BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NJS /BYTES /XJ" + BackupSource.GetRobocopyParameters(); // /NC /NS /NFL /NDL /NJH /TEE
+          _FirstLines = 1;
+          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NJS /BYTES /XJ" + BackupSource.GetRobocopyParameters());
           _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
           _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
         }
@@ -568,7 +539,7 @@ namespace RoboG {
                       _FirstLines--;
                       return; //Ignore setting of codepage
                     }
-                    if (Char.IsLetterOrDigit(OutputLine.Data[0]) && !OutputLine.Data.Trim().EndsWith(" % ")) {
+                    if (Char.IsLetterOrDigit(OutputLine.Data[0]) && !OutputLine.Data.Trim().EndsWith("%")) {
                       if (_RoboCopyError) _RoboCopyErrors[_RoboCopyErrors.Count - 1].Text.Add(OutputLine.Data);
                       else _RoboCopyErrors.Add(new RoboCopyError(OutputLine.Data.Trim(), _CurrentFile, _CurrentDir));
                       _RoboCopyError = true;
@@ -579,9 +550,9 @@ namespace RoboG {
                     for (int i = 0; i < Columns.Length; i++) {
                       Columns[i] = Columns[i].Trim();
                     }
-                    if (!(Columns.Length == 1 && Columns[0].EndsWith(" % "))) HelperFunctions.WriteLog(OutputLine.Data);
-                    if (Columns.Length > 0 && Columns[0].StartsWith(" * ")) return;
-                    if (Columns.Length == 1 && Columns[0].EndsWith(" % ")) {
+                    if (!(Columns.Length == 1 && Columns[0].EndsWith("%"))) HelperFunctions.WriteLog(OutputLine.Data);
+                    if (Columns.Length > 0 && Columns[0].StartsWith("*")) return;
+                    if (Columns.Length == 1 && Columns[0].EndsWith("%")) {
                       if (!IO.IsStRunning()) IO.StStart();
                       Single Progress = 0;
 
@@ -628,7 +599,7 @@ namespace RoboG {
                       String[] Fields = Columns[0].Split("".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                       Int32.TryParse(Fields[Fields.Length - 1], out Matches);
                       if (Matches > 0) {
-                        _CurrentDir = _CurrentRealSourceDir.Substring(0, _CurrentRealSourceDir.LastIndexOf(@ "\")) + Columns[1].Substring(_CurrentSourceDir.LastIndexOf(@"\"));
+                        _CurrentDir = _CurrentRealSourceDir.Substring(0, _CurrentRealSourceDir.LastIndexOf(@"\")) + Columns[1].Substring(_CurrentSourceDir.LastIndexOf(@"\"));
                             if (DirectoryChanged != null && !_Abort) DirectoryChanged(_CurrentDir);
                           }
                         }
@@ -641,8 +612,7 @@ namespace RoboG {
                   private static Int64 UnformatSize(String Size) {
                     String[] Fields = Size.Split("".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                     if (Fields.Length == 2) return UnformatSize(Fields[0], Fields[1]);
-                    else if (Fields.Length == 1) return UnformatSize(Fields[0], "
-              b ");
+                    else if (Fields.Length == 1) return UnformatSize(Fields[0], "b");
                     else return 0;
                   }
 
@@ -651,23 +621,17 @@ namespace RoboG {
                     Double Size = 0;
                     if (!Double.TryParse(SizeString, out Size)) return 0;
                     switch (Unit.ToLower()) {
-                    case "
-              b ":
+                    case "b":
                       return (Int64) Size;
-                    case "
-              k ":
+                    case "k":
                       return SizeToByte(SizePrefixes.Kilo, Size);
-                    case "
-              m ":
+                    case "m":
                       return SizeToByte(SizePrefixes.Mega, Size);
-                    case "
-              g ":
+                    case "g":
                       return SizeToByte(SizePrefixes.Giga, Size);
-                    case "
-              t ":
+                    case "t":
                       return SizeToByte(SizePrefixes.Tera, Size);
-                    case "
-              p ":
+                    case "p":
                       return SizeToByte(SizePrefixes.Peta, Size);
                     default:
                       return (Int64) Size;
@@ -744,8 +708,7 @@ namespace RoboG {
                             {
                               Postfix = BackupDirectories[i].Substring(GlobalData.BackupPrefix.Length + 4);
                             }
-                            String NewName = GetFreeDirectoryName(GlobalData.BackupVolume + Settings.Subfolder, GlobalData.BackupPrefix + (Index + 1).ToString("
-              0000 ") + Postfix);
+                            String NewName = GetFreeDirectoryName(GlobalData.BackupVolume + Settings.Subfolder, GlobalData.BackupPrefix + (Index + 1).ToString("0000") + Postfix);
                             int j = 0;
                             while (j < Settings.Retries + 1) {
                               try {
@@ -760,13 +723,10 @@ namespace RoboG {
                                 }
                               }
                             }
-                            BackupDirectories[i] = NewName.Substring(NewName.LastIndexOf(@ "\") + 1);
+                            BackupDirectories[i] = NewName.Substring(NewName.LastIndexOf(@"\") + 1);
                               }
                               catch (System.IO.IOException) {
-                                if (HelperFunctions.ShowYesNoQuestion("
-              RoboG ", Translations.Get("
-              DirMoveError1 ") + BackupDirectories[i] + Translations.Get("
-              DirMoveError2 "), 1) == System.Windows.Forms.DialogResult.Yes) {
+                                if (HelperFunctions.ShowYesNoQuestion("RoboG", Translations.Get("DirMoveError1") + BackupDirectories[i] + Translations.Get("DirMoveError2"), 1) == System.Windows.Forms.DialogResult.Yes) {
                                   i++;
                                 } else {
                                   Error = true;
@@ -784,10 +744,9 @@ namespace RoboG {
                                 {
                                   Postfix = BackupDirectories[j].Substring(GlobalData.BackupPrefix.Length + 4);
                                 }
-                                String OldName = GetFreeDirectoryName(GlobalData.BackupVolume + Settings.Subfolder, GlobalData.BackupPrefix + (Index - 1).ToString("
-              0000 ") + Postfix);
+                                String OldName = GetFreeDirectoryName(GlobalData.BackupVolume + Settings.Subfolder, GlobalData.BackupPrefix + (Index - 1).ToString("0000") + Postfix);
                                 System.IO.Directory.Move(GlobalData.BackupVolume + Settings.Subfolder + BackupDirectories[j], OldName);
-                                BackupDirectories[j] = OldName.Substring(OldName.LastIndexOf(@ "\") + 1);
+                                BackupDirectories[j] = OldName.Substring(OldName.LastIndexOf(@"\") + 1);
                                   }
                                   return false;
                                 }
@@ -806,8 +765,7 @@ namespace RoboG {
                               try {
                                 if (System.IO.File.Exists(Filename)) Paths.Add(System.IO.Path.GetFullPath(Filename));
 
-                                String Values = Environment.GetEnvironmentVariable("
-              PATH ");
+                                String Values = Environment.GetEnvironmentVariable("PATH");
                                 String Path;
                                 foreach(String path in Values.Split(';')) {
                                   Path = path.Trim().Replace("\"", "");
@@ -835,11 +793,13 @@ namespace RoboG {
         public static bool RobocopyInstalled(out String Version) {
           Version = "";
           try {
-            List < String > RobocopyPaths = GetFullPaths("Robocopy.exe");
+            List < String > RobocopyPaths = new List < String > ();
+            String SystemRobocopy = Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\System32\\robocopy.exe";
+            if (System.IO.File.Exists(SystemRobocopy)) RobocopyPaths.Add(SystemRobocopy);
             for (int i = 0; i < RobocopyPaths.Count; i++) {
               FileVersionInfo FileVersionInfo = FileVersionInfo.GetVersionInfo(RobocopyPaths[i]);
               Version = FileVersionInfo.ProductVersion;
-              if (Version.ToUpper() == "XP026" || Version.ToUpper() == "XP027" || Version.StartsWith("6.2.") || Version.StartsWith("6.3.")) {
+              if (Version.ToUpper() == "XP026" || Version.ToUpper() == "XP027" || Version.StartsWith("6.2.") || Version.StartsWith("6.3.") || Version.StartsWith("10.")) {
                 GlobalData.RobocopyPath = RobocopyPaths[i];
                 return true;
               }
