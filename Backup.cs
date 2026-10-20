@@ -52,13 +52,13 @@ namespace RoboG {
             _MirOptionSet = true;
           }
         }
-        /* if (_MirOptionSet)
+        if (_MirOptionSet)
         {
         	if (HelperFunctions.ShowYesNoQuestion("RoboG", Translations.Get("WarningMIR"), 2) != System.Windows.Forms.DialogResult.Yes)
         	{
         		_Abort = true;
         	}
-        } */
+        }
 
         for (int i = 0; i < _TargetDirectories.Count; i++) {
 
