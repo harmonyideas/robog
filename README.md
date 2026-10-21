@@ -18,7 +18,7 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 * Support VSS/Shadow copy volume service
 * Simple and intuitive GUI.
 * Compose and Save the options as a profile for reuse.
-* Run multiple instances of robocopy jobs or save them as scripts to run in a cmd window.
+* Run several sync jobs at the same time, each in its own tab with its own progress and log.
 * Provides a text box with RoboCopy commands associated with the changes to the properties.
 * Display immediate hints for an option highlighted in the property grid or in the text editor.
 * The ability to run the RoboCopy within the GUI.
@@ -30,9 +30,11 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 
 ![Main window listing four sync jobs](screenshots/main-window.png "Sync jobs")
 
-**Sync progress**: files copied, speed, elapsed time, time left and errors while a job runs.
+**Sync progress, Overview tab**: the whole run at the top (files, speed, elapsed time, time left, errors, jobs done), and every job with its status, progress, files, amount copied, speed and errors. Double-click a job to open its tab.
 
-![Progress window during a sync](screenshots/sync-progress.png "Sync progress")
+![Progress window, Overview tab, with several jobs running in parallel](screenshots/sync-progress.png "Sync progress: Overview")
+
+**Sync progress, job tab**: one tab per job, with its own progress bar, the folder and file being copied, and that job's log. Tab titles show each job's state at a glance (`Photos · 45%`, `· waiting`, `· done`, `· failed`).
 
 **Edit sync job**
 
@@ -42,19 +44,30 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 
 ![Advanced job options dialog](screenshots/job-options.png "Advanced job options")
 
-**Profile options**: retries, copy threads, scan and logging, and programs to run before or after a sync.
+**Profile options**: retries, copy threads, parallel jobs, scan and logging, and programs to run before or after a sync.
 
 ![Profile options dialog](screenshots/profile-options.png "Profile options")
 
+# Parallel jobs
+
+A profile's jobs run at the same time, up to **Parallel jobs** (Profile options, default 4); the rest wait and start as soon as a running job finishes. Each job runs its own robocopy, so jobs on different disks or servers finish much sooner together than one after the other. Set it to 1 to run jobs one after the other, for example when they all read from the same hard disk. Jobs whose target folders overlap (one inside the other) always run one after the other, so they can't get in each other's way. Turned-off jobs get no tab and don't run.
+
+If a job fails, the others carry on, and the failures are listed together when the run ends. Stopping the run stops every running job and doesn't start the waiting ones. Shadow copies and the programs to run before and after a sync happen once for the whole run.
+
 # Large jobs (millions to billions of files)
 
-RoboG streams robocopy's output instead of holding it in memory, so memory use stays flat however many files a job has. For the fastest runs, open **Edit > Advanced settings**:
+RoboG streams robocopy's output instead of holding it in memory, so memory use stays flat however many files a job has, and parallel jobs don't add up to more than a few megabytes each. The progress window reads each job's counters twice a second and redraws only the tab you are looking at, so the copy never waits for the screen. For the fastest runs, open **Edit > Advanced settings**:
 
 * **Copy threads** (default 16) runs robocopy with `/MT`. 16 to 32 suits most jobs; very small files over a network can benefit from more. Set it to 1 only if you need EFS-encrypted files copied in raw mode (`/EFSRAW` cannot be combined with `/MT`).
 * **Scan first** does a list-only pass to find the total size, which gives an accurate progress bar and time estimate but means walking the whole tree twice. Turn it off for very large trees.
-* **Show live progress** lists every file in the log. Turning it off (`/NFL /NDL`) is fastest; errors and robocopy's summary are still logged.
+* **Show live progress** lists every file in the log. Turning it off (`/NFL /NDL`) is fastest; errors and robocopy's summary are still logged, and each job's files and bytes copied appear when it finishes.
+* **Parallel jobs** (default 4) sets how many jobs run at the same time. Each one also uses the copy threads above, so 4 jobs at 16 threads read up to 64 files at once.
 
-The full log is written as the job runs to `%AppData%\RoboG\RoboG-Log.txt`, and errors to `RoboG-Errors.txt` in the same folder.
+Logs are written as the run goes, to `%AppData%\RoboG` (**Open log folder** in the progress window):
+
+* `RoboG-Log.txt`: the run as a whole, such as shadow copies and when each job starts and ends.
+* `Jobs\Job-NN-<name>.txt`: everything robocopy reported for that job.
+* `RoboG-Errors.txt`: every file that could not be copied, from all jobs, tagged with the job's name.
 
 # Shadow copies (VSS)
 
