@@ -30,7 +30,7 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 
 ![Main window listing four sync jobs](screenshots/main-window.png "Sync jobs")
 
-**Sync progress, Overview tab**: the whole run at the top (files, speed, elapsed time, time left, errors, jobs done), and every job with its status, progress, files, amount copied, speed and errors. Double-click a job to open its tab.
+**Sync progress, Overview tab**: the whole run at the top (files, speed in MB/s and files per second, elapsed time, time left, errors, jobs done), and every job with its status, progress, files, amount copied, speed, files per second and errors. With many small files, files per second is the better measure: each file costs a few round trips to the target whatever its size, so MB/s looks low even when the copy is going well. Double-click a job to open its tab.
 
 ![Progress window, Overview tab, with several jobs running in parallel](screenshots/sync-progress.png "Sync progress: Overview")
 

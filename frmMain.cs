@@ -121,13 +121,14 @@ namespace RoboG
 			lstJobs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
 			lstJobs.BorderStyle = BorderStyle.FixedSingle;
 			lstJobs.Font = Theme.BaseFont;
-			lstJobs.Columns.Add("Job", 190);
-			lstJobs.Columns.Add("Status", 150);
-			lstJobs.Columns.Add("Progress", 70, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Files", 90, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Copied", 85, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Speed", 85, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Errors", 60, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Job", 165);
+			lstJobs.Columns.Add("Status", 140);
+			lstJobs.Columns.Add("Progress", 62, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Files", 82, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Copied", 78, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Speed", 78, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Files/s", 62, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Errors", 56, HorizontalAlignment.Right);
 			lstJobs.DoubleClick += new EventHandler(lstJobs_DoubleClick);
 			lstJobs.Dock = DockStyle.Top;
 			lstJobs.Height = 170;
@@ -173,7 +174,7 @@ namespace RoboG
 				_Panels.Add(Panel);
 				_JobTabs.Add(Page);
 
-				ListViewItem Item = new ListViewItem(new String[] { Run.Number + ". " + Run.Name, "", "", "", "", "", "" });
+				ListViewItem Item = new ListViewItem(new String[] { Run.Number + ". " + Run.Name, "", "", "", "", "", "", "" });
 				Item.Tag = Page;
 				lstJobs.Items.Add(Item);
 			}
@@ -386,7 +387,7 @@ namespace RoboG
 
 				long Copied = 0, Total = 0, Files = 0;
 				bool TotalKnown = Settings.Scan && Settings.LogFiles;
-				double Rate = 0;
+				double Rate = 0, FileRate = 0;
 				int Running = 0, Finished = 0, Waiting = 0, Reconnecting = 0;
 				for (int i = 0; i < _Panels.Count; i++)
 				{
@@ -394,6 +395,7 @@ namespace RoboG
 					JobRun Run = Panel.Run;
 					Panel.Sample(Now);
 					Rate += Panel.TransferRate;
+					FileRate += Panel.FileRate;
 
 					long JobCopied = Run.CopiedBytes;
 					Copied += JobCopied;
@@ -447,6 +449,7 @@ namespace RoboG
 
 				SetText(lblFilesValue, Settings.LogFiles || _BackupFinished ? Files.ToString("N0") : "-");
 				SetText(lblSpeedValue, Copying && Settings.LogFiles ? HelperFunctions.SizeSuffix((long)Rate) + "/s" : "-");
+				SetText(lblFileRateValue, Copying && Settings.LogFiles ? FileRate.ToString("N0") : "-");
 				SetText(lblElapsedValue, PrintTimeSpan(Now.TotalSeconds));
 				if (Copying && TotalKnown && Total > Copied && Rate > 0) SetText(lblRemainingValue, PrintTimeSpan((Total - Copied) / Rate));
 				else SetText(lblRemainingValue, _BackupFinished ? "0s" : "-");
@@ -492,7 +495,8 @@ namespace RoboG
 			SetText(Item.SubItems[3], ShowCounts ? Run.FilesCopied.ToString("N0") : "");
 			SetText(Item.SubItems[4], ShowCounts ? HelperFunctions.SizeSuffix(Run.CopiedBytes) : "");
 			SetText(Item.SubItems[5], Panel.TransferRate > 0 ? HelperFunctions.SizeSuffix((long)Panel.TransferRate) + "/s" : "");
-			SetText(Item.SubItems[6], Run.ErrorCount > 0 ? Run.ErrorCount.ToString("N0") : "");
+			SetText(Item.SubItems[6], Panel.FileRate > 0 ? Panel.FileRate.ToString("N0") : "");
+			SetText(Item.SubItems[7], Run.ErrorCount > 0 ? Run.ErrorCount.ToString("N0") : "");
 			Color Fore = State == JobState.Failed ? Color.Firebrick : State == JobState.Reconnecting ? Color.DarkOrange : State == JobState.Waiting ? Theme.TextMuted : Theme.Text;
 			if (Item.ForeColor != Fore) Item.ForeColor = Fore;
 		}

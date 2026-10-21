@@ -62,6 +62,8 @@ namespace RoboG
 			this.lblFilesValue = new System.Windows.Forms.Label();
 			this.lblSpeedCaption = new System.Windows.Forms.Label();
 			this.lblSpeedValue = new System.Windows.Forms.Label();
+			this.lblFileRateCaption = new System.Windows.Forms.Label();
+			this.lblFileRateValue = new System.Windows.Forms.Label();
 			this.lblElapsedCaption = new System.Windows.Forms.Label();
 			this.lblElapsedValue = new System.Windows.Forms.Label();
 			this.lblRemainingCaption = new System.Windows.Forms.Label();
@@ -129,7 +131,7 @@ namespace RoboG
 			this.lblFilesCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblFilesCaption.Location = new System.Drawing.Point(20, 104);
 			this.lblFilesCaption.Name = "lblFilesCaption";
-			this.lblFilesCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblFilesCaption.Size = new System.Drawing.Size(105, 17);
 			this.lblFilesCaption.TabIndex = 4;
 			this.lblFilesCaption.Text = "Files";
 			this.lblFilesCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
@@ -139,7 +141,7 @@ namespace RoboG
 			this.lblFilesValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblFilesValue.Location = new System.Drawing.Point(20, 121);
 			this.lblFilesValue.Name = "lblFilesValue";
-			this.lblFilesValue.Size = new System.Drawing.Size(120, 24);
+			this.lblFilesValue.Size = new System.Drawing.Size(105, 24);
 			this.lblFilesValue.TabIndex = 5;
 			this.lblFilesValue.Text = "0";
 			this.lblFilesValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -148,30 +150,51 @@ namespace RoboG
 			// lblSpeedCaption
 			// 
 			this.lblSpeedCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblSpeedCaption.Location = new System.Drawing.Point(150, 104);
+			this.lblSpeedCaption.Location = new System.Drawing.Point(131, 104);
 			this.lblSpeedCaption.Name = "lblSpeedCaption";
-			this.lblSpeedCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblSpeedCaption.Size = new System.Drawing.Size(105, 17);
 			this.lblSpeedCaption.TabIndex = 6;
 			this.lblSpeedCaption.Text = "Speed";
 			this.lblSpeedCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
 			// 
+			// lblFileRateCaption
+			// 
+			this.lblFileRateCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblFileRateCaption.Location = new System.Drawing.Point(242, 104);
+			this.lblFileRateCaption.Name = "lblFileRateCaption";
+			this.lblFileRateCaption.Size = new System.Drawing.Size(105, 17);
+			this.lblFileRateCaption.TabIndex = 6;
+			this.lblFileRateCaption.Text = "Files/s";
+			this.lblFileRateCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
 			// lblSpeedValue
 			// 
 			this.lblSpeedValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblSpeedValue.Location = new System.Drawing.Point(150, 121);
+			this.lblSpeedValue.Location = new System.Drawing.Point(131, 121);
 			this.lblSpeedValue.Name = "lblSpeedValue";
-			this.lblSpeedValue.Size = new System.Drawing.Size(120, 24);
+			this.lblSpeedValue.Size = new System.Drawing.Size(105, 24);
 			this.lblSpeedValue.TabIndex = 7;
 			this.lblSpeedValue.Text = "-";
 			this.lblSpeedValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblSpeedValue.AutoEllipsis = true;
 			// 
+			// lblFileRateValue
+			// 
+			this.lblFileRateValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblFileRateValue.Location = new System.Drawing.Point(242, 121);
+			this.lblFileRateValue.Name = "lblFileRateValue";
+			this.lblFileRateValue.Size = new System.Drawing.Size(105, 24);
+			this.lblFileRateValue.TabIndex = 7;
+			this.lblFileRateValue.Text = "-";
+			this.lblFileRateValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblFileRateValue.AutoEllipsis = true;
+			// 
 			// lblElapsedCaption
 			// 
 			this.lblElapsedCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblElapsedCaption.Location = new System.Drawing.Point(280, 104);
+			this.lblElapsedCaption.Location = new System.Drawing.Point(353, 104);
 			this.lblElapsedCaption.Name = "lblElapsedCaption";
-			this.lblElapsedCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblElapsedCaption.Size = new System.Drawing.Size(105, 17);
 			this.lblElapsedCaption.TabIndex = 8;
 			this.lblElapsedCaption.Text = "Elapsed";
 			this.lblElapsedCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
@@ -179,9 +202,9 @@ namespace RoboG
 			// lblElapsedValue
 			// 
 			this.lblElapsedValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblElapsedValue.Location = new System.Drawing.Point(280, 121);
+			this.lblElapsedValue.Location = new System.Drawing.Point(353, 121);
 			this.lblElapsedValue.Name = "lblElapsedValue";
-			this.lblElapsedValue.Size = new System.Drawing.Size(120, 24);
+			this.lblElapsedValue.Size = new System.Drawing.Size(105, 24);
 			this.lblElapsedValue.TabIndex = 9;
 			this.lblElapsedValue.Text = "-";
 			this.lblElapsedValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -190,9 +213,9 @@ namespace RoboG
 			// lblRemainingCaption
 			// 
 			this.lblRemainingCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblRemainingCaption.Location = new System.Drawing.Point(410, 104);
+			this.lblRemainingCaption.Location = new System.Drawing.Point(464, 104);
 			this.lblRemainingCaption.Name = "lblRemainingCaption";
-			this.lblRemainingCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblRemainingCaption.Size = new System.Drawing.Size(105, 17);
 			this.lblRemainingCaption.TabIndex = 10;
 			this.lblRemainingCaption.Text = "Time left";
 			this.lblRemainingCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
@@ -200,9 +223,9 @@ namespace RoboG
 			// lblRemainingValue
 			// 
 			this.lblRemainingValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblRemainingValue.Location = new System.Drawing.Point(410, 121);
+			this.lblRemainingValue.Location = new System.Drawing.Point(464, 121);
 			this.lblRemainingValue.Name = "lblRemainingValue";
-			this.lblRemainingValue.Size = new System.Drawing.Size(120, 24);
+			this.lblRemainingValue.Size = new System.Drawing.Size(105, 24);
 			this.lblRemainingValue.TabIndex = 11;
 			this.lblRemainingValue.Text = "-";
 			this.lblRemainingValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -211,9 +234,9 @@ namespace RoboG
 			// lblErrorsCaption
 			// 
 			this.lblErrorsCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblErrorsCaption.Location = new System.Drawing.Point(540, 104);
+			this.lblErrorsCaption.Location = new System.Drawing.Point(575, 104);
 			this.lblErrorsCaption.Name = "lblErrorsCaption";
-			this.lblErrorsCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblErrorsCaption.Size = new System.Drawing.Size(105, 17);
 			this.lblErrorsCaption.TabIndex = 12;
 			this.lblErrorsCaption.Text = "Errors";
 			this.lblErrorsCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
@@ -221,9 +244,9 @@ namespace RoboG
 			// lblErrorsValue
 			// 
 			this.lblErrorsValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblErrorsValue.Location = new System.Drawing.Point(540, 121);
+			this.lblErrorsValue.Location = new System.Drawing.Point(575, 121);
 			this.lblErrorsValue.Name = "lblErrorsValue";
-			this.lblErrorsValue.Size = new System.Drawing.Size(120, 24);
+			this.lblErrorsValue.Size = new System.Drawing.Size(105, 24);
 			this.lblErrorsValue.TabIndex = 13;
 			this.lblErrorsValue.Text = "0";
 			this.lblErrorsValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -232,9 +255,9 @@ namespace RoboG
 			// lblJobsCaption
 			// 
 			this.lblJobsCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblJobsCaption.Location = new System.Drawing.Point(670, 104);
+			this.lblJobsCaption.Location = new System.Drawing.Point(686, 104);
 			this.lblJobsCaption.Name = "lblJobsCaption";
-			this.lblJobsCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblJobsCaption.Size = new System.Drawing.Size(105, 17);
 			this.lblJobsCaption.TabIndex = 14;
 			this.lblJobsCaption.Text = "Jobs done";
 			this.lblJobsCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
@@ -242,9 +265,9 @@ namespace RoboG
 			// lblJobsValue
 			// 
 			this.lblJobsValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblJobsValue.Location = new System.Drawing.Point(670, 121);
+			this.lblJobsValue.Location = new System.Drawing.Point(686, 121);
 			this.lblJobsValue.Name = "lblJobsValue";
-			this.lblJobsValue.Size = new System.Drawing.Size(120, 24);
+			this.lblJobsValue.Size = new System.Drawing.Size(105, 24);
 			this.lblJobsValue.TabIndex = 15;
 			this.lblJobsValue.Text = "-";
 			this.lblJobsValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -334,6 +357,8 @@ namespace RoboG
 			this.Controls.Add(this.lblFilesValue);
 			this.Controls.Add(this.lblSpeedCaption);
 			this.Controls.Add(this.lblSpeedValue);
+			this.Controls.Add(this.lblFileRateCaption);
+			this.Controls.Add(this.lblFileRateValue);
 			this.Controls.Add(this.lblElapsedCaption);
 			this.Controls.Add(this.lblElapsedValue);
 			this.Controls.Add(this.lblRemainingCaption);
@@ -372,6 +397,8 @@ namespace RoboG
 		private System.Windows.Forms.Label lblFilesValue;
 		private System.Windows.Forms.Label lblSpeedCaption;
 		private System.Windows.Forms.Label lblSpeedValue;
+		private System.Windows.Forms.Label lblFileRateCaption;
+		private System.Windows.Forms.Label lblFileRateValue;
 		private System.Windows.Forms.Label lblElapsedCaption;
 		private System.Windows.Forms.Label lblElapsedValue;
 		private System.Windows.Forms.Label lblRemainingCaption;

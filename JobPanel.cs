@@ -31,7 +31,7 @@ namespace RoboG {
     private readonly Label lblState = new Label();
     private readonly ProgressBar Bar = new ProgressBar();
     private readonly Label lblProgress = new Label();
-    private readonly Label lblFiles, lblSpeed, lblElapsed, lblRemaining, lblErrors;
+    private readonly Label lblFiles, lblSpeed, lblFileRate, lblElapsed, lblRemaining, lblErrors;
     private readonly Label lblSource = new Label();
     private readonly Label lblTarget = new Label();
     private readonly Label lblFile = new Label();
@@ -40,6 +40,8 @@ namespace RoboG {
 
     // Transfer rate, averaged over at least two seconds so it doesn't jump from file to file.
     private long _RateBytes = 0;
+    private long _RateFiles = 0;
+    private double _FileRate = 0;
     private TimeSpan _RateTime = TimeSpan.Zero;
     private double _Rate = 0;
     private long _ShownLogVersion = -1;
@@ -67,9 +69,10 @@ namespace RoboG {
 
       lblFiles = Tile("Files", 0);
       lblSpeed = Tile("Speed", 1);
-      lblElapsed = Tile("Elapsed", 2);
-      lblRemaining = Tile("Time left", 3);
-      lblErrors = Tile("Errors", 4);
+      lblFileRate = Tile("Files/s", 2);
+      lblElapsed = Tile("Elapsed", 3);
+      lblRemaining = Tile("Time left", 4);
+      lblErrors = Tile("Errors", 5);
 
       Caption(Translations.Get("lblDirectoryCaption"), 136);
       Caption("Target:", 156);
@@ -113,35 +116,43 @@ namespace RoboG {
     }
 
     private Label Tile(String Caption, int Index) {
-      int X = 12 + Index * 140;
+      int X = 12 + Index * 122;
       Label C = new Label();
       C.Text = Caption;
       C.ForeColor = Theme.TextMuted;
-      Place(C, X, 88, 130, 17, AnchorStyles.Top | AnchorStyles.Left);
+      Place(C, X, 88, 116, 17, AnchorStyles.Top | AnchorStyles.Left);
       Label V = new Label();
       V.Text = "-";
       V.Font = new Font("Segoe UI Semibold", 11.25F, FontStyle.Bold);
       V.AutoEllipsis = true;
-      Place(V, X, 105, 130, 24, AnchorStyles.Top | AnchorStyles.Left);
+      Place(V, X, 105, 116, 24, AnchorStyles.Top | AnchorStyles.Left);
       return V;
     }
 
     /// <summary>Bytes per second this job is copying at (0 when not copying).</summary>
     public double TransferRate { get { return _Rate; } }
 
+    /// <summary>Files per second this job is copying (0 when not copying). With many small files this says more than MB/s.</summary>
+    public double FileRate { get { return _FileRate; } }
+
     /// <summary>Updates the transfer rate. Called on every timer tick for every job, visible or not.</summary>
     public void Sample(TimeSpan Now) {
       long Copied = Run.CopiedBytes;
+      long Files = Run.FilesCopied;
       if (Run.State != JobState.Copying || !Settings.LogFiles) {
         _Rate = 0;
+        _FileRate = 0;
         _RateBytes = Copied;
+        _RateFiles = Files;
         _RateTime = Now;
         return;
       }
       double Seconds = (Now - _RateTime).TotalSeconds;
       if (Seconds < 2) return;
       _Rate = Math.Max(0, (Copied - _RateBytes) / Seconds);
+      _FileRate = Math.Max(0, (Files - _RateFiles) / Seconds);
       _RateBytes = Copied;
+      _RateFiles = Files;
       _RateTime = Now;
     }
 
@@ -219,6 +230,7 @@ namespace RoboG {
       bool ShowCounts = Settings.LogFiles || Run.IsFinished;
       SetText(lblFiles, ShowCounts && State != JobState.Waiting ? Run.FilesCopied.ToString("N0") : "-");
       SetText(lblSpeed, Copying && Settings.LogFiles ? HelperFunctions.SizeSuffix((long)_Rate) + "/s" : "-");
+      SetText(lblFileRate, Copying && Settings.LogFiles ? _FileRate.ToString("N0") : "-");
       SetText(lblElapsed, State == JobState.Waiting ? "-" : frmMain.PrintTimeSpan(Run.Elapsed.TotalSeconds));
       if (Copying && ToCopy > Copied && _Rate > 0) SetText(lblRemaining, frmMain.PrintTimeSpan((ToCopy - Copied) / _Rate));
       else SetText(lblRemaining, Run.IsFinished ? "0s" : "-");
