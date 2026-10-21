@@ -68,7 +68,7 @@ namespace RoboG {
         if (!Translations.LoadTranslations()) Environment.Exit(2);
 
         if (Start && Settings.LoadSettings(true, false)) {
-          if (!GlobalData.Admin && Alphaleonis.Win32.Vss.OperatingSystemInfo.OSVersionName > Alphaleonis.Win32.Vss.OSVersionName.WindowsServer2003 && !Processes.Elevated() && Settings.NeedsAdmin()) {
+          if (!GlobalData.Admin && Environment.OSVersion.Version.Major >= 6 && !Processes.Elevated() && Settings.NeedsAdmin()) {
             if (!Processes.RestartAsAdmin()) Environment.Exit(3);
           } else {
             frmMain frmHaupt = new frmMain();

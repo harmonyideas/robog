@@ -155,7 +155,7 @@ namespace RoboG
 			this.groupBox2.Size = new System.Drawing.Size(730, 247);
 			this.groupBox2.TabIndex = 15;
 			this.groupBox2.TabStop = false;
-			this.groupBox2.Text = "AlphaVSS";
+			this.groupBox2.Text = "Shadow copies";
 			// 
 			// lblAlphaVSS
 			// 
@@ -195,6 +195,7 @@ namespace RoboG
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "frmAbout";
 			this.Padding = new System.Windows.Forms.Padding(9);
 			this.ShowIcon = false;

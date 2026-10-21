@@ -81,6 +81,11 @@ namespace RoboG
 			this.lblProgram3 = new System.Windows.Forms.Label();
 			this.bnSelectProgramOnError = new System.Windows.Forms.Button();
 			this.chkScan = new System.Windows.Forms.CheckBox();
+			this.chkLogFiles = new System.Windows.Forms.CheckBox();
+			this.lblThreads = new System.Windows.Forms.Label();
+			this.numThreads = new System.Windows.Forms.NumericUpDown();
+			this.lblThreadsHint = new System.Windows.Forms.Label();
+			((System.ComponentModel.ISupportInitialize)(this.numThreads)).BeginInit();
 			this.txtProgramOnError = new RoboG.PathTextBox();
 			this.txtProgramAfterBackup = new RoboG.PathTextBox();
 			this.txtProgramBeforeBackup = new RoboG.PathTextBox();
@@ -183,7 +188,7 @@ namespace RoboG
 			// lblProgram1
 			// 
 			this.lblProgram1.AutoSize = true;
-			this.lblProgram1.Location = new System.Drawing.Point(6, -32);
+			this.lblProgram1.Location = new System.Drawing.Point(6, 22);
 			this.lblProgram1.Name = "lblProgram1";
 			this.lblProgram1.Size = new System.Drawing.Size(81, 13);
 			this.lblProgram1.TabIndex = 5;
@@ -191,7 +196,7 @@ namespace RoboG
 			// 
 			// bnSelectProgramBeforeBackup
 			// 
-			this.bnSelectProgramBeforeBackup.Location = new System.Drawing.Point(407, -36);
+			this.bnSelectProgramBeforeBackup.Location = new System.Drawing.Point(407, 17);
 			this.bnSelectProgramBeforeBackup.Name = "bnSelectProgramBeforeBackup";
 			this.bnSelectProgramBeforeBackup.Size = new System.Drawing.Size(28, 21);
 			this.bnSelectProgramBeforeBackup.TabIndex = 4;
@@ -237,7 +242,7 @@ namespace RoboG
 			// lblProgram2
 			// 
 			this.lblProgram2.AutoSize = true;
-			this.lblProgram2.Location = new System.Drawing.Point(6, -32);
+			this.lblProgram2.Location = new System.Drawing.Point(6, 22);
 			this.lblProgram2.Name = "lblProgram2";
 			this.lblProgram2.Size = new System.Drawing.Size(81, 13);
 			this.lblProgram2.TabIndex = 5;
@@ -245,7 +250,7 @@ namespace RoboG
 			// 
 			// bnSelectProgramAfterBackup
 			// 
-			this.bnSelectProgramAfterBackup.Location = new System.Drawing.Point(407, -36);
+			this.bnSelectProgramAfterBackup.Location = new System.Drawing.Point(407, 17);
 			this.bnSelectProgramAfterBackup.Name = "bnSelectProgramAfterBackup";
 			this.bnSelectProgramAfterBackup.Size = new System.Drawing.Size(28, 21);
 			this.bnSelectProgramAfterBackup.TabIndex = 4;
@@ -345,7 +350,7 @@ namespace RoboG
 			// lblProgram3
 			// 
 			this.lblProgram3.AutoSize = true;
-			this.lblProgram3.Location = new System.Drawing.Point(6, -32);
+			this.lblProgram3.Location = new System.Drawing.Point(6, 22);
 			this.lblProgram3.Name = "lblProgram3";
 			this.lblProgram3.Size = new System.Drawing.Size(81, 13);
 			this.lblProgram3.TabIndex = 5;
@@ -353,7 +358,7 @@ namespace RoboG
 			// 
 			// bnSelectProgramOnError
 			// 
-			this.bnSelectProgramOnError.Location = new System.Drawing.Point(407, -36);
+			this.bnSelectProgramOnError.Location = new System.Drawing.Point(407, 17);
 			this.bnSelectProgramOnError.Name = "bnSelectProgramOnError";
 			this.bnSelectProgramOnError.Size = new System.Drawing.Size(28, 21);
 			this.bnSelectProgramOnError.TabIndex = 4;
@@ -370,7 +375,59 @@ namespace RoboG
 			this.chkScan.Name = "chkScan";
 			this.chkScan.Size = new System.Drawing.Size(351, 17);
 			this.chkScan.TabIndex = 13;
-			this.chkScan.Text = "Scan directories to synchronize. (Turn off for large file sets)\r\n";
+			this.chkScan.Text = "Scan first to show overall progress (adds a full pass; turn off for very large jobs)";
+			// 
+			// chkLogFiles
+			// 
+			this.chkLogFiles.AutoSize = true;
+			this.chkLogFiles.Checked = true;
+			this.chkLogFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogFiles.Location = new System.Drawing.Point(15, 166);
+			this.chkLogFiles.Name = "chkLogFiles";
+			this.chkLogFiles.Size = new System.Drawing.Size(351, 17);
+			this.chkLogFiles.TabIndex = 14;
+			this.chkLogFiles.Text = "Show live progress and list every file in the log (turn off for fastest speed)";
+			this.chkLogFiles.UseVisualStyleBackColor = true;
+			// 
+			// lblThreads
+			// 
+			this.lblThreads.AutoSize = true;
+			this.lblThreads.Location = new System.Drawing.Point(300, 25);
+			this.lblThreads.Name = "lblThreads";
+			this.lblThreads.Size = new System.Drawing.Size(74, 13);
+			this.lblThreads.TabIndex = 15;
+			this.lblThreads.Text = "Copy threads:";
+			// 
+			// numThreads
+			// 
+			this.numThreads.Location = new System.Drawing.Point(400, 22);
+			this.numThreads.Maximum = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+			this.numThreads.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numThreads.Name = "numThreads";
+			this.numThreads.Size = new System.Drawing.Size(50, 20);
+			this.numThreads.TabIndex = 16;
+			this.numThreads.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+			// 
+			// lblThreadsHint
+			// 
+			this.lblThreadsHint.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.lblThreadsHint.Location = new System.Drawing.Point(300, 46);
+			this.lblThreadsHint.Name = "lblThreadsHint";
+			this.lblThreadsHint.Size = new System.Drawing.Size(165, 26);
+			this.lblThreadsHint.TabIndex = 17;
+			this.lblThreadsHint.Text = "16-32 suits most jobs. Use 1 for EFS raw copy.";
 			this.chkScan.UseVisualStyleBackColor = true;
 			// 
 			// txtProgramOnError
@@ -378,7 +435,7 @@ namespace RoboG
 			this.txtProgramOnError.AllowColon = true;
 			this.txtProgramOnError.AllowFullStop = true;
 			this.txtProgramOnError.BackColor = System.Drawing.SystemColors.Window;
-			this.txtProgramOnError.Location = new System.Drawing.Point(105, -35);
+			this.txtProgramOnError.Location = new System.Drawing.Point(105, 18);
 			this.txtProgramOnError.Name = "txtProgramOnError";
 			this.txtProgramOnError.Size = new System.Drawing.Size(296, 20);
 			this.txtProgramOnError.TabIndex = 0;
@@ -389,7 +446,7 @@ namespace RoboG
 			this.txtProgramAfterBackup.AllowColon = true;
 			this.txtProgramAfterBackup.AllowFullStop = true;
 			this.txtProgramAfterBackup.BackColor = System.Drawing.SystemColors.Window;
-			this.txtProgramAfterBackup.Location = new System.Drawing.Point(105, -35);
+			this.txtProgramAfterBackup.Location = new System.Drawing.Point(105, 18);
 			this.txtProgramAfterBackup.Name = "txtProgramAfterBackup";
 			this.txtProgramAfterBackup.Size = new System.Drawing.Size(296, 20);
 			this.txtProgramAfterBackup.TabIndex = 0;
@@ -400,7 +457,7 @@ namespace RoboG
 			this.txtProgramBeforeBackup.AllowColon = true;
 			this.txtProgramBeforeBackup.AllowFullStop = true;
 			this.txtProgramBeforeBackup.BackColor = System.Drawing.SystemColors.Window;
-			this.txtProgramBeforeBackup.Location = new System.Drawing.Point(105, -35);
+			this.txtProgramBeforeBackup.Location = new System.Drawing.Point(105, 18);
 			this.txtProgramBeforeBackup.Name = "txtProgramBeforeBackup";
 			this.txtProgramBeforeBackup.Size = new System.Drawing.Size(296, 20);
 			this.txtProgramBeforeBackup.TabIndex = 0;
@@ -431,6 +488,10 @@ namespace RoboG
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.bnCancel;
 			this.ClientSize = new System.Drawing.Size(480, 549);
+			this.Controls.Add(this.lblThreadsHint);
+			this.Controls.Add(this.numThreads);
+			this.Controls.Add(this.lblThreads);
+			this.Controls.Add(this.chkLogFiles);
 			this.Controls.Add(this.chkScan);
 			this.Controls.Add(this.gbProgramOnError);
 			this.Controls.Add(this.chkSilentMode);
@@ -448,6 +509,7 @@ namespace RoboG
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "frmAdvancedSettings";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Advanced Settings";
@@ -458,6 +520,7 @@ namespace RoboG
 			this.gbProgramAfterBackup.PerformLayout();
 			this.gbProgramOnError.ResumeLayout(false);
 			this.gbProgramOnError.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numThreads)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -498,5 +561,9 @@ namespace RoboG
         private System.Windows.Forms.Button bnSelectProgramOnError;
         private PathTextBox txtProgramOnError;
 		private System.Windows.Forms.CheckBox chkScan;
+		private System.Windows.Forms.CheckBox chkLogFiles;
+		private System.Windows.Forms.Label lblThreads;
+		private System.Windows.Forms.NumericUpDown numThreads;
+		private System.Windows.Forms.Label lblThreadsHint;
     }
 }

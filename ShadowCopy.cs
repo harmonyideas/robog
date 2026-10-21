@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-/*
-Copyright (C) 2014 
+﻿/*
+Copyright (C) 2014
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,358 +16,211 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-using System.IO;
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Alphaleonis.Win32.Vss;
 
 namespace RoboG
 {
+	/// <summary>
+	/// Takes one VSS snapshot set covering all source volumes, so every volume is captured at the same instant,
+	/// and makes each snapshot reachable for robocopy through a directory symbolic link under
+	/// %ProgramData%\RoboG\Snapshots\&lt;drive letter&gt;.
+	///
+	/// The snapshots are non-persistent (auto-release): Windows deletes them as soon as this object is disposed,
+	/// and also if RoboG crashes or is killed, so nothing is ever left behind using disk space.
+	/// The backup is declared as a "copy" backup, which does not change applications' backup history
+	/// (SQL Server, Exchange and similar will not truncate their logs because of it).
+	///
+	/// All methods must be called on the same thread (the backup thread).
+	/// </summary>
 	class ShadowCopy : IDisposable
 	{
-		private const uint DDD_RAW_TARGET_PATH = 0x00000001;
-		private const uint DDD_REMOVE_DEFINITION = 0x00000002;
-		private const uint DDD_EXACT_MATCH_ON_REMOVE = 0x00000004;
-		private const uint DDD_NO_BROADCAST_SYSTEM = 0x00000008;
+		private const uint SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1;
 
-		[DllImport("kernel32.dll")]
-		private static extern bool DefineDosDevice(uint dwFlags, string lpDeviceName, string lpTargetPath);
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.I1)]
+		private static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, uint dwFlags);
 
-		[DllImport("kernel32.dll")]
-		private static extern bool DeleteVolumeMountPoint(string lpszVolumeMountPoint);
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool RemoveDirectory(string lpPathName);
 
-		private String _OldSnapshotSetIdsPath;
+		private Vss.IVssBackupComponents _BackupComponents = null;
+		private Guid _SnapshotSetId = Guid.Empty;
+		private readonly Dictionary<String, Guid> _SnapshotIds = new Dictionary<String, Guid>(StringComparer.OrdinalIgnoreCase);
+		private readonly List<String> _Links = new List<String>();
+		private bool _SnapshotsCreated = false;
 
-		Guid _SnapshotSetId;
-		public Guid SnapshotSetId { get { return _SnapshotSetId; } }
+		public static String MountRoot
+		{
+			get { return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\RoboG\\Snapshots"; }
+		}
 
-		List<Guid> _SnapshotIds = new List<Guid>();
-		IVssBackupComponents _BackupComponents = null;
-
+		/// <summary>
+		/// Snapshots the given volumes ("C:\", "D:\", ...) and fills GlobalData.ShadowCopyMounts with
+		/// volume -> mount path. Returns false (after reporting the error) if anything fails.
+		/// </summary>
 		public bool Create(List<String> Volumes)
 		{
 			try
 			{
-				if (OperatingSystemInfo.ProcessorArchitecture == ProcessorArchitecture.X64 || OperatingSystemInfo.ProcessorArchitecture == ProcessorArchitecture.IA64)
+				if (Environment.OSVersion.Version.Major < 6)
 				{
-					if (!System.IO.File.Exists(System.Windows.Forms.Application.StartupPath + "\\AlphaVSS.60.x64.dll"))
-					{
-						HelperFunctions.ShowError(Translations.Get("WrongVersion64"));
-						Settings.ShadowCopy = false;
-						return false;
-					}
-				}
-				else
-				{
-					if (!System.IO.File.Exists(System.Windows.Forms.Application.StartupPath + "\\AlphaVSS.60.x86.dll"))
-					{
-						HelperFunctions.ShowError(Translations.Get("WrongVersion32"));
-						Settings.ShadowCopy = false;
-						return false;
-					} 
-				}
-				if (GlobalData.SettingsInAppData)
-				{
-					_OldSnapshotSetIdsPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\RoboGapp\\SnapshotIds.dat";
-				}
-				else
-				{
-					_OldSnapshotSetIdsPath = System.Windows.Forms.Application.StartupPath + "\\SnapshotIds.dat";
-				}
-				Abort();
-				HelperFunctions.WriteLog(Translations.Get("LoadingVSSImplementation"));
-				IVssImplementation VssImplementation = null;
-				try
-				{
-					VssImplementation = VssUtils.LoadImplementation();
-				}
-				catch (Exception ex)
-				{
-					HelperFunctions.ShowError(Translations.Get("ShadowCopyError") + "\n\n" + Translations.Get("Error") + "\n" + ex.Message);
-					if (OperatingSystemInfo.ProcessorArchitecture == ProcessorArchitecture.X64)
-					{
-						HelperFunctions.ShowError(Translations.Get("VCRedist64"));
-					}
-					else if (OperatingSystemInfo.ProcessorArchitecture == ProcessorArchitecture.IA64)
-					{
-						HelperFunctions.ShowError(Translations.Get("VCRedistIA64"));
-					}
-					else
-					{
-						HelperFunctions.ShowError(Translations.Get("VCRedist32"));
-					}
+					HelperFunctions.ShowError("Shadow copies require Windows Vista or later.");
 					return false;
 				}
+				if (!Service.IsServiceUsable("VSS"))
+				{
+					HelperFunctions.ShowError("The Volume Shadow Copy service (VSS) is disabled. Set it to Manual in services.msc to use shadow copies.");
+					return false;
+				}
+
+				RemoveStaleLinks();
+				GlobalData.ShadowCopyMounts.Clear();
+
 				HelperFunctions.WriteLog(Translations.Get("CreatingBackupComponents"));
-				_BackupComponents = VssImplementation.CreateVssBackupComponents();
+				_BackupComponents = Vss.CreateBackupComponents();
 				HelperFunctions.WriteLog(Translations.Get("InitializingVSSBackup"));
 				_BackupComponents.InitializeForBackup(null);
-				if (OperatingSystemInfo.OSVersionName > OSVersionName.WindowsServer2003)
-				{
-					HelperFunctions.WriteLog(Translations.Get("SettingVSSContext"));
-					_BackupComponents.SetContext(VssVolumeSnapshotAttributes.Persistent | VssVolumeSnapshotAttributes.NoAutoRelease);
-				}
+				_BackupComponents.SetContext(Vss.VSS_CTX_BACKUP);
 				HelperFunctions.WriteLog(Translations.Get("SettingVSSBackupState"));
-				_BackupComponents.SetBackupState(false, true, VssBackupType.Full, false);
+				_BackupComponents.SetBackupState(false, false, Vss.BackupType.Copy, false);
+
+				// Asking writers for metadata lets applications (databases, mail servers) flush to disk
+				// before the snapshot, so their files are consistent in it.
 				HelperFunctions.WriteLog(Translations.Get("GatheringWriterMetadata"));
-				_BackupComponents.GatherWriterMetadata();
+				Vss.IVssAsync Async;
+				_BackupComponents.GatherWriterMetadata(out Async);
+				Vss.WaitFor(Async);
+				_BackupComponents.FreeWriterMetadata();
 
 				HelperFunctions.WriteLog(Translations.Get("CreatingSnapshotSet"));
-				_SnapshotSetId = _BackupComponents.StartSnapshotSet();
-				_SnapshotIds.Clear();
-				for (int i = 0; i < Volumes.Count; i++)
+				_BackupComponents.StartSnapshotSet(out _SnapshotSetId);
+				foreach (String Volume in Volumes)
 				{
-					HelperFunctions.WriteLog(Translations.Get("AddingToSnapshotSet1") + Volumes[i] + Translations.Get("AddingToSnapshotSet2"));
-					Guid SnapshotId = _BackupComponents.AddToSnapshotSet(Volumes[i], Guid.Empty);
-					_SnapshotIds.Add(SnapshotId);
+					HelperFunctions.WriteLog(Translations.Get("AddingToSnapshotSet1") + Volume + Translations.Get("AddingToSnapshotSet2"));
+					Guid SnapshotId;
+					_BackupComponents.AddToSnapshotSet(Volume, Guid.Empty, out SnapshotId);
+					_SnapshotIds[Volume] = SnapshotId;
 				}
-				HelperFunctions.WriteLog(Translations.Get("SavingSnapshotSetID"));
-				SaveSnapshotSetId();
 
 				HelperFunctions.WriteLog(Translations.Get("PreparingVSSBackup"));
-				_BackupComponents.PrepareForBackup();
+				_BackupComponents.PrepareForBackup(out Async);
+				Vss.WaitFor(Async);
 
 				HelperFunctions.WriteLog(Translations.Get("CreatingVSSSnapshots"));
-				_BackupComponents.DoSnapshotSet();
+				_BackupComponents.DoSnapshotSet(out Async);
+				Vss.WaitFor(Async);
+				_SnapshotsCreated = true;
 
 				HelperFunctions.WriteLog(Translations.Get("ExposingSnapshots"));
-				GlobalData.ShadowCopyMounts.Clear();
-				List<String> FreeDriveLetters = IO.GetFreeDriveLetters();
+				System.IO.Directory.CreateDirectory(MountRoot);
+				foreach (String Volume in Volumes)
+				{
+					String Device = Vss.GetSnapshotDevice(_BackupComponents, _SnapshotIds[Volume]);
+					if (Device == null) throw new COMException("The shadow copy disappeared right after it was created.", Vss.VSS_E_OBJECT_NOT_FOUND);
+					String Link = MountRoot + "\\" + Volume.Substring(0, 1).ToUpperInvariant();
+					if (!CreateSymbolicLink(Link, Device + "\\", SYMBOLIC_LINK_FLAG_DIRECTORY))
+					{
+						throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(), "Could not create the link " + Link + " to the shadow copy");
+					}
+					_Links.Add(Link);
+					GlobalData.ShadowCopyMounts.Add(Volume, Link + "\\");
+					HelperFunctions.WriteLog(Volume + " -> " + Device + " (" + Link + ")");
+				}
 
-				String Path = System.Windows.Forms.Application.StartupPath;
-				if (OperatingSystemInfo.OSVersionName > OSVersionName.WindowsServer2003)
-				{
-					try
-					{
-						if (System.IO.File.Exists(Path + "\\write.test")) File.Delete(Path + "\\write.test");
-						using (System.IO.File.Create(Path + "\\write.test")) { }
-						File.Delete(Path + "\\write.test");
-					}
-					catch
-					{
-						Path = IO.GetCommonApplicationDataPath();
-						if (Path == "")
-						{
-							HelperFunctions.ShowError(Translations.Get("ExposingSnapshotsDirError"));
-							return false;
-						}
-					}
-				}
-				for (int i = 0; i < Volumes.Count; i++)
-				{
-					if (OperatingSystemInfo.OSVersionName <= OSVersionName.WindowsServer2003)
-					{
-						GlobalData.ShadowCopyMounts.Add(Volumes[i], FreeDriveLetters[i]);
-						DefineDosDevice(0, FreeDriveLetters[i].Substring(0, 2), _BackupComponents.GetSnapshotProperties(_SnapshotIds[i]).SnapshotDeviceObject);
-					}
-					else
-					{
-						DriveInfo DriveInfo = null;
-						if (Path == System.Windows.Forms.Application.StartupPath)
-						{
-							DriveInfo = DriveInfo.GetDrives().FirstOrDefault((DriveInfo DI) => DI.RootDirectory.ToString() == System.Windows.Forms.Application.StartupPath.Substring(0, 3));
-							if (DriveInfo == null || DriveInfo.DriveType == DriveType.Network)
-							{
-								Path = IO.GetCommonApplicationDataPath();
-								if (Path == "")
-								{
-									HelperFunctions.ShowError(Translations.Get("ExposingSnapshotsDirError"));
-									return false;
-								}
-							}
-						}
-						GlobalData.ShadowCopyMounts.Add(Volumes[i], Path + "\\mnt" + i.ToString() + "\\");
-						if (System.IO.Directory.Exists(GlobalData.ShadowCopyMounts[Volumes[i]]))
-						{
-							try
-							{
-								Directory.Delete(GlobalData.ShadowCopyMounts[Volumes[i]], false);
-							}
-							catch (Exception ex)
-							{
-								HelperFunctions.ShowError(ex);
-								return false;
-							}
-						}
-						Directory.Create(GlobalData.ShadowCopyMounts[Volumes[i]]);
-						_BackupComponents.ExposeSnapshot(_SnapshotIds[i], null, VssVolumeSnapshotAttributes.ExposedLocally, GlobalData.ShadowCopyMounts[Volumes[i]]);
-					}
-				}
 				HelperFunctions.WriteLog(Translations.Get("SnapshotSuccessful"));
 				return true;
 			}
 			catch (Exception ex)
 			{
-				HelperFunctions.ShowError(ex);
+				HelperFunctions.ShowError(Translations.Get("ShadowCopyError") + "\n\n" + Vss.Describe(ex));
+				Dispose();
 				return false;
 			}
 		}
 
-		public void Abort()
+		/// <summary>
+		/// False if Windows has discarded any of the snapshots, typically because shadow storage filled up
+		/// during a long copy. Files read after that point will have failed.
+		/// </summary>
+		public bool IsStillValid()
 		{
-			HelperFunctions.WriteLog(Translations.Get("LoadingSnapshotIDs"));
-			List<Guid> OldSnapshotSetIds = LoadOldSnapshotSetIds();
-			if (OldSnapshotSetIds.Count == 0) return;
-
-			HelperFunctions.WriteLog(Translations.Get("DeletingOldSnapshots"));
-			HelperFunctions.WriteLog(Translations.Get("LoadingVSSImplementation"));
-			IVssImplementation VssImplementation = VssUtils.LoadImplementation();
-			HelperFunctions.WriteLog(Translations.Get("CreatingBackupComponents"));
-			using (IVssBackupComponents BackupComponents = VssImplementation.CreateVssBackupComponents())
-			{
-				HelperFunctions.WriteLog(Translations.Get("InitializingVSSBackup"));
-				BackupComponents.InitializeForBackup(null);
-				if (OperatingSystemInfo.OSVersionName > OSVersionName.WindowsServer2003)
-				{
-					HelperFunctions.WriteLog(Translations.Get("SettingVSSContext"));
-					BackupComponents.SetContext(VssVolumeSnapshotAttributes.Persistent | VssVolumeSnapshotAttributes.NoAutoRelease);
-				}
-				HelperFunctions.WriteLog(Translations.Get("QueryingSnapshots"));
-				List<Guid> SnapshotSetIds = new List<Guid>();
-				foreach (VssSnapshotProperties VssSnapshotProperties in BackupComponents.QuerySnapshots())
-				{
-					if (OldSnapshotSetIds.IndexOf(VssSnapshotProperties.SnapshotSetId) > -1)
-					{
-						if (SnapshotSetIds.IndexOf(VssSnapshotProperties.SnapshotSetId) == -1) SnapshotSetIds.Add(VssSnapshotProperties.SnapshotSetId);
-						try
-						{
-							HelperFunctions.WriteLog(Translations.Get("Unexposing") + VssSnapshotProperties.SnapshotId.ToString() + "...");
-							if (OperatingSystemInfo.OSVersionName > OSVersionName.WindowsServer2003)
-							{
-								BackupComponents.UnexposeSnapshot(VssSnapshotProperties.SnapshotId);
-							}
-						}
-						catch
-						{
-						}
-					}
-				}
-				for (int i = 0; i < SnapshotSetIds.Count; i++)
-				{
-					try
-					{
-						HelperFunctions.WriteLog(Translations.Get("DeletingSnapshot") + SnapshotSetIds[i].ToString() + "...");
-						BackupComponents.DeleteSnapshotSet(SnapshotSetIds[i], true);
-					}
-					catch { }
-				}
-			}
-
+			if (_BackupComponents == null || !_SnapshotsCreated) return false;
 			try
 			{
-				if (System.IO.File.Exists(_OldSnapshotSetIdsPath)) File.Delete(_OldSnapshotSetIdsPath);
-			}
-			catch (IOException ex)
-			{
-				HelperFunctions.ShowError(ex);
-			}
-		}
-
-		private List<Guid> LoadOldSnapshotSetIds()
-		{
-			List<Guid> OldSnapshotIds = new List<Guid>();
-			try
-			{
-				if (!System.IO.File.Exists(_OldSnapshotSetIdsPath)) return OldSnapshotIds;
-				using (FileStream FileStream = new FileStream(_OldSnapshotSetIdsPath, FileMode.Open))
+				foreach (Guid SnapshotId in _SnapshotIds.Values)
 				{
-					using (StreamReader StreamReader = new StreamReader(FileStream))
-					{
-						String Guid;
-						while (!StreamReader.EndOfStream)
-						{
-							Guid = StreamReader.ReadLine().Trim();
-							if (Guid.Length == 36)
-							{
-								OldSnapshotIds.Add(new Guid(Guid));
-							}
-						}
-					}
+					if (Vss.GetSnapshotDevice(_BackupComponents, SnapshotId) == null) return false;
 				}
-			}
-			catch (IOException ex)
-			{
-				HelperFunctions.ShowError(ex.Message);
-			}
-			catch (Exception ex)
-			{
-				HelperFunctions.ShowError(ex.Message);
-			}
-			return OldSnapshotIds;
-		}
-
-		private void SaveSnapshotSetId()
-		{
-			try
-			{
-				using (FileStream FileStream = new FileStream(_OldSnapshotSetIdsPath, FileMode.Append))
-				{
-					using (StreamWriter StreamWriter = new StreamWriter(FileStream))
-					{
-						StreamWriter.WriteLine(_SnapshotSetId);
-					}
-				}
-			}
-			catch (IOException ex)
-			{
-				HelperFunctions.ShowError(ex.Message);
-			}
-			catch (Exception ex)
-			{
-				HelperFunctions.ShowError(ex.Message);
-			}
-		}
-
-		protected void Dispose(bool Disposing)
-		{
-			try
-			{
-				if (Disposing && _BackupComponents != null)
-				{
-					try
-					{
-						for (int i = 0; i < _SnapshotIds.Count; i++)
-						{
-							if (OperatingSystemInfo.OSVersionName <= OSVersionName.WindowsServer2003)
-							{
-								DeleteVolumeMountPoint(GlobalData.ShadowCopyMounts.Values.ElementAt(i).Substring(0, 2));
-							}
-							else
-							{
-								_BackupComponents.UnexposeSnapshot(_SnapshotIds[i]);
-								Directory.Delete(GlobalData.ShadowCopyMounts.Values.ElementAt(i));
-							}
-						}
-					}
-					catch { }
-					HelperFunctions.WriteLog(Translations.Get("DeletingSnapshotSet"));
-					_BackupComponents.DeleteSnapshotSet(_SnapshotSetId, true);
-					_BackupComponents.Dispose();
-					HelperFunctions.WriteLog(Translations.Get("SnapshotSetDeleted"));
-					try
-					{
-						File.Delete(_OldSnapshotSetIdsPath);
-					}
-					catch (IOException ex)
-					{
-						HelperFunctions.ShowError(ex);
-					}
-				}
+				return true;
 			}
 			catch
 			{
+				return false;
+			}
+		}
+
+		// Links left behind by a run that crashed point at snapshots that no longer exist.
+		// RemoveDirectory on a directory symlink removes only the link, never anything it points to.
+		private static void RemoveStaleLinks()
+		{
+			try
+			{
+				if (!System.IO.Directory.Exists(MountRoot)) return;
+				foreach (String Entry in System.IO.Directory.GetDirectories(MountRoot))
+				{
+					System.IO.FileAttributes Attributes = System.IO.File.GetAttributes(Entry);
+					if ((Attributes & System.IO.FileAttributes.ReparsePoint) != 0) RemoveDirectory(Entry);
+				}
+			}
+			catch (Exception ex)
+			{
+				HelperFunctions.WriteLog("Could not clean up old snapshot links: " + ex.Message);
 			}
 		}
 
 		public void Dispose()
 		{
+			foreach (String Link in _Links)
+			{
+				try { RemoveDirectory(Link); } catch { }
+			}
+			_Links.Clear();
+			GlobalData.ShadowCopyMounts.Clear();
+
+			if (_BackupComponents == null) return;
 			try
 			{
-				Dispose(true);
-				GC.SuppressFinalize(this);
+				if (_SnapshotsCreated)
+				{
+					// Tell writers the copy is finished, then delete the snapshots explicitly rather than waiting for release.
+					Vss.IVssAsync Async;
+					_BackupComponents.BackupComplete(out Async);
+					Vss.WaitFor(Async);
+					HelperFunctions.WriteLog(Translations.Get("DeletingSnapshotSet"));
+					int Deleted;
+					Guid NotDeleted;
+					_BackupComponents.DeleteSnapshots(_SnapshotSetId, Vss.ObjectType.SnapshotSet, true, out Deleted, out NotDeleted);
+					HelperFunctions.WriteLog(Translations.Get("SnapshotSetDeleted"));
+				}
+				else
+				{
+					_BackupComponents.AbortBackup();
+				}
 			}
-			catch
+			catch (Exception ex)
 			{
+				// Releasing the components below still makes Windows delete the auto-release snapshots.
+				HelperFunctions.WriteLog("Shadow copy cleanup: " + Vss.Describe(ex));
+			}
+			finally
+			{
+				try { Marshal.ReleaseComObject(_BackupComponents); } catch { }
+				_BackupComponents = null;
+				_SnapshotsCreated = false;
+				_SnapshotIds.Clear();
 			}
 		}
 	}

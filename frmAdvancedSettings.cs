@@ -104,6 +104,8 @@ namespace RoboG
 				chkAutoExit2.Checked = Settings.AutoExitAlways;
 				chkSilentMode.Checked = Settings.SilentMode;
 				chkScan.Checked = Settings.Scan;
+				chkLogFiles.Checked = Settings.LogFiles;
+				numThreads.Value = Settings.Threads;
 				
 
 				txtProgramBeforeBackup.Text = Settings.ProgramBeforeBackup;
@@ -137,6 +139,8 @@ namespace RoboG
 				Settings.AutoExitAlways = chkAutoExit2.Checked;
 				Settings.SilentMode = chkSilentMode.Checked;
 				Settings.Scan = chkScan.Checked;
+				Settings.LogFiles = chkLogFiles.Checked;
+				Settings.Threads = (int)numThreads.Value;
 				Settings.ProgramBeforeBackup = txtProgramBeforeBackup.Text;
 				Settings.ArgumentsProgramBeforeBackup = txtArgumentsProgramBeforeBackup.Text;
 				Settings.ProgramBeforeBackupAdmin = chkProgramBeforeBackupAdmin.Checked;

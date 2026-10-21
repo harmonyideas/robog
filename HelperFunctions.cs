@@ -91,11 +91,11 @@ namespace RoboG {
         "EB"
       }; //Longs run out around EB
       if (byteCount == 0)
-        return "0" + suf[0];
+        return "0 " + suf[0];
       long bytes = Math.Abs(byteCount);
       int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
       double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-      return (Math.Sign(byteCount) * num).ToString() + suf[place];
+      return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
     }
 
     public static String GetUserName() {
@@ -193,26 +193,15 @@ namespace RoboG {
     }
 
     public delegate void LogDelegate(String Text);
-    private static LogDelegate _LogCallback = null;
-    public static LogDelegate LogCallback {
-      get {
-        return _LogCallback;
-      }
-      set {
-        _LogCallback = value;
-      }
-    }
 
     public static void WriteLog(String Text) {
-      try {
-        if (_LogCallback != null) _LogCallback.Invoke(Text);
-      } catch {}
+      RunLog.Write(Text);
     }
+
     public static void WriteLogLine() {
-      try {
-        if (_LogCallback != null) _LogCallback.Invoke("______________________________________________________");
-      } catch {}
+      RunLog.Write("______________________________________________________");
     }
+
     internal static WinAPI.Platform GetPlatform() {
       WinAPI.SYSTEM_INFO sysInfo = new WinAPI.SYSTEM_INFO();
       WinAPI.GetNativeSystemInfo(ref sysInfo);

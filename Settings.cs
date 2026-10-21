@@ -162,6 +162,15 @@ namespace RoboG {
 		private static bool _SilentMode = false;
 		private static bool _Scan = true;
 		public static bool Scan { get { return _Scan; } set { _Scan = value; } }
+
+		// Number of robocopy copy threads (/MT:n). 1 = single-threaded, which keeps /EFSRAW for EFS-encrypted files.
+		public const int MaxThreads = 128;
+		private static int _Threads = 16;
+		public static int Threads { get { return _Threads; } set { _Threads = Math.Max(1, Math.Min(MaxThreads, value)); } }
+
+		// When false, robocopy is run with /NFL /NDL: only errors and the summary are reported (fastest for huge file sets).
+		private static bool _LogFiles = true;
+		public static bool LogFiles { get { return _LogFiles; } set { _LogFiles = value; } }
 		public static bool SilentMode { get { return _SilentMode; } set { _SilentMode = value; } }
 		#endregion
 		//public static string _MountPointPrefix = "mnt";
@@ -400,6 +409,18 @@ namespace RoboG {
 					tw.WriteString(_SilentMode.ToString());
 					tw.WriteEndElement();
 
+					tw.WriteStartElement("scan");
+					tw.WriteString(_Scan.ToString());
+					tw.WriteEndElement();
+
+					tw.WriteStartElement("threads");
+					tw.WriteString(_Threads.ToString());
+					tw.WriteEndElement();
+
+					tw.WriteStartElement("logfiles");
+					tw.WriteString(_LogFiles.ToString());
+					tw.WriteEndElement();
+
 					for (int i = 0; i < _Sources.Count; i++)
 					{
 						tw.WriteStartElement("source");
@@ -626,6 +647,17 @@ namespace RoboG {
 											Temp = Rd.ReadString().Trim().ToLower();
 											if (Temp == "1" || Temp == "true") _SilentMode = true; else _SilentMode = false;
 											break;
+										case "scan":
+											Temp = Rd.ReadString().Trim().ToLower();
+											_Scan = Temp == "1" || Temp == "true";
+											break;
+										case "threads":
+											if (int.TryParse(Rd.ReadString().Trim(), out TempInt)) Threads = TempInt;
+											break;
+										case "logfiles":
+											Temp = Rd.ReadString().Trim().ToLower();
+											_LogFiles = Temp == "1" || Temp == "true";
+											break;
 									}
 								}
 							}
@@ -833,11 +865,11 @@ namespace RoboG {
 
 				if (MIR)
 				{
-					BackupMode = " /UNICODE /MIR /R:";
+					BackupMode = " /MIR /R:";
 				}
 				else
 				{
-					BackupMode = " /UNICODE /E /R:";
+					BackupMode = " /E /R:";
 				}
 
 				if (LogOnly)
@@ -858,9 +890,12 @@ namespace RoboG {
 		{
 			String Parameters = "";
 
+			// /MT cannot be combined with /EFSRAW, so EFS raw mode is only used for single-threaded copies.
+			// XP026 (Vista) has neither switch.
 			if (GlobalData.RobocopyVersion != "XP026")
 			{
-				Parameters += " /EFSRAW";
+				if (Settings.Threads > 1) Parameters += " /MT:" + Settings.Threads.ToString();
+				else Parameters += " /EFSRAW";
 			}
 			try
 			{
@@ -953,10 +988,11 @@ namespace RoboG {
 				{
 					if (_ExcludedFiles[i] == "") continue;
 					String ExcludedFile = _ExcludedFiles[i];
-					if (GlobalData.ShadowCopyMounts.Count > 0) ExcludedFile = ExcludedFile.Replace(_Volume, GlobalData.ShadowCopyMounts[_Volume]);
-					if (ExcludedFile.IndexOf("") > -1)
+					String Mount;
+					if (_ShadowCopy && GlobalData.ShadowCopyMounts.TryGetValue(_Volume, out Mount)) ExcludedFile = ExcludedFile.Replace(_Volume, Mount);
+					if (ExcludedFile.IndexOf(" ") > -1)
 					{
-						ExcludedFiles += "\"" + ExcludedFile + "\"";
+						ExcludedFiles += " \"" + ExcludedFile + "\"";
       }
       else {
         ExcludedFiles += " " + ExcludedFile;
@@ -977,7 +1013,8 @@ private String GetExcludedDirectoriesString() {
     for (int i = 0; i < _ExcludedDirectories.Count; i++) {
       if (_ExcludedDirectories[i] == "") continue;
       String ExcludedDirectory = _ExcludedDirectories[i];
-      if (GlobalData.ShadowCopyMounts.Count > 0) ExcludedDirectory = ExcludedDirectory.Replace(_Volume, GlobalData.ShadowCopyMounts[_Volume]);
+      String Mount;
+      if (_ShadowCopy && GlobalData.ShadowCopyMounts.TryGetValue(_Volume, out Mount)) ExcludedDirectory = ExcludedDirectory.Replace(_Volume, Mount);
       if (ExcludedDirectory.IndexOf(" ") > -1) {
         ExcludedDirectories += " \"" + ExcludedDirectory + "\"";
       }

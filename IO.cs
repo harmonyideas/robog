@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014 
+Copyright (C) 2014
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,147 +18,123 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
-using System.Windows.Forms;
+using System.Threading;
 
 namespace RoboG {
+  /// <summary>
+  /// Runs robocopy and turns its output into progress, log and error information.
+  ///
+  /// Designed for very large jobs (billions of files): memory use does not grow with the
+  /// number of files, the copy thread never waits on the UI (the UI polls the progress
+  /// properties below on a timer), and the log and error list stream to disk.
+  /// </summary>
   static class IO {
-    public delegate void RoboCopyErrorEventHandler(RoboCopyError Error);
-    public static event RoboCopyErrorEventHandler RoboCopyError;
+    /// <summary>At most this many errors are kept in memory for the error summary window; all of them go to the error log file.</summary>
+    public const int MaxStoredErrors = 10000;
 
-    public delegate void DirectoryChangedEventHandler(string Directory);
-    public static event DirectoryChangedEventHandler DirectoryChanged;
+    private static readonly char[] _Tab = new char[] { '\t' };
+    private static readonly char[] _Whitespace = new char[] { ' ', '\t' };
 
-    public delegate void FileChangedEventHandler(string File, Int64 Size);
-    public static event FileChangedEventHandler FileChanged;
+    private static volatile bool _Abort = false;
+    private static volatile Process _Cmd = null;
 
-    public delegate void FileCopiedEventHandler(string File, Int64 Size);
-    public static event FileCopiedEventHandler FileCopied;
-
-    public delegate void CopyProgressEventHandler(Single Progress);
-    public static event CopyProgressEventHandler CopyProgress;
-
-    private static bool _Abort = false;
-    private static FilesToCopy _FilesToCopy = new FilesToCopy();
-    private static List < RoboCopyError > _RoboCopyErrors = new List < RoboCopyError > ();
-    public static List < RoboCopyError > RoboCopyErrors {
-      get {
-        return _RoboCopyErrors;
-      }
-    }
-    private static bool _RoboCopyError = false;
-    private static String _CurrentFile = null;
-    private static Int64 _CurrentFileSize = 0;
-    private static String _CurrentDir = null;
-    private static Int64 _SpaceNeeded = 0;
+    // Per-run source/target context, used to map shadow-copy paths back to the real source path.
     private static String _CurrentRealSourceDir = null;
     private static String _CurrentSourceDir = null;
-    private static String _CurrentSourceDirWithoutTrailingBackslash = null;
-    private static String _CurrentTargetDir = null;
-    private static int _FirstLines = 2;
-    private static Process _Cmd = null;
-    private static String _Last100Percent = null;
-    private static Stopwatch st = new Stopwatch();
-    private static Char[] _SafeChars = new Char[] {
-      '\x8',
-      ' ',
-      '!',
-      '#',
-      '$',
-      '%',
-      '&',
-      '\'',
-      '(',
-      ')',
-      '+',
-      ',',
-      '-',
-      ';',
-      '=',
-      '@',
-      '[',
-      '\\',
-      ']',
-      '^',
-      '_',
-      '`',
-      '{',
-      '}',
-      '~'
+    private static volatile String _CurrentTargetDir = null;
+
+    // Scan results.
+    private static long _SpaceNeeded = 0;
+    private static long _ScanChanges = 0;
+
+    // Live progress, written by the copy thread and read by the UI timer.
+    private static long _CopiedBytes = 0;
+    private static long _FilesCopied = 0;
+    private static long _CurrentFileSize = 0;
+    private static volatile String _CurrentFile = null;
+    private static volatile String _CurrentDir = null;
+
+    // Errors.
+    private static readonly object _ErrorLock = new object();
+    private static readonly List<RoboCopyError> _RoboCopyErrors = new List<RoboCopyError>();
+    // Errors robocopy may still retry, by path, and the error the next message line belongs to.
+    private static readonly Dictionary<String, RoboCopyError> _OpenErrors = new Dictionary<String, RoboCopyError>(StringComparer.OrdinalIgnoreCase);
+    private static RoboCopyError _LastError = null;
+    private static int _ErrorCount = 0;
+    private static System.IO.StreamWriter _ErrorLog = null;
+
+    private static readonly Char[] _SafeChars = new Char[] {
+      '\x8', ' ', '!', '#', '$', '%', '&', '\'', '(', ')', '+', ',', '-', ';', '=', '@', '[', '\\', ']', '^', '_', '`', '{', '}', '~'
     };
 
+    #region Progress and errors (read by the UI)
+
+    public static long CopiedBytes { get { return Interlocked.Read(ref _CopiedBytes); } }
+    public static long FilesCopied { get { return Interlocked.Read(ref _FilesCopied); } }
+    public static long CurrentFileSize { get { return Interlocked.Read(ref _CurrentFileSize); } }
+    public static String CurrentFile { get { return _CurrentFile; } }
+    public static String CurrentDirectory { get { return _CurrentDir; } }
+
+    /// <summary>Total number of robocopy errors in this run (may exceed the number kept in <see cref="RoboCopyErrors"/>).</summary>
+    public static int ErrorCount {
+      get {
+        lock (_ErrorLock) return _ErrorCount;
+      }
+    }
+
+    /// <summary>The first <see cref="MaxStoredErrors"/> errors of this run. Read it once the run has finished.</summary>
+    public static List<RoboCopyError> RoboCopyErrors {
+      get {
+        lock (_ErrorLock) return new List<RoboCopyError>(_RoboCopyErrors);
+      }
+    }
+
+    public static String ErrorLogPath {
+      get { return GlobalData.LogPath + "\\RoboG-Errors.txt"; }
+    }
+
+    public static String GetTargetDir() {
+      return _CurrentTargetDir;
+    }
+
+    #endregion
+
     public static void Initialize() {
-      try {
-        _Abort = false;
-        _FilesToCopy.Clear();
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
+      _Abort = false;
+      _CurrentFile = null;
+      _CurrentDir = null;
+      Interlocked.Exchange(ref _CopiedBytes, 0);
+      Interlocked.Exchange(ref _FilesCopied, 0);
+      Interlocked.Exchange(ref _CurrentFileSize, 0);
+      lock (_ErrorLock) {
+        _RoboCopyErrors.Clear();
+        _OpenErrors.Clear();
+        _LastError = null;
+        _ErrorCount = 0;
+        CloseErrorLog();
+        try {
+          if (System.IO.File.Exists(ErrorLogPath)) System.IO.File.Delete(ErrorLogPath);
+        } catch {}
       }
     }
 
     public static bool IsCharSafe(Char KeyChar) {
-      return _SafeChars.Contains(KeyChar);
+      return Array.IndexOf(_SafeChars, KeyChar) >= 0;
     }
 
-    public static double GetStElapsedTimeSeconds() {
-      return st.Elapsed.TotalSeconds;
-    }
-
-    public static bool IsStRunning() {
-      bool _IsStRunning = false;
+    public static List<String> GetBackupRoot(bool TrailingBackslash) {
       try {
-
-        _IsStRunning = IO.st.IsRunning;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return _IsStRunning;
-    }
-    public static void StStart() {
-      try {
-        st.Start();
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-    }
-
-    public static void StStop() {
-      try {
-        st.Stop();
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-    }
-
-    public static void StReset() {
-      try {
-
-        if (st.IsRunning) {
-          st.Reset();
-        } else {
-          st.Stop();
-          st.Reset();
-        }
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-    }
-
-    public static List < String > GetBackupRoot(bool TrailingBackslash) {
-      try {
-        List < String > _Paths = new List < String > ();
-
+        List<String> Paths = new List<String>();
         String Temp = "\\" + Settings.Subfolder;
-
         if (!TrailingBackslash) Temp = Temp.Substring(0, Temp.Length - 1);
         for (int i = 0; i < Settings.Sources.Count; i++) {
-          _Paths.Add(Settings.Sources[i].TargetPath + Temp);
+          Paths.Add(Settings.Sources[i].TargetPath + Temp);
         }
-
-        return _Paths;
-      } catch(Exception ex) {
+        return Paths;
+      } catch (Exception ex) {
         HelperFunctions.ShowError(ex);
       }
       return null;
@@ -168,234 +144,284 @@ namespace RoboG {
       try {
         System.IO.DriveInfo[] Drives = System.IO.DriveInfo.GetDrives();
         for (int i = 0; i < Settings.Sources.Count; i++) {
-          System.IO.DriveInfo Info = Drives.FirstOrDefault(DI =>DI.RootDirectory.ToString() == Settings.Sources[i].Volume);
-          if (Info == null || Info.DriveFormat.ToLower() != "ntfs") {
+          System.IO.DriveInfo Info = Drives.FirstOrDefault(DI => DI.RootDirectory.ToString() == Settings.Sources[i].Volume);
+          if (Info == null || !SupportsShadowCopy(Info)) {
             Settings.Sources[i].ShadowCopy = false;
           }
         }
-      } catch(Exception ex) {
+      } catch (Exception ex) {
         HelperFunctions.ShowError(ex);
       }
     }
 
     public static bool CheckSourceDrive(String Volume) {
       try {
-        if (Volume.Length != 3) return false;
-        System.IO.DriveInfo[] Drives = System.IO.DriveInfo.GetDrives();
-        System.IO.DriveInfo Info = Drives.FirstOrDefault(DI =>DI.RootDirectory.ToString() == Volume);
-        if (Info == null || Info.DriveFormat.ToLower() != "ntfs" || !Char.IsLetter(Volume[0]) || Volume.Substring(1, 1) != ":" || Volume.Substring(2) != "\\") {
-          return false;
-        }
-        return true;
-      } catch(Exception ex) {
+        if (Volume.Length != 3 || !Char.IsLetter(Volume[0]) || Volume[1] != ':' || Volume[2] != '\\') return false;
+        System.IO.DriveInfo Info = System.IO.DriveInfo.GetDrives().FirstOrDefault(DI => DI.RootDirectory.ToString() == Volume);
+        return Info != null && SupportsShadowCopy(Info);
+      } catch (Exception ex) {
         HelperFunctions.ShowError(ex);
-
       }
       return false;
     }
 
-    public static void WriteErrorLog() {
-
-      try {
-        String ErrorLogFilePath = GlobalData.LogPath + "Errors.txt";
-        if (System.IO.File.Exists(ErrorLogFilePath)) File.Delete(ErrorLogFilePath);
-        if (GlobalData.BackupVolume != null && System.IO.Directory.Exists("C:\\TEMP") && RoboCopyErrors.Count > 0) {
-          using(System.IO.StreamWriter SW = new System.IO.StreamWriter(ErrorLogFilePath, false)) {
-            foreach(RoboG.RoboCopyError Error in RoboCopyErrors) {
-              if (Error.Text.Count == 0) continue;
-              SW.WriteLine(Error.Directory + Error.File + "\t\t" + Error.Text[0]);
-              for (int j = 1; j < Error.Text.Count; j++) {
-                SW.WriteLine("\t\t\t\t\t" + Error.Text[j]);
-              }
-            }
-          }
-        }
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
+    // VSS can snapshot local NTFS and ReFS volumes.
+    private static bool SupportsShadowCopy(System.IO.DriveInfo Info) {
+      if (!Info.IsReady || Info.DriveType == System.IO.DriveType.Network) return false;
+      String Format = Info.DriveFormat.ToUpperInvariant();
+      return Format == "NTFS" || Format == "REFS";
     }
 
-    public static String FindBackupDrive() {
-      try {
-        String[] Drives = Environment.GetLogicalDrives();
-        for (int i = Drives.Length - 1; i >= 0; i--) {
-          String Root = Drives[i];
-          if (Root.Length > 3) continue;
-          if (String.CompareOrdinal(Root, Settings.LargestDriveLetter) <= 0 && String.CompareOrdinal(Root, Settings.SmallestDriveLetter) >= 0 && System.IO.File.Exists(Root + "BackupDrive")) {
-            System.IO.DriveInfo DriveInfo = new System.IO.DriveInfo(Drives[i]);
-            if (DriveInfo.DriveFormat.ToLower() != "ntfs") {
-              HelperFunctions.ShowMessage(Translations.Get("WrongFileSystem1") + Root + Translations.Get("WrongFileSystem2"), "RoboG");
-            } else {
-              return Root;
-            }
-          } else if (String.CompareOrdinal(Root, Settings.SmallestDriveLetter) < 0) {
-            return null;
-          }
-        }
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
+    /// <summary>Finishes the error log for this run. The log itself is written as errors happen.</summary>
+    public static void WriteErrorLog() {
+      lock (_ErrorLock) {
+        EndOfRunErrors();
+        CloseErrorLog();
       }
-      return null;
     }
 
     public static String GetCommonApplicationDataPath() {
-      String Path = "";
-      try {
-        Path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\RoboG";
-        if (!System.IO.Directory.Exists(Path)) {
-          Directory.Create(Path);
-        }
-        Path += "\\RoboGApp";
-        if (!System.IO.Directory.Exists(Path)) {
-          Directory.Create(Path);
-        }
-        try {
-          if (System.IO.File.Exists(Path + "\\write.test")) File.Delete(Path + "\\write.test");
-          using(System.IO.File.Create(Path + "\\write.test")) {}
-          File.Delete(Path + "\\write.test");
-        } catch {
-          HelperFunctions.ShowError(Translations.Get("DirectoryNotWriteable1") + Path + Translations.Get("DirectoryNotWriteable2"));
-          return "";
-        }
-        return Path;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(Translations.Get("CreateDirectoryError1") + Path + Translations.Get("CreateDirectoryError2") + Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + Translations.Get("CreateDirectoryError3") + "\n\n" + Translations.Get("Error") + "\n" + ex.Message);
-      }
-      return "";
+      return GetWritableAppDataPath(Environment.SpecialFolder.CommonApplicationData, true);
     }
 
     public static String GetApplicationDataPath() {
+      return GetWritableAppDataPath(Environment.SpecialFolder.ApplicationData, false);
+    }
+
+    private static String GetWritableAppDataPath(Environment.SpecialFolder Folder, bool AppSubfolder) {
       String Path = "";
       try {
-        Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\RoboG";
-        if (!System.IO.Directory.Exists(Path)) {
-          Directory.Create(Path);
-        }
-        //Path += "\\RoboGApp";
-        //if (!System.IO.Directory.Exists(Path))
-        //{
-        //	Directory.Create(Path);
-        //}
+        Path = Environment.GetFolderPath(Folder) + "\\RoboG";
+        if (AppSubfolder) Path += "\\RoboGApp";
+        System.IO.Directory.CreateDirectory(Path);
         try {
-          if (System.IO.File.Exists(Path + "\\write.test")) File.Delete(Path + "\\write.test");
-          using(System.IO.File.Create(Path + "\\write.test")) {}
-          File.Delete(Path + "\\write.test");
+          String TestFile = Path + "\\write.test";
+          using (System.IO.File.Create(TestFile)) {}
+          System.IO.File.Delete(TestFile);
         } catch {
           HelperFunctions.ShowError(Translations.Get("DirectoryNotWriteable1") + Path + Translations.Get("DirectoryNotWriteable2"));
           return "";
         }
         return Path;
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(Translations.Get("CreateDirectoryError1") + Path + Translations.Get("CreateDirectoryError2") + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Translations.Get("CreateDirectoryError3") + "\n\n" + Translations.Get("Error") + "\n" + ex.Message);
+      } catch (Exception ex) {
+        HelperFunctions.ShowError(Translations.Get("CreateDirectoryError1") + Path + Translations.Get("CreateDirectoryError2") + Environment.GetFolderPath(Folder) + Translations.Get("CreateDirectoryError3") + "\n\n" + Translations.Get("Error") + "\n" + ex.Message);
       }
       return "";
     }
 
-    public static String GetUNCPathOfNetworkDrive(String Drive) {
-      try {
-        if (Drive.Length < 2 || !Char.IsLetter(Drive[0]) || Drive[1] != ':') return "";
-        Drive = Drive.Substring(0, 2);
-        int Capacity = 259;
-        StringBuilder Buffer = new StringBuilder(Capacity);
-        int Error = WinAPI.WNetGetConnection(Drive, Buffer, ref Capacity);
-        if (Error == 0) {
-          return Buffer.ToString();
-        }
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return "";
-    }
-
+    /// <summary>Stops the running robocopy process.</summary>
     public static void Abort() {
-      try {
-        if (_Cmd != null && !_Cmd.HasExited && !_Abort) {
-          _Abort = true;
-          int ParentProcessId = _Cmd.Id;
-          Process[] Processes = Process.GetProcesses();
-          foreach(Process ChildProcess in Processes) {
-            Process ParentProcess = null;
-            try {
-              ParentProcess = RoboG.Processes.GetParentProcess(ChildProcess.Handle);
-            } catch {} // Not allowed to access process
-            if (ParentProcess != null && ParentProcess.Id == ParentProcessId) {
-              ChildProcess.Kill();
-            }
-          }
-        }
-      } catch(Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
       _Abort = true;
+      Process Cmd = _Cmd;
+      if (Cmd == null) return;
+      try {
+        if (!Cmd.HasExited) Cmd.Kill(); // robocopy's /MT worker threads live inside this one process.
+      } catch {} // Already exited.
     }
 
-    public static Int64 GetSpaceNeeded(BackupSource BackupSource) {
-      try {
-        if (BackupSource.DisableJob) {
-          return _SpaceNeeded = 0;
-        };
-        _SpaceNeeded = 0;
-        string Source = BackupSource.Mount;
-        string Target = BackupSource.TargetPath.ToString();
-        _CurrentSourceDir = Source;
-        _CurrentSourceDirWithoutTrailingBackslash = (Source.Length == 3) ? Source.Substring(0, 2) : Source.EndsWith("\\") ? Source.Substring(0, Source.Length - 1) : Source;
-        _CurrentRealSourceDir = BackupSource.SourcePath;
-        _CurrentTargetDir = Target;
-        if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1);
-        if (Target.EndsWith("\\") && Target.Length > 3) Target = Target.Substring(0, Target.Length - 1);
-        HelperFunctions.WriteLogLine();
-        HelperFunctions.WriteLog(Translations.Get("StartingRobocopy"));
-        _Cmd = new Process();
-        _Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
-        if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) _Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        if (Alphaleonis.Win32.Vss.OperatingSystemInfo.OSVersionName <= Alphaleonis.Win32.Vss.OSVersionName.WindowsServer2003) {
-          _FirstLines = 1;
-          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /L /NP /NJH /BYTES /XJ" + BackupSource.GetRobocopyParameters());
-          _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.Unicode;
-          _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.Unicode;
-        } else {
-          _FirstLines = 1;
-          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /L /NP /NJH /BYTES /XJ" + BackupSource.GetRobocopyParameters());
-          _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
-          _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
-        }
-        _Cmd.StartInfo.CreateNoWindow = true;
-        _Cmd.StartInfo.UseShellExecute = false;
-        _Cmd.StartInfo.RedirectStandardError = true;
-        _Cmd.StartInfo.RedirectStandardOutput = true;
-        _Cmd.StartInfo.RedirectStandardInput = true;
+    #region Running robocopy
 
-        _Cmd.Start();
-        _Cmd.BeginOutputReadLine();
-        _Cmd.OutputDataReceived += new DataReceivedEventHandler(GetSpaceNeededOutputHandler);
-        String Error = _Cmd.StandardError.ReadToEnd().Trim();
+    /// <summary>
+    /// Runs robocopy in list-only mode to find how many bytes need copying. Only robocopy's summary is
+    /// requested (/NFL /NDL), so this costs a single pass over the tree and no per-file output.
+    /// Returns -1 on error or abort.
+    /// </summary>
+    public static long GetSpaceNeeded(BackupSource BackupSource) {
+      try {
+        if (BackupSource.DisableJob) return 0;
+        _SpaceNeeded = 0;
+        _ScanChanges = 0;
+        String Source, Target;
+        PrepareRun(BackupSource, out Source, out Target);
+
+        String Switches = CommonSwitches(BackupSource) + " /L /NFL /NDL" + BackupSource.GetRobocopyParameters();
+        String Error;
+        int ExitCode = RunRobocopy(BuildRobocopyArguments(Source, Target, Switches), ProcessScanLine, out Error);
+
         if (Error != "") {
           HelperFunctions.ShowError(Translations.Get("RobocopyError") + "\n\n" + Translations.Get("Error") + "\n" + Error);
-          return - 1;
+          return -1;
         }
-        _Cmd.WaitForExit();
-        if ((_Cmd.ExitCode & 16) == 16 && !_Abort) {
-          HelperFunctions.ShowError(GetRobocopyReadableExitCode(_Cmd.ExitCode));
-          return - 1;
-        }
-        if (_Cmd.ExitCode == 0 && _SpaceNeeded == 0) BackupSource.NoChanges = true;
         if (_Abort) {
           HelperFunctions.WriteLog(Translations.Get("Aborted"));
-          return - 1;
-        } else HelperFunctions.WriteLog(Translations.Get("ExitCode") + _Cmd.ExitCode + ": " + GetRobocopyReadableExitCode(_Cmd.ExitCode));
-        _Cmd = null;
+          return -1;
+        }
+        if ((ExitCode & 16) == 16) {
+          HelperFunctions.ShowError(GetRobocopyReadableExitCode(ExitCode));
+          return -1;
+        }
+        if (ExitCode == 0 && _SpaceNeeded == 0 && _ScanChanges == 0) BackupSource.NoChanges = true;
+        HelperFunctions.WriteLog(Translations.Get("ExitCode") + ExitCode + ": " + GetRobocopyReadableExitCode(ExitCode));
         return _SpaceNeeded;
-      } catch(Exception ex) {
+      } catch (Exception ex) {
         HelperFunctions.ShowError(ex);
       }
-      return - 1;
+      return -1;
+    }
+
+    public static void MirrorDirectory(BackupSource BackupSource) {
+      try {
+        if (BackupSource.DisableJob) return;
+        String Source, Target;
+        PrepareRun(BackupSource, out Source, out Target);
+
+        String Switches = CommonSwitches(BackupSource) + " /NJS";
+        if (!Settings.LogFiles) Switches += " /NFL /NDL";
+        Switches += BackupSource.GetRobocopyParameters();
+
+        String Error;
+        int ExitCode = RunRobocopy(BuildRobocopyArguments(Source, Target, Switches), ProcessMirrorLine, out Error);
+        lock (_ErrorLock) EndOfRunErrors();
+
+        if (Error != "") HelperFunctions.ShowError(Translations.Get("ErrorInRobocopy") + Error);
+        if (_Abort) {
+          HelperFunctions.WriteLog(Translations.Get("Aborted"));
+        } else {
+          if ((ExitCode & 16) == 16) HelperFunctions.ShowError(GetRobocopyReadableExitCode(ExitCode));
+          HelperFunctions.WriteLog(Translations.Get("ExitCode") + ExitCode + ": " + GetRobocopyReadableExitCode(ExitCode));
+        }
+        HelperFunctions.WriteLogLine();
+      } catch (Exception ex) {
+        HelperFunctions.ShowError(ex);
+      }
+    }
+
+    private static void PrepareRun(BackupSource BackupSource, out String Source, out String Target) {
+      Source = BackupSource.Mount;
+      Target = BackupSource.TargetPath.ToString();
+      _CurrentRealSourceDir = BackupSource.SourcePath;
+      _CurrentSourceDir = Source;
+      _CurrentTargetDir = Target;
+      if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1); // A trailing backslash would escape the closing quote.
+      if (Target.EndsWith("\\") && Target.Length > 3) Target = Target.Substring(0, Target.Length - 1);
+      HelperFunctions.WriteLogLine();
+      HelperFunctions.WriteLog(Translations.Get("StartingRobocopy"));
+    }
+
+    // /NP: no per-file percentage lines. They are pure overhead for many small files and robocopy omits them with /MT anyway.
+    private static String CommonSwitches(BackupSource BackupSource) {
+      return BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NP /BYTES /XJ";
+    }
+
+    /// <summary>
+    /// Starts robocopy and feeds every line it reports to <paramref name="LineHandler"/> on the calling thread.
+    /// Returns robocopy's exit code (-1 if it could not be started or was killed).
+    ///
+    /// robocopy writes its report to a Unicode log file (/UNILOG) that is read while it grows. Reading the
+    /// console pipe instead would turn every file name outside the console code page (accents, CJK, ...)
+    /// into '?', because a program without a console window cannot give robocopy a UTF-8 console.
+    /// </summary>
+    private static int RunRobocopy(String Arguments, Action<String> LineHandler, out String Error) {
+      Error = "";
+      if (_Abort) return -1;
+
+      String UniLog = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RoboG-" + Guid.NewGuid().ToString("N") + ".log");
+      Process Cmd = new Process();
+      Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
+      Cmd.StartInfo.Arguments = Arguments + " /UNILOG:" + QuoteRobocopyArgument(UniLog);
+      if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+      Cmd.StartInfo.CreateNoWindow = true;
+      Cmd.StartInfo.UseShellExecute = false;
+      Cmd.StartInfo.RedirectStandardError = true;
+      Cmd.StartInfo.RedirectStandardOutput = true;
+      Cmd.StartInfo.RedirectStandardInput = true;
+
+      // With /UNILOG robocopy prints nothing to the console, except usage errors (which come before the log is opened).
+      StringBuilder ConsoleText = new StringBuilder();
+      DataReceivedEventHandler Collect = (Sender, Args) => {
+        if (Args.Data == null) return;
+        lock (ConsoleText) {
+          if (ConsoleText.Length < 8192) ConsoleText.AppendLine(Args.Data);
+        }
+      };
+      Cmd.OutputDataReceived += Collect;
+      Cmd.ErrorDataReceived += Collect;
+
+      HelperFunctions.WriteLog(GlobalData.RobocopyPath + " " + Arguments);
+      Cmd.Start();
+      _Cmd = Cmd;
+      try {
+        Cmd.BeginOutputReadLine();
+        Cmd.BeginErrorReadLine();
+        TailLog(UniLog, Cmd, Line => {
+          if (_Abort || Line.Length == 0) return;
+          try {
+            LineHandler(Line);
+          } catch (Exception ex) {
+            // An unexpected line must never stop the sync; note it and carry on.
+            RunLog.Write("RoboG could not parse robocopy output (" + ex.Message + "): " + Line);
+          }
+        });
+        Cmd.WaitForExit();
+        int ExitCode = _Abort ? -1 : Cmd.ExitCode;
+        if ((ExitCode & 16) == 16) {
+          // A usage error is reported on the console, not in the log.
+          lock (ConsoleText) Error = ConsoleText.ToString().Trim();
+        }
+        return ExitCode;
+      } finally {
+        _Cmd = null;
+        Cmd.Dispose();
+        try {
+          System.IO.File.Delete(UniLog);
+        } catch {}
+      }
+    }
+
+    // Reads lines from a log file that another process is still writing, until that process has exited
+    // and everything it wrote has been read. Memory use is constant however long the log gets.
+    private static void TailLog(String Path, Process Writer, Action<String> LineHandler) {
+      System.IO.FileStream Stream = null;
+      while (Stream == null) {
+        try {
+          Stream = new System.IO.FileStream(Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite | System.IO.FileShare.Delete, 1 << 16);
+        } catch (System.IO.IOException) {
+          if (Writer.HasExited) return; // robocopy ended before creating the log (usage error).
+          Thread.Sleep(20);
+        } catch (UnauthorizedAccessException) {
+          if (Writer.HasExited) return;
+          Thread.Sleep(20);
+        }
+      }
+      using (Stream)
+      using (System.IO.StreamReader Reader = new System.IO.StreamReader(Stream, Encoding.Unicode, true, 1 << 16)) {
+        char[] Buffer = new char[1 << 15];
+        StringBuilder Partial = new StringBuilder();
+        bool WriterDone = false;
+        while (true) {
+          int Count = Reader.Read(Buffer, 0, Buffer.Length);
+          if (Count == 0) {
+            if (WriterDone) break; // Process has exited and the file has been read to the end.
+            WriterDone = Writer.HasExited; // Check before the last read, so nothing written just before exit is missed.
+            if (!WriterDone) Thread.Sleep(50);
+            continue;
+          }
+          int Start = 0;
+          for (int i = 0; i < Count; i++) {
+            if (Buffer[i] != '\n') continue;
+            int End = i;
+            if (End > Start && Buffer[End - 1] == '\r') End--;
+            if (Partial.Length > 0) {
+              Partial.Append(Buffer, Start, End - Start);
+              if (Partial.Length > 0 && Partial[Partial.Length - 1] == '\r') Partial.Length--;
+              LineHandler(Partial.ToString());
+              Partial.Length = 0;
+            } else {
+              LineHandler(new String(Buffer, Start, End - Start));
+            }
+            Start = i + 1;
+          }
+          if (Start < Count) Partial.Append(Buffer, Start, Count - Start);
+        }
+        if (Partial.Length > 0) LineHandler(Partial.ToString().TrimEnd('\r'));
+      }
     }
 
     // Quotes one command line argument for CreateProcess (Arguments string, .NET Framework 4.0 has no ArgumentList).
     // Quoting is applied only here, so a path cannot end its argument early and inject further switches.
     private static String QuoteRobocopyArgument(String Argument) {
       if (Argument.Length > 0 && Argument.IndexOf(' ') < 0 && Argument.IndexOf('\t') < 0 && Argument.IndexOf('"') < 0) return Argument;
-      System.Text.StringBuilder Quoted = new System.Text.StringBuilder("\"");
+      StringBuilder Quoted = new StringBuilder("\"");
       int Backslashes = 0;
       foreach (char C in Argument) {
         if (C == '\\') {
@@ -413,543 +439,234 @@ namespace RoboG {
     }
 
     private static String BuildRobocopyArguments(String Source, String Target, String Switches) {
-      return "/U" + " " + QuoteRobocopyArgument(Source) + " " + QuoteRobocopyArgument(Target) + " " + Switches;
+      return QuoteRobocopyArgument(Source) + " " + QuoteRobocopyArgument(Target) + " " + Switches;
     }
 
     public static String GetRobocopyReadableExitCode(int ExitCode) {
+      if (ExitCode < 0) return Translations.Get("ExitCode-1");
       String ExitCodeString = "";
-      if ((_Cmd.ExitCode & 16) == 16) ExitCodeString += Translations.Get("ExitCode16");
-      if ((_Cmd.ExitCode & 8) == 8) ExitCodeString += Translations.Get("ExitCode8");
-      if ((_Cmd.ExitCode & 4) == 4) ExitCodeString += Translations.Get("ExitCode4");
-      if ((_Cmd.ExitCode & 2) == 2) ExitCodeString += Translations.Get("ExitCode2");
-      if ((_Cmd.ExitCode & 1) == 1) ExitCodeString += Translations.Get("ExitCode1");
+      if ((ExitCode & 16) == 16) ExitCodeString += Translations.Get("ExitCode16");
+      if ((ExitCode & 8) == 8) ExitCodeString += Translations.Get("ExitCode8");
+      if ((ExitCode & 4) == 4) ExitCodeString += Translations.Get("ExitCode4");
+      if ((ExitCode & 2) == 2) ExitCodeString += Translations.Get("ExitCode2");
+      if ((ExitCode & 1) == 1) ExitCodeString += Translations.Get("ExitCode1");
       //Ignore ExitCode 0, as it is returned in Windows XP even when there were changes
       if (ExitCodeString != "" || ExitCode == 0) return ExitCodeString;
       return Translations.Get("ExitCode-1");
     }
 
-    public static void MirrorDirectory(BackupSource BackupSource) {
-      try {
-        if (BackupSource.DisableJob) {
+    #endregion
+
+    #region Parsing robocopy output
+
+    // With /NFL /NDL the scan prints only errors and the job summary, e.g. (with /BYTES):
+    //    Dirs :      1200        15      1185         0         0         0
+    //   Bytes :  99999999     12345  99987654         0         0         0
+    // Columns: Total, Copied, Skipped, Mismatch, FAILED, Extras.
+    private static void ProcessScanLine(String Line) {
+      RunLog.Write(Line);
+      String Trimmed = Line.TrimStart();
+      int Colon = Trimmed.IndexOf(':');
+      if (Colon < 0) return;
+      String Label = Trimmed.Substring(0, Colon).Trim();
+      if (Label != "Dirs" && Label != "Files" && Label != "Bytes") return;
+
+      String[] Fields = Trimmed.Substring(Colon + 1).Split(_Whitespace, StringSplitOptions.RemoveEmptyEntries);
+      if (Fields.Length < 6) return;
+      long Copied, Extras;
+      long.TryParse(Fields[1], out Copied);
+      long.TryParse(Fields[5], out Extras);
+      if (Label == "Bytes") _SpaceNeeded += Copied;
+      else _ScanChanges += Copied + Extras;
+    }
+
+    // Mirror output (tab separated):
+    //   directory:  \t   [New Dir]  <count>\t<path>\               (not printed with /MT)
+    //   file:       \t    <Class>\t\t<size>\t<name>              (with /MT: the full path instead of the name)
+    //               Class is capitalised when the file is copied, lower case when skipped, *EXTRA when deleted.
+    //   error:      <date> <time> ERROR <n> (0x...) <what> <path>, followed by message lines
+    private static void ProcessMirrorLine(String Line) {
+      RunLog.Write(Line);
+      if (Char.IsLetterOrDigit(Line[0])) {
+        AddErrorText(Line);
+        return;
+      }
+
+      String[] Columns = Line.Split(_Tab, StringSplitOptions.RemoveEmptyEntries);
+      if (Columns.Length >= 3) {
+        String Class = Columns[0].Trim();
+        if (Class.Length == 0 || !Char.IsUpper(Class[0])) return; // Skipped file, or *EXTRA file being deleted.
+        String Name = Columns[Columns.Length - 1];
+        long Size;
+        long.TryParse(Columns[Columns.Length - 2].Trim(), out Size);
+
+        int Waiting = Name.IndexOf("Waiting ", StringComparison.Ordinal);
+        if (Waiting > 0 && Name.IndexOf(" seconds", Waiting, StringComparison.Ordinal) > 0) Name = Name.Substring(0, Waiting); // Retry notice printed on the same line.
+        int Slash = Name.LastIndexOf('\\');
+        if (Slash >= 0) {
+          _CurrentDir = MapToRealSourcePath(Name.Substring(0, Slash + 1));
+          Name = Name.Substring(Slash + 1);
+        }
+
+        _CurrentFile = Name;
+        Interlocked.Exchange(ref _CurrentFileSize, Size);
+        Interlocked.Add(ref _CopiedBytes, Size);
+        Interlocked.Increment(ref _FilesCopied);
+      } else if (Columns.Length == 2) {
+        if (Columns[0].Trim().StartsWith("*")) return; // *EXTRA Dir being deleted.
+        _CurrentDir = MapToRealSourcePath(Columns[1].Trim());
+      }
+    }
+
+    // Maps a path under the shadow-copy mount back to the source path the user chose.
+    private static String MapToRealSourcePath(String Path) {
+      String Mount = TrimTrailingBackslash(_CurrentSourceDir);
+      String Real = TrimTrailingBackslash(_CurrentRealSourceDir);
+      if (Mount == null || Real == null || Mount == Real) return Path;
+      if (!Path.StartsWith(Mount, StringComparison.OrdinalIgnoreCase)) return Path;
+      return Real + Path.Substring(Mount.Length);
+    }
+
+    private static String TrimTrailingBackslash(String Path) {
+      if (Path != null && Path.Length > 3 && Path.EndsWith("\\")) return Path.Substring(0, Path.Length - 1);
+      return Path;
+    }
+
+    // An error starts with a line like "2026/10/21 05:29:07 ERROR 32 (0x00000020) Copying File C:\\Data\\file.txt",
+    // followed by the Windows message. robocopy then either retries ("Waiting 30 seconds... Retrying...") or gives
+    // up with "ERROR: RETRY LIMIT EXCEEDED.". Only the give-up counts as a failure; an attempt that is retried and
+    // then succeeds is not an error. With /MT, lines from other files arrive in between, so the error's file is
+    // taken from the error line itself and open errors are tracked per file.
+    private static void AddErrorText(String Line) {
+      lock (_ErrorLock) {
+        if (Line.StartsWith("ERROR: RETRY LIMIT EXCEEDED", StringComparison.Ordinal)) {
+          if (_LastError != null) {
+            _LastError.Text.Add(Line);
+            _OpenErrors.Remove(_LastError.Directory + _LastError.File);
+            FinalizeError(_LastError);
+            _LastError = null;
+          }
           return;
         }
-        String Source = BackupSource.Mount;
-        String Target = BackupSource.TargetPath.ToString();
-
-        _CurrentRealSourceDir = BackupSource.SourcePath;
-        _CurrentSourceDir = Source;
-        _CurrentTargetDir = Target;
-        if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1); //Error in backup of an entire drive
-        if (Target.EndsWith("\\")) Target = Target.Substring(0, Target.Length - 1);
-        HelperFunctions.WriteLogLine();
-        HelperFunctions.WriteLog(Translations.Get("StartingRobocopy"));
-        _Cmd = new Process();
-        _Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
-        if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) _Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        if (Alphaleonis.Win32.Vss.OperatingSystemInfo.OSVersionName <= Alphaleonis.Win32.Vss.OSVersionName.WindowsServer2003) {
-          _FirstLines = 1;
-          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NJS /BYTES /XJ" + BackupSource.GetRobocopyParameters());
-          _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.Unicode;
-          _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.Unicode;
-        } else {
-          _FirstLines = 1;
-          _Cmd.StartInfo.Arguments = BuildRobocopyArguments(Source, Target, BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NJS /BYTES /XJ" + BackupSource.GetRobocopyParameters());
-          _Cmd.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
-          _Cmd.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
+        int ErrorAt = Line.IndexOf(" ERROR ", StringComparison.Ordinal);
+        if (ErrorAt < 0 || ErrorAt > 25) {
+          if (_LastError != null && !Line.StartsWith("Waiting ", StringComparison.Ordinal)) _LastError.Text.Add(Line);
+          return;
         }
+        String File = _CurrentFile, Directory = _CurrentDir ?? _CurrentRealSourceDir ?? "";
+        int PathAt = Line.IndexOf(":\\", ErrorAt, StringComparison.Ordinal);
+        if (PathAt > 0) PathAt--; else PathAt = Line.IndexOf("\\\\", ErrorAt, StringComparison.Ordinal);
+        if (PathAt > 0) {
+          String Path = Line.Substring(PathAt).Trim();
+          int Slash = Path.TrimEnd('\\').LastIndexOf('\\');
+          if (Slash >= 0) {
+            Directory = MapToRealSourcePath(Path.Substring(0, Slash + 1));
+            File = Path.Substring(Slash + 1);
+          }
+        }
+        // With retries off robocopy may not print the retry-limit line, so the previous error is final now.
+        if (Settings.Retries == 0 && _LastError != null) {
+          _OpenErrors.Remove(_LastError.Directory + _LastError.File);
+          FinalizeError(_LastError);
+        }
+        RoboCopyError Error = new RoboCopyError(Line.Trim(), File, Directory);
+        if (_OpenErrors.Count > MaxStoredErrors) _OpenErrors.Clear(); // Bound memory if many errors are retried successfully.
+        _OpenErrors[Error.Directory + Error.File] = Error; // A retry replaces the previous attempt's error.
+        _LastError = Error;
+      }
+    }
 
-        _Cmd.StartInfo.CreateNoWindow = true;
-        _Cmd.StartInfo.UseShellExecute = false;
-        _Cmd.StartInfo.RedirectStandardError = true;
-        _Cmd.StartInfo.RedirectStandardOutput = true;
-        _Cmd.StartInfo.RedirectStandardInput = true;
-        _Cmd.Start();
-        _Cmd.BeginOutputReadLine();
-        _Cmd.OutputDataReceived += new DataReceivedEventHandler(GetMirrorDirectoryOutputHandler);
-        String Error = _Cmd.StandardError.ReadToEnd().Trim();
-        if (Error != "") HelperFunctions.ShowError(Translations.Get("ErrorInRobocopy") + Error);
-        _Cmd.WaitForExit();
-        if ((_Cmd.ExitCode & 16) == 16 && !_Abort) HelperFunctions.ShowError(GetRobocopyReadableExitCode(_Cmd.ExitCode));
-        if (_Abort) HelperFunctions.WriteLog(Translations.Get("Aborted"));
-        else HelperFunctions.WriteLog(Translations.Get("ExitCode") + _Cmd.ExitCode + ": " + GetRobocopyReadableExitCode(_Cmd.ExitCode));
-        _Cmd = null;
-        HelperFunctions.WriteLogLine();
-      } catch(Exception ex) {
+    // Caller holds _ErrorLock. An error still waiting for robocopy's verdict when the run ends was retried
+    // successfully (or the run was aborted); it only counts when retries are off.
+    private static void EndOfRunErrors() {
+      if (Settings.Retries == 0 && !_Abort) {
+        foreach (RoboCopyError Error in _OpenErrors.Values) FinalizeError(Error);
+      }
+      _OpenErrors.Clear();
+      _LastError = null;
+    }
+
+    // Caller holds _ErrorLock.
+    private static void FinalizeError(RoboCopyError Error) {
+      _ErrorCount++;
+      if (_RoboCopyErrors.Count < MaxStoredErrors) _RoboCopyErrors.Add(Error);
+      try {
+        if (_ErrorLog == null) {
+          System.IO.Directory.CreateDirectory(GlobalData.LogPath);
+          _ErrorLog = new System.IO.StreamWriter(ErrorLogPath, false, new UTF8Encoding(false), 1 << 16);
+        }
+        _ErrorLog.WriteLine(Error.Directory + Error.File + "\t\t" + Error.Text[0]);
+        for (int j = 1; j < Error.Text.Count; j++) _ErrorLog.WriteLine("\t\t\t\t\t" + Error.Text[j]);
+      } catch {
+        CloseErrorLog(); // Not being able to write the error log must not stop the sync.
+      }
+    }
+
+    // Caller holds _ErrorLock.
+    private static void CloseErrorLog() {
+      if (_ErrorLog == null) return;
+      try {
+        _ErrorLog.Dispose();
+      } catch {}
+      _ErrorLog = null;
+    }
+
+    #endregion
+
+    public static bool RobocopyInstalled(out String Version) {
+      Version = "";
+      try {
+        String SystemRobocopy = Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\System32\\robocopy.exe";
+        if (!System.IO.File.Exists(SystemRobocopy)) return false;
+        Version = FileVersionInfo.GetVersionInfo(SystemRobocopy).ProductVersion;
+        if (Version.ToUpper() == "XP026" || Version.ToUpper() == "XP027" || Version.StartsWith("6.2.") || Version.StartsWith("6.3.") || Version.StartsWith("10.")) {
+          GlobalData.RobocopyPath = SystemRobocopy;
+          GlobalData.RobocopyVersion = Version.ToUpper();
+          return true;
+        }
+        return false;
+      } catch (Exception ex) {
         HelperFunctions.ShowError(ex);
       }
+      return false;
     }
 
-    private static void GetSpaceNeededOutputHandler(object SendingProcess, DataReceivedEventArgs OutputLine) {
+    public static List<String> GetFreeDriveLetters() {
       try {
-        if (!String.IsNullOrEmpty(OutputLine.Data) && !_Abort) {
-          if (_FirstLines > 0) {
-            _FirstLines--;
-            return; //Ignore setting of codepage
-          }
-          HelperFunctions.WriteLog(OutputLine.Data);
-          string[] Columns = OutputLine.Data.Split("\t".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-          for (int i = 0; i < Columns.Length; i++) {
-            Columns[i] = Columns[i].Trim();
-          }
-          if (Columns[0].StartsWith("Bytes")) {
-            if (_FilesToCopy.Count > 0 && _FilesToCopy[_FilesToCopy.Count - 1].FileList.Count == 0) _FilesToCopy.RemoveAt(_FilesToCopy.Count - 1);
-            String[] Fields = Columns[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            Int64 Size = 0;
-            if (Fields.Length > 4) {
-              Int64.TryParse(Fields[Fields.Length - 5], out Size);
-              _SpaceNeeded += Size;
-            }
-          }
-          if (Columns.Length == 3) //File
-          {
-            if (!char.IsUpper(Columns[0][0])) return; //Skipped
-            if (!char.IsLower(Columns[0][1])) return; //Error
-            _FilesToCopy[_FilesToCopy.Count - 1].FileList.Add(Columns[2]);
-
-            if (FileChanged != null && !_Abort) {
-              FileChanged(Columns[2], 0);
-            }
-          }
-          if (Columns.Length == 2) //Directory
-          {
-            if (Columns[0].StartsWith("New Dir          0")) {
-              _SpaceNeeded += 1;
-            }
-            int Matches = 0;
-            String[] Fields = Columns[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            Int32.TryParse(Fields[Fields.Length - 1], out Matches);
-
-            if (Matches > 0) {
-              if (_FilesToCopy.Count > 0 && _FilesToCopy[_FilesToCopy.Count - 1].FileList.Count == 0) _FilesToCopy.RemoveAt(_FilesToCopy.Count - 1);
-              _FilesToCopy.Add(new Files(_CurrentTargetDir + Columns[1].Substring(_CurrentSourceDirWithoutTrailingBackslash.Length, Columns[1].Length - _CurrentSourceDirWithoutTrailingBackslash.Length - 1)));
-              if (DirectoryChanged != null && !_Abort) DirectoryChanged(_CurrentRealSourceDir.Substring(0, _CurrentRealSourceDir.LastIndexOf(@"\")) + Columns[1].Substring(_CurrentSourceDir.LastIndexOf(@"\")));
-                    }
-                  }
-                }
-              } catch (Exception ex) {
-                if (!_Abort) HelperFunctions.ShowError(ex);
-              }
-            }
-
-            private static void GetMirrorDirectoryOutputHandler(object SendingProcess, DataReceivedEventArgs OutputLine) {
-                try {
-
-                  if (!String.IsNullOrEmpty(OutputLine.Data) && !_Abort) {
-                    if (_FirstLines > 0) {
-                      _FirstLines--;
-                      return; //Ignore setting of codepage
-                    }
-                    if (Char.IsLetterOrDigit(OutputLine.Data[0]) && !OutputLine.Data.Trim().EndsWith("%")) {
-                      if (_RoboCopyError) _RoboCopyErrors[_RoboCopyErrors.Count - 1].Text.Add(OutputLine.Data);
-                      else _RoboCopyErrors.Add(new RoboCopyError(OutputLine.Data.Trim(), _CurrentFile, _CurrentDir));
-                      _RoboCopyError = true;
-                      HelperFunctions.WriteLog(OutputLine.Data);
-                      return;
-                    }
-                    string[] Columns = OutputLine.Data.Split("\t ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    for (int i = 0; i < Columns.Length; i++) {
-                      Columns[i] = Columns[i].Trim();
-                    }
-                    if (!(Columns.Length == 1 && Columns[0].EndsWith("%"))) HelperFunctions.WriteLog(OutputLine.Data);
-                    if (Columns.Length > 0 && Columns[0].StartsWith("*")) return;
-                    if (Columns.Length == 1 && Columns[0].EndsWith("%")) {
-                      if (!IO.IsStRunning()) IO.StStart();
-                      Single Progress = 0;
-
-                      if (CopyProgress != null && !_Abort) {
-                        Columns[0] = Columns[0].Replace(".", System.Globalization.NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
-                        if (Single.TryParse(Columns[0].Substring(0, Columns[0].Length - 1), out Progress)) {
-                          int ProgressPercent = (int) Progress;
-                          if (ProgressPercent == 100 && _CurrentFile != _Last100Percent && FileCopied != null) {
-                            _Last100Percent = _CurrentFile; //Otherwise when a file is large it happens that the file is counted several times
-                            if (FileCopied != null) {
-                              FileCopied(_CurrentFile, _CurrentFileSize);
-                              IO.StReset();
-
-                            }
-                          }
-
-                          CopyProgress(Progress);
-
-                        }
-                      }
-                    }
-                    if (Columns.Length == 3) //File
-                    {
-                      if (!char.IsUpper(Columns[0][0])) return; //skipped
-                      Int64 Size = 0;
-                      Int64.TryParse(Columns[1], out Size);
-                      if (_RoboCopyError) {
-                        if (_CurrentFile == Columns[2]) {
-                          _RoboCopyErrors.RemoveAt(_RoboCopyErrors.Count - 1); //Next try. Only keep error after last try.
-                        } else {
-                          //Error
-                          if (RoboCopyError != null) RoboCopyError(_RoboCopyErrors[_RoboCopyErrors.Count - 1]);
-                          if (FileCopied != null) FileCopied(_CurrentFile, _CurrentFileSize);
-                        }
-                        _RoboCopyError = false;
-                      }
-                      _CurrentFile = Columns[2];
-                      _CurrentFileSize = Size;
-                      if (FileChanged != null && !_Abort) FileChanged(Columns[2], Size);
-                    }
-                    if (Columns.Length == 2) //Directory
-                    {
-                      int Matches = 0;
-                      String[] Fields = Columns[0].Split("".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                      Int32.TryParse(Fields[Fields.Length - 1], out Matches);
-                      if (Matches > 0) {
-                        _CurrentDir = _CurrentRealSourceDir.Substring(0, _CurrentRealSourceDir.LastIndexOf(@"\")) + Columns[1].Substring(_CurrentSourceDir.LastIndexOf(@"\"));
-                            if (DirectoryChanged != null && !_Abort) DirectoryChanged(_CurrentDir);
-                          }
-                        }
-                      }
-                    } catch (Exception ex) {
-                      if (!_Abort) HelperFunctions.ShowError(ex);
-                    }
-                  }
-
-                  private static Int64 UnformatSize(String Size) {
-                    String[] Fields = Size.Split("".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    if (Fields.Length == 2) return UnformatSize(Fields[0], Fields[1]);
-                    else if (Fields.Length == 1) return UnformatSize(Fields[0], "b");
-                    else return 0;
-                  }
-
-                  private static Int64 UnformatSize(String SizeString, String Unit) {
-                    SizeString = SizeString.Replace(".", System.Globalization.NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator);
-                    Double Size = 0;
-                    if (!Double.TryParse(SizeString, out Size)) return 0;
-                    switch (Unit.ToLower()) {
-                    case "b":
-                      return (Int64) Size;
-                    case "k":
-                      return SizeToByte(SizePrefixes.Kilo, Size);
-                    case "m":
-                      return SizeToByte(SizePrefixes.Mega, Size);
-                    case "g":
-                      return SizeToByte(SizePrefixes.Giga, Size);
-                    case "t":
-                      return SizeToByte(SizePrefixes.Tera, Size);
-                    case "p":
-                      return SizeToByte(SizePrefixes.Peta, Size);
-                    default:
-                      return (Int64) Size;
-                    }
-                  }
-
-                  private enum SizePrefixes {
-                    Kilo,
-                    Mega,
-                    Giga,
-                    Tera,
-                    Peta
-                  };
-                  private static Int64 SizeToByte(SizePrefixes SizePrefix, Double Size) {
-                    Int64 Bytes = 0;
-                    switch (SizePrefix) {
-                    case SizePrefixes.Kilo:
-                      Bytes = (Int64)(Size * 1024);
-                      break;
-                    case SizePrefixes.Mega:
-                      Bytes = (Int64)(Size * 1024 * 1024);
-                      break;
-                    case SizePrefixes.Giga:
-                      Bytes = (Int64)(Size * 1024 * 1024 * 1024);
-                      break;
-                    case SizePrefixes.Tera:
-                      Bytes = (Int64)(Size * 1024 * 1024 * 1024 * 1024);
-                      break;
-                    case SizePrefixes.Peta:
-                      Bytes = (Int64)(Size * 1024 * 1024 * 1024 * 1024 * 1024);
-                      break;
-                    }
-                    return Bytes;
-                  }
-
-                  public static String GetTargetDir() {
-                    try {
-                      return _CurrentTargetDir;
-                    } catch (Exception ex) {
-                      //HelperFunctions.ShowError(ex);
-
-                      return null;
-                    }
-
-                  }
-
-                  public static String GetFreeDirectoryName(String Path, String Name) {
-                    try {
-                      String FinalName = Name;
-                      int i = 1;
-                      while (System.IO.Directory.Exists(Path + Name)) {
-                        FinalName = Name + "." + i.ToString();
-                        i++;
-                      }
-                      return Path + FinalName;
-                    } catch (Exception ex) {
-                      HelperFunctions.ShowError(ex);
-                      return Path + Name;
-                    }
-                  }
-
-                  public static bool MoveDirectories(List < String > BackupDirectories) {
-                      try {
-                        if (!Settings.IncrementalBackup) return true;
-                        bool Error = false;
-                        int i = 0;
-                        for (i = BackupDirectories.Count - 1; i > 0; i--) {
-                          try {
-                            if (DirectoryChanged != null) DirectoryChanged(GlobalData.BackupVolume + Settings.Subfolder + BackupDirectories[i]);
-                            int Index = 0;
-                            int.TryParse(BackupDirectories[i].Substring(GlobalData.BackupPrefix.Length, 4), out Index);
-                            String Postfix = "";
-                            if (BackupDirectories[i].Length > GlobalData.BackupPrefix.Length + 4) //Datum vorhanden?
-                            {
-                              Postfix = BackupDirectories[i].Substring(GlobalData.BackupPrefix.Length + 4);
-                            }
-                            String NewName = GetFreeDirectoryName(GlobalData.BackupVolume + Settings.Subfolder, GlobalData.BackupPrefix + (Index + 1).ToString("0000") + Postfix);
-                            int j = 0;
-                            while (j < Settings.Retries + 1) {
-                              try {
-                                System.IO.Directory.Move(GlobalData.BackupVolume + Settings.Subfolder + BackupDirectories[i], NewName);
-                                j = Settings.Retries + 1;
-                              } catch (Exception ex) {
-                                if (j == Settings.Retries) {
-                                  throw ex;
-                                } else {
-                                  System.Threading.Thread.Sleep(Settings.WaitBetweenRetries * 1000);
-                                  j++;
-                                }
-                              }
-                            }
-                            BackupDirectories[i] = NewName.Substring(NewName.LastIndexOf(@"\") + 1);
-                              }
-                              catch (System.IO.IOException) {
-                                if (HelperFunctions.ShowYesNoQuestion("RoboG", Translations.Get("DirMoveError1") + BackupDirectories[i] + Translations.Get("DirMoveError2"), 1) == System.Windows.Forms.DialogResult.Yes) {
-                                  i++;
-                                } else {
-                                  Error = true;
-                                  break;
-                                }
-                              }
-                            }
-                            if (Error) {
-                              for (int j = i + 1; j < BackupDirectories.Count; j++) {
-                                if (DirectoryChanged != null) DirectoryChanged(GlobalData.BackupVolume + Settings.Subfolder + BackupDirectories[j]);
-                                int Index = 0;
-                                int.TryParse(BackupDirectories[j].Substring(GlobalData.BackupPrefix.Length, 4), out Index);
-                                String Postfix = "";
-                                if (BackupDirectories[j].Length > GlobalData.BackupPrefix.Length + 4) //Datum vorhanden?
-                                {
-                                  Postfix = BackupDirectories[j].Substring(GlobalData.BackupPrefix.Length + 4);
-                                }
-                                String OldName = GetFreeDirectoryName(GlobalData.BackupVolume + Settings.Subfolder, GlobalData.BackupPrefix + (Index - 1).ToString("0000") + Postfix);
-                                System.IO.Directory.Move(GlobalData.BackupVolume + Settings.Subfolder + BackupDirectories[j], OldName);
-                                BackupDirectories[j] = OldName.Substring(OldName.LastIndexOf(@"\") + 1);
-                                  }
-                                  return false;
-                                }
-                                else {
-                                  return true;
-                                }
-
-                              } catch (System.IO.IOException ex) {
-                                HelperFunctions.ShowError(ex);
-                              }
-                              return false;
-                            }
-
-                            public static List < String > GetFullPaths(string Filename) {
-                              List < String > Paths = new List < string > ();
-                              try {
-                                if (System.IO.File.Exists(Filename)) Paths.Add(System.IO.Path.GetFullPath(Filename));
-
-                                String Values = Environment.GetEnvironmentVariable("PATH");
-                                String Path;
-                                foreach(String path in Values.Split(';')) {
-                                  Path = path.Trim().Replace("\"", "");
-              try {
-                bool InvalidChar = false;
-                foreach(char c in System.IO.Path.GetInvalidPathChars()) {
-                  if (Path.Contains(c)) {
-                    InvalidChar = true;
-                    break;
-                  }
-                }
-                if (InvalidChar) continue;
-                String FullPath = System.IO.Path.Combine(Path, Filename);
-                if (System.IO.File.Exists(FullPath)) Paths.Add(FullPath);
-              } catch(Exception ex) {
-                HelperFunctions.ShowError(ex);
-              }
-            }
-          } catch(Exception ex) {
-            HelperFunctions.ShowError(ex);
-          }
-          return Paths;
+        String[] LogicalDrives = Environment.GetLogicalDrives();
+        List<String> FreeLetters = new List<string>();
+        for (char Letter = 'B'; Letter <= 'Z'; Letter++) {
+          String Drive = Letter + ":\\";
+          if (!LogicalDrives.Contains(Drive)) FreeLetters.Add(Drive);
         }
-
-        public static bool RobocopyInstalled(out String Version) {
-          Version = "";
-          try {
-            List < String > RobocopyPaths = new List < String > ();
-            String SystemRobocopy = Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\System32\\robocopy.exe";
-            if (System.IO.File.Exists(SystemRobocopy)) RobocopyPaths.Add(SystemRobocopy);
-            for (int i = 0; i < RobocopyPaths.Count; i++) {
-              FileVersionInfo FileVersionInfo = FileVersionInfo.GetVersionInfo(RobocopyPaths[i]);
-              Version = FileVersionInfo.ProductVersion;
-              if (Version.ToUpper() == "XP026" || Version.ToUpper() == "XP027" || Version.StartsWith("6.2.") || Version.StartsWith("6.3.") || Version.StartsWith("10.")) {
-                GlobalData.RobocopyPath = RobocopyPaths[i];
-                return true;
-              }
-            }
-            return false;
-          } catch(Exception ex) {
-            HelperFunctions.ShowError(ex);
-          }
-          return false;
-        }
-
-        public static List < String > GetFreeDriveLetters() {
-          try {
-            String[] LogicalDrives = System.Environment.GetLogicalDrives();
-            List < String > FreeLetters = new List < string > ();
-            for (int i = 66; i <= 90; i++) {
-              String Letter = ((Char) i).ToString() + ":\\";
-              if (!LogicalDrives.Contains(Letter)) {
-                FreeLetters.Add(Letter);
-              }
-            }
-            return FreeLetters;
-          } catch(Exception ex) {
-            HelperFunctions.ShowError(ex);
-          }
-          return null;
-        }
+        return FreeLetters;
+      } catch (Exception ex) {
+        HelperFunctions.ShowError(ex);
       }
-
-      class Files {
-        private String _Directory = "";
-        public String Directory {
-          get {
-            return _Directory;
-          }
-          set {
-            _Directory = value;
-          }
-        }
-
-        private List < String > _Files = new List < String > ();
-        public List < String > FileList {
-          get {
-            return _Files;
-          }
-          set {
-            _Files = value;
-          }
-        }
-
-        public Files() {}
-
-        public Files(String Directory) {
-          _Directory = Directory;
-        }
-      }
-
-      class FilesToCopy {
-        private List < Files > _Files = new List < Files > ();
-
-        public int Count {
-          get {
-            return _Files.Count;
-          }
-        }
-
-        public void Add(Files Files) {
-          _Files.Add(Files);
-        }
-
-        public void Clear() {
-          _Files.Clear();
-        }
-
-        public void Remove(Files Files) {
-          _Files.Remove(Files);
-        }
-
-        public void RemoveAt(int Index) {
-          if (Index > -1 && Index < _Files.Count) _Files.RemoveAt(Index);
-        }
-
-        public Files this[int Index] {
-          get {
-            return _Files[Index];
-          }
-          set {
-            _Files[Index] = value;
-          }
-        }
-
-        public Files this[String Directory] {
-          get {
-            for (int i = 0; i < _Files.Count; i++) {
-              if (_Files[i].Directory == Directory) return _Files[i];
-            }
-            return null;
-          }
-          set {
-            for (int i = 0; i < _Files.Count; i++) {
-              if (_Files[i].Directory == Directory) {
-                _Files[i] = value;
-                return;
-              }
-            }
-          }
-        }
-      }
-
-      class RoboCopyError {
-        public String File {
-          get;
-          set;
-        }
-        public String Directory {
-          get;
-          set;
-        }
-
-        private List < String > _Text = new List < String > ();
-        public List < String > Text {
-          get {
-            return _Text;
-          }
-        }
-
-        private bool _FirstErrorInDirectory = false;
-        public bool FirstErrorInDirectory {
-          get {
-            return _FirstErrorInDirectory;
-          }
-          set {
-            _FirstErrorInDirectory = value;
-          }
-        }
-
-        public RoboCopyError() {}
-
-        public RoboCopyError(String Text, String File, String Directory) {
-          _Text.Add(Text);
-          this.File = File;
-          this.Directory = Directory.EndsWith("\\") ? Directory: Directory + "\\";
-        }
-
-        public override String ToString() {
-          if (_FirstErrorInDirectory) {
-            return Directory + File;
-          } else {
-            return "\t" + File;
-          }
-        }
-      }
+      return null;
     }
+  }
+
+  class RoboCopyError {
+    public String File { get; set; }
+    public String Directory { get; set; }
+
+    private readonly List<String> _Text = new List<String>();
+    public List<String> Text { get { return _Text; } }
+
+    public bool FirstErrorInDirectory { get; set; }
+
+    public RoboCopyError() {}
+
+    public RoboCopyError(String Text, String File, String Directory) {
+      _Text.Add(Text);
+      this.File = File;
+      this.Directory = Directory.EndsWith("\\") ? Directory : Directory + "\\";
+    }
+
+    public override String ToString() {
+      if (FirstErrorInDirectory) return Directory + File;
+      return "\t" + File;
+    }
+  }
+}

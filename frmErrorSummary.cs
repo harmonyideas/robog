@@ -70,7 +70,16 @@ namespace RoboG
 						LastDirectory = _RoboCopyErrors[i].Directory;
 						_RoboCopyErrors[i].FirstErrorInDirectory = true;
 					}
-					lstErrors.Items.Add(_RoboCopyErrors[i]);
+				}
+				lstErrors.BeginUpdate();
+				lstErrors.Items.AddRange(_RoboCopyErrors.ToArray());
+				lstErrors.EndUpdate();
+
+				int Total = IO.ErrorCount;
+				if (Total > _RoboCopyErrors.Count)
+				{
+					// Only the first errors are kept in memory; the full list is in the error log.
+					this.Text += " (" + _RoboCopyErrors.Count.ToString("N0") + " of " + Total.ToString("N0") + ", see " + IO.ErrorLogPath + ")";
 				}
 			}
 			catch (Exception ex)

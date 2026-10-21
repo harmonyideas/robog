@@ -17,120 +17,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ServiceProcess;
-using Microsoft.Win32;
 
 namespace RoboG
 {
+	/// <summary>
+	/// The VSS service is demand-start: Windows starts it when RoboG asks for a snapshot and stops it when idle.
+	/// RoboG therefore never starts, stops or reconfigures it (stopping it could break another backup that is running).
+	/// </summary>
 	class Service
 	{
-		private static bool _VSSWasStarted = false;
-		private static bool _VSSProviderWasStarted = false;
-		private static bool _COMSysAppWasEnabled = false;
-
-		public static bool StartVSS()
-		{
-			HelperFunctions.WriteLog(Translations.Get("StartingVSService"));
-			bool WasEnabled = false;
-			if (!EnableService("COMSysApp", out WasEnabled)) return false;
-			_COMSysAppWasEnabled = WasEnabled;
-			bool WasStarted = false;
-			if (!StartService("VSS", out WasStarted)) return false;
-			_VSSWasStarted = WasStarted;
-			if (!StartService("swprv", out WasStarted)) return false;
-			_VSSProviderWasStarted = WasStarted;
-			return true;
-		}
-
-		public static void StopVSS()
-		{
-			HelperFunctions.WriteLog(Translations.Get("StoppingVSService"));
-			if (!_VSSWasStarted) StopService("VSS");
-			if (!_VSSProviderWasStarted) StopService("swprv");
-			//Keep COM+ System Application Service enabled
-			//if (!_COMSysAppWasEnabled) DisableService("COMSysApp");
-		}
-
-		public static bool EnableService(String ServiceName, out bool WasEnabled)
-		{
-			WasEnabled = false;
-			try
-			{
-				RegistryKey Key = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\services\\" + ServiceName, true);
-				if ((int)Key.GetValue("Start", 3) == 3)
-				{
-					WasEnabled = true;
-				}
-				else
-				{
-					Key.SetValue("Start", 3);
-					System.Threading.Thread.Sleep(500);
-				}
-				return true;
-			}
-			catch (Exception)
-			{
-				HelperFunctions.ShowError(Translations.Get("VSSStartError"));
-			}
-			return false;
-		}
-
-		public static bool DisableService(String ServiceName)
+		/// <summary>False only if the service exists and is disabled.</summary>
+		public static bool IsServiceUsable(String ServiceName)
 		{
 			try
 			{
-				RegistryKey Key = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\services\\" + ServiceName, true);
-				Key.SetValue("Start", 4);
-				return true;
-			}
-			catch (Exception)
-			{
-				HelperFunctions.ShowError(Translations.Get("VSSStartError"));
-			}
-			return false;
-		}
-
-		public static bool StartService(String ServiceName, out bool WasStarted)
-		{
-			WasStarted = false;
-			ServiceController ServiceController = new ServiceController(ServiceName);
-			try
-			{
-				if (ServiceController.Status == ServiceControllerStatus.Running)
+				using (ServiceController Controller = new ServiceController(ServiceName))
 				{
-					WasStarted = true;
+					return Controller.StartType != ServiceStartMode.Disabled;
 				}
-				else
-				{
-					ServiceController.Start();
-					ServiceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(60000));
-				}
-				return true;
 			}
-			catch (Exception)
+			catch
 			{
-				HelperFunctions.ShowError(Translations.Get("VSSStartError"));
+				return true; // If the state cannot be read, let VSS itself report any problem.
 			}
-			return false;
-		}
-
-		public static bool StopService(String ServiceName)
-		{
-			ServiceController ServiceController = new ServiceController(ServiceName);
-			try
-			{
-				ServiceController.Stop();
-				ServiceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMilliseconds(60000));
-				return true;
-			}
-			catch (Exception ex)
-			{
-				HelperFunctions.ShowError(ex);
-			}
-			return false;
 		}
 	}
 }

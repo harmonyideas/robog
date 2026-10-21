@@ -29,7 +29,6 @@ namespace RoboG {
       if (Path.EndsWith("\\")) Path = Path.Substring(0, Path.Length - 1);
       HelperFunctions.WriteLog(Translations.Get("DeletingDirectory") + Path);
       String UNCPath = GetUNCPath(Path);
-      List < String > Directories = new List < String > ();
       WinAPI.WIN32_FIND_DATA FindData;
       using(WinAPI.SafeFindHandle FindHandle = WinAPI.FindFirstFile(UNCPath + @"\*", out FindData)) {
         if (!FindHandle.IsInvalid) {
@@ -105,8 +104,8 @@ namespace RoboG {
       try {
         using(System.IO.File.Create(Path + TestFile)) {};
         File.Delete(Path + TestFile);
-        Directory.Create(TestDir);
-        Directory.Delete(TestDir);
+        Directory.Create(Path + TestDir); // Was created relative to the working directory, not the target.
+        Directory.Delete(Path + TestDir, false);
         return true;
       } catch {
         return false;

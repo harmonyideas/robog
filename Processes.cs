@@ -301,64 +301,6 @@ namespace RoboG
 			return false;
 		}
 
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		private struct PROCESS_BASIC_INFORMATION
-		{
-			public IntPtr ExitStatus;
-			public IntPtr PebBaseAddress;
-			public IntPtr AffinityMask;
-			public IntPtr BasePriority;
-			public UIntPtr UniqueProcessId;
-			public IntPtr InheritedFromUniqueProcessId;
-
-			public int Size
-			{
-				get { return (6 * IntPtr.Size); }
-			}
-		}
-
-		[DllImport("ntdll.dll")]
-		private static extern int NtQueryInformationProcess(IntPtr processHandle, int processInformationClass, ref PROCESS_BASIC_INFORMATION processInformation, int processInformationLength, out int returnLength);
-
-		public static Process GetParentProcess(int id)
-		{
-			try
-			{
-				Process Process = Process.GetProcessById(id);
-				return GetParentProcess(Process.Handle);
-			}
-			catch (Exception ex)
-			{
-				HelperFunctions.ShowError(ex);
-			}
-			return null;
-		}
-
-		public static Process GetParentProcess(IntPtr Handle)
-		{
-			try
-			{
-				PROCESS_BASIC_INFORMATION PBI = new PROCESS_BASIC_INFORMATION();
-				int ReturnLength;
-				int Status = NtQueryInformationProcess(Handle, 0, ref PBI, PBI.Size, out ReturnLength);
-				if (Status != 0) throw new System.ComponentModel.Win32Exception(Status);
-
-				try
-				{
-					return Process.GetProcessById(PBI.InheritedFromUniqueProcessId.ToInt32());
-				}
-				catch (ArgumentException) //not found
-				{
-					return null;
-				}
-			}
-			catch //Not enough privileges
-			{
-				return null;
-			}
-
-		}
-
 		public static int ProcessPathCount(String ProcessPath)
 		{
 			uint cb;

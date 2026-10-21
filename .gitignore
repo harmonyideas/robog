@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+*.exe
+*.pdb
+
+# Visual Studio per-user files
+.vs/
+*.suo
+*.user
+*.userprefs
+
+# RoboG runtime files
+Settings.xml
+SnapshotIds.dat
