@@ -865,11 +865,11 @@ namespace RoboG {
 
 				if (MIR)
 				{
-					BackupMode = " /UNICODE /MIR /R:";
+					BackupMode = " /MIR /R:";
 				}
 				else
 				{
-					BackupMode = " /UNICODE /E /R:";
+					BackupMode = " /E /R:";
 				}
 
 				if (LogOnly)

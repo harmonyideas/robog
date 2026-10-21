@@ -76,7 +76,7 @@ namespace RoboG {
       public int Status;
     }
 
-    [ComImport, Guid("C7B98A22-222D-4e62-B875-1A44980634AF"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("507C37B4-CF5B-4e95-B0AF-14EB9767467E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IVssAsync {
       void Cancel();
       void Wait(uint Milliseconds);

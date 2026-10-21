@@ -40,7 +40,6 @@ namespace RoboG {
 
     private static volatile bool _Abort = false;
     private static volatile Process _Cmd = null;
-    private static int _FirstLines = 1;
 
     // Per-run source/target context, used to map shadow-copy paths back to the real source path.
     private static String _CurrentRealSourceDir = null;
@@ -61,7 +60,9 @@ namespace RoboG {
     // Errors.
     private static readonly object _ErrorLock = new object();
     private static readonly List<RoboCopyError> _RoboCopyErrors = new List<RoboCopyError>();
-    private static RoboCopyError _PendingError = null;
+    // Errors robocopy may still retry, by path, and the error the next message line belongs to.
+    private static readonly Dictionary<String, RoboCopyError> _OpenErrors = new Dictionary<String, RoboCopyError>(StringComparer.OrdinalIgnoreCase);
+    private static RoboCopyError _LastError = null;
     private static int _ErrorCount = 0;
     private static System.IO.StreamWriter _ErrorLog = null;
 
@@ -110,7 +111,8 @@ namespace RoboG {
       Interlocked.Exchange(ref _CurrentFileSize, 0);
       lock (_ErrorLock) {
         _RoboCopyErrors.Clear();
-        _PendingError = null;
+        _OpenErrors.Clear();
+        _LastError = null;
         _ErrorCount = 0;
         CloseErrorLog();
         try {
@@ -173,7 +175,7 @@ namespace RoboG {
     /// <summary>Finishes the error log for this run. The log itself is written as errors happen.</summary>
     public static void WriteErrorLog() {
       lock (_ErrorLock) {
-        FinalizePendingError();
+        EndOfRunErrors();
         CloseErrorLog();
       }
     }
@@ -269,7 +271,7 @@ namespace RoboG {
 
         String Error;
         int ExitCode = RunRobocopy(BuildRobocopyArguments(Source, Target, Switches), ProcessMirrorLine, out Error);
-        lock (_ErrorLock) FinalizePendingError();
+        lock (_ErrorLock) EndOfRunErrors();
 
         if (Error != "") HelperFunctions.ShowError(Translations.Get("ErrorInRobocopy") + Error);
         if (_Abort) {
@@ -302,60 +304,116 @@ namespace RoboG {
     }
 
     /// <summary>
-    /// Starts robocopy and feeds every stdout line to <paramref name="LineHandler"/> on the calling thread.
+    /// Starts robocopy and feeds every line it reports to <paramref name="LineHandler"/> on the calling thread.
     /// Returns robocopy's exit code (-1 if it could not be started or was killed).
+    ///
+    /// robocopy writes its report to a Unicode log file (/UNILOG) that is read while it grows. Reading the
+    /// console pipe instead would turn every file name outside the console code page (accents, CJK, ...)
+    /// into '?', because a program without a console window cannot give robocopy a UTF-8 console.
     /// </summary>
     private static int RunRobocopy(String Arguments, Action<String> LineHandler, out String Error) {
       Error = "";
       if (_Abort) return -1;
 
+      String UniLog = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RoboG-" + Guid.NewGuid().ToString("N") + ".log");
       Process Cmd = new Process();
       Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
-      Cmd.StartInfo.Arguments = Arguments;
+      Cmd.StartInfo.Arguments = Arguments + " /UNILOG:" + QuoteRobocopyArgument(UniLog);
       if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-      Encoding OutputEncoding = Encoding.UTF8;
-      Cmd.StartInfo.StandardOutputEncoding = OutputEncoding;
-      Cmd.StartInfo.StandardErrorEncoding = OutputEncoding;
       Cmd.StartInfo.CreateNoWindow = true;
       Cmd.StartInfo.UseShellExecute = false;
       Cmd.StartInfo.RedirectStandardError = true;
       Cmd.StartInfo.RedirectStandardOutput = true;
       Cmd.StartInfo.RedirectStandardInput = true;
 
-      StringBuilder ErrorText = new StringBuilder();
-      Cmd.ErrorDataReceived += (Sender, Args) => {
+      // With /UNILOG robocopy prints nothing to the console, except usage errors (which come before the log is opened).
+      StringBuilder ConsoleText = new StringBuilder();
+      DataReceivedEventHandler Collect = (Sender, Args) => {
         if (Args.Data == null) return;
-        lock (ErrorText) ErrorText.AppendLine(Args.Data);
+        lock (ConsoleText) {
+          if (ConsoleText.Length < 8192) ConsoleText.AppendLine(Args.Data);
+        }
       };
+      Cmd.OutputDataReceived += Collect;
+      Cmd.ErrorDataReceived += Collect;
 
-      _FirstLines = 1; // robocopy's first line only reports the code page.
       HelperFunctions.WriteLog(GlobalData.RobocopyPath + " " + Arguments);
       Cmd.Start();
       _Cmd = Cmd;
       try {
+        Cmd.BeginOutputReadLine();
         Cmd.BeginErrorReadLine();
-        System.IO.StreamReader Output = Cmd.StandardOutput;
-        String Line;
-        while ((Line = Output.ReadLine()) != null) {
-          if (_Abort) continue; // Keep draining until the killed process closes the pipe.
-          if (Line.Length == 0) continue;
-          if (_FirstLines > 0) {
-            _FirstLines--;
-            continue;
-          }
+        TailLog(UniLog, Cmd, Line => {
+          if (_Abort || Line.Length == 0) return;
           try {
             LineHandler(Line);
           } catch (Exception ex) {
             // An unexpected line must never stop the sync; note it and carry on.
             RunLog.Write("RoboG could not parse robocopy output (" + ex.Message + "): " + Line);
           }
-        }
+        });
         Cmd.WaitForExit();
-        lock (ErrorText) Error = ErrorText.ToString().Trim();
-        return _Abort ? -1 : Cmd.ExitCode;
+        int ExitCode = _Abort ? -1 : Cmd.ExitCode;
+        if ((ExitCode & 16) == 16) {
+          // A usage error is reported on the console, not in the log.
+          lock (ConsoleText) Error = ConsoleText.ToString().Trim();
+        }
+        return ExitCode;
       } finally {
         _Cmd = null;
         Cmd.Dispose();
+        try {
+          System.IO.File.Delete(UniLog);
+        } catch {}
+      }
+    }
+
+    // Reads lines from a log file that another process is still writing, until that process has exited
+    // and everything it wrote has been read. Memory use is constant however long the log gets.
+    private static void TailLog(String Path, Process Writer, Action<String> LineHandler) {
+      System.IO.FileStream Stream = null;
+      while (Stream == null) {
+        try {
+          Stream = new System.IO.FileStream(Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite | System.IO.FileShare.Delete, 1 << 16);
+        } catch (System.IO.IOException) {
+          if (Writer.HasExited) return; // robocopy ended before creating the log (usage error).
+          Thread.Sleep(20);
+        } catch (UnauthorizedAccessException) {
+          if (Writer.HasExited) return;
+          Thread.Sleep(20);
+        }
+      }
+      using (Stream)
+      using (System.IO.StreamReader Reader = new System.IO.StreamReader(Stream, Encoding.Unicode, true, 1 << 16)) {
+        char[] Buffer = new char[1 << 15];
+        StringBuilder Partial = new StringBuilder();
+        bool WriterDone = false;
+        while (true) {
+          int Count = Reader.Read(Buffer, 0, Buffer.Length);
+          if (Count == 0) {
+            if (WriterDone) break; // Process has exited and the file has been read to the end.
+            WriterDone = Writer.HasExited; // Check before the last read, so nothing written just before exit is missed.
+            if (!WriterDone) Thread.Sleep(50);
+            continue;
+          }
+          int Start = 0;
+          for (int i = 0; i < Count; i++) {
+            if (Buffer[i] != '\n') continue;
+            int End = i;
+            if (End > Start && Buffer[End - 1] == '\r') End--;
+            if (Partial.Length > 0) {
+              Partial.Append(Buffer, Start, End - Start);
+              if (Partial.Length > 0 && Partial[Partial.Length - 1] == '\r') Partial.Length--;
+              LineHandler(Partial.ToString());
+              Partial.Length = 0;
+            } else {
+              LineHandler(new String(Buffer, Start, End - Start));
+            }
+            Start = i + 1;
+          }
+          if (Start < Count) Partial.Append(Buffer, Start, Count - Start);
+        }
+        if (Partial.Length > 0) LineHandler(Partial.ToString().TrimEnd('\r'));
       }
     }
 
@@ -381,7 +439,7 @@ namespace RoboG {
     }
 
     private static String BuildRobocopyArguments(String Source, String Target, String Switches) {
-      return "/U" + " " + QuoteRobocopyArgument(Source) + " " + QuoteRobocopyArgument(Target) + " " + Switches;
+      return QuoteRobocopyArgument(Source) + " " + QuoteRobocopyArgument(Target) + " " + Switches;
     }
 
     public static String GetRobocopyReadableExitCode(int ExitCode) {
@@ -423,16 +481,16 @@ namespace RoboG {
     }
 
     // Mirror output (tab separated):
-    //   directory:  \t   [New Dir]  <count>\t<path>\
-    //   file:       \t    <Class>\t\t<size>\t<name>     (Class is capitalised when copied, lower case when skipped, *EXTRA when deleted)
+    //   directory:  \t   [New Dir]  <count>\t<path>\               (not printed with /MT)
+    //   file:       \t    <Class>\t\t<size>\t<name>              (with /MT: the full path instead of the name)
+    //               Class is capitalised when the file is copied, lower case when skipped, *EXTRA when deleted.
     //   error:      <date> <time> ERROR <n> (0x...) <what> <path>, followed by message lines
     private static void ProcessMirrorLine(String Line) {
+      RunLog.Write(Line);
       if (Char.IsLetterOrDigit(Line[0])) {
         AddErrorText(Line);
-        RunLog.Write(Line);
         return;
       }
-      RunLog.Write(Line);
 
       String[] Columns = Line.Split(_Tab, StringSplitOptions.RemoveEmptyEntries);
       if (Columns.Length >= 3) {
@@ -442,11 +500,12 @@ namespace RoboG {
         long Size;
         long.TryParse(Columns[Columns.Length - 2].Trim(), out Size);
 
-        lock (_ErrorLock) {
-          if (_PendingError != null) {
-            if (_PendingError.File == Name) _PendingError = null; // robocopy is retrying this file; keep only the error from the last try.
-            else FinalizePendingError();
-          }
+        int Waiting = Name.IndexOf("Waiting ", StringComparison.Ordinal);
+        if (Waiting > 0 && Name.IndexOf(" seconds", Waiting, StringComparison.Ordinal) > 0) Name = Name.Substring(0, Waiting); // Retry notice printed on the same line.
+        int Slash = Name.LastIndexOf('\\');
+        if (Slash >= 0) {
+          _CurrentDir = MapToRealSourcePath(Name.Substring(0, Slash + 1));
+          Name = Name.Substring(Slash + 1);
         }
 
         _CurrentFile = Name;
@@ -473,18 +532,62 @@ namespace RoboG {
       return Path;
     }
 
+    // An error starts with a line like "2026/10/21 05:29:07 ERROR 32 (0x00000020) Copying File C:\\Data\\file.txt",
+    // followed by the Windows message. robocopy then either retries ("Waiting 30 seconds... Retrying...") or gives
+    // up with "ERROR: RETRY LIMIT EXCEEDED.". Only the give-up counts as a failure; an attempt that is retried and
+    // then succeeds is not an error. With /MT, lines from other files arrive in between, so the error's file is
+    // taken from the error line itself and open errors are tracked per file.
     private static void AddErrorText(String Line) {
       lock (_ErrorLock) {
-        if (_PendingError != null) _PendingError.Text.Add(Line);
-        else _PendingError = new RoboCopyError(Line.Trim(), _CurrentFile, _CurrentDir ?? _CurrentRealSourceDir ?? "");
+        if (Line.StartsWith("ERROR: RETRY LIMIT EXCEEDED", StringComparison.Ordinal)) {
+          if (_LastError != null) {
+            _LastError.Text.Add(Line);
+            _OpenErrors.Remove(_LastError.Directory + _LastError.File);
+            FinalizeError(_LastError);
+            _LastError = null;
+          }
+          return;
+        }
+        int ErrorAt = Line.IndexOf(" ERROR ", StringComparison.Ordinal);
+        if (ErrorAt < 0 || ErrorAt > 25) {
+          if (_LastError != null && !Line.StartsWith("Waiting ", StringComparison.Ordinal)) _LastError.Text.Add(Line);
+          return;
+        }
+        String File = _CurrentFile, Directory = _CurrentDir ?? _CurrentRealSourceDir ?? "";
+        int PathAt = Line.IndexOf(":\\", ErrorAt, StringComparison.Ordinal);
+        if (PathAt > 0) PathAt--; else PathAt = Line.IndexOf("\\\\", ErrorAt, StringComparison.Ordinal);
+        if (PathAt > 0) {
+          String Path = Line.Substring(PathAt).Trim();
+          int Slash = Path.TrimEnd('\\').LastIndexOf('\\');
+          if (Slash >= 0) {
+            Directory = MapToRealSourcePath(Path.Substring(0, Slash + 1));
+            File = Path.Substring(Slash + 1);
+          }
+        }
+        // With retries off robocopy may not print the retry-limit line, so the previous error is final now.
+        if (Settings.Retries == 0 && _LastError != null) {
+          _OpenErrors.Remove(_LastError.Directory + _LastError.File);
+          FinalizeError(_LastError);
+        }
+        RoboCopyError Error = new RoboCopyError(Line.Trim(), File, Directory);
+        if (_OpenErrors.Count > MaxStoredErrors) _OpenErrors.Clear(); // Bound memory if many errors are retried successfully.
+        _OpenErrors[Error.Directory + Error.File] = Error; // A retry replaces the previous attempt's error.
+        _LastError = Error;
       }
     }
 
+    // Caller holds _ErrorLock. An error still waiting for robocopy's verdict when the run ends was retried
+    // successfully (or the run was aborted); it only counts when retries are off.
+    private static void EndOfRunErrors() {
+      if (Settings.Retries == 0 && !_Abort) {
+        foreach (RoboCopyError Error in _OpenErrors.Values) FinalizeError(Error);
+      }
+      _OpenErrors.Clear();
+      _LastError = null;
+    }
+
     // Caller holds _ErrorLock.
-    private static void FinalizePendingError() {
-      RoboCopyError Error = _PendingError;
-      if (Error == null) return;
-      _PendingError = null;
+    private static void FinalizeError(RoboCopyError Error) {
       _ErrorCount++;
       if (_RoboCopyErrors.Count < MaxStoredErrors) _RoboCopyErrors.Add(Error);
       try {

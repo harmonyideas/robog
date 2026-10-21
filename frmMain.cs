@@ -116,29 +116,26 @@ namespace RoboG
 			{
 				RunProgram(Settings.ProgramBeforeBackup, Settings.ArgumentsProgramBeforeBackup, Settings.ProgramBeforeBackupAdmin);
 
+				bool Error = false;
 				if (Settings.ShadowCopy)
 				{
 					HelperFunctions.UpdateStatus(Translations.Get("StartingVSS") + "...");
 					IO.CheckSourceDrives();
-					if (!CreateSnapshot())
-					{
-						FinishLog();
-						_BackupFinished = true;
-						return;
-					}
+					Error = !CreateSnapshot(); // On failure nothing is copied, but the job still finishes normally below.
 				}
 
-				Backup.Initialize();
-
-				for (int i = 0; i < Settings.Sources.Count; i++)
+				if (!Error)
 				{
-					if (Settings.ShadowCopy && Settings.Sources[i].ShadowCopy)
+					Backup.Initialize();
+					for (int i = 0; i < Settings.Sources.Count; i++)
 					{
-						Settings.Sources[i].Mount = Settings.Sources[i].SourcePath.Replace(Settings.Sources[i].Volume, GlobalData.ShadowCopyMounts[Settings.Sources[i].Volume]);
+						if (Settings.ShadowCopy && Settings.Sources[i].ShadowCopy)
+						{
+							Settings.Sources[i].Mount = Settings.Sources[i].SourcePath.Replace(Settings.Sources[i].Volume, GlobalData.ShadowCopyMounts[Settings.Sources[i].Volume]);
+						}
 					}
+					Error = !Backup.DoBackup();
 				}
-
-				bool Error = !Backup.DoBackup();
 
 				ClearFields();
 				if (_ShadowCopy != null)
