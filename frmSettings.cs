@@ -31,6 +31,10 @@ namespace RoboG
 		public frmSettings()
 		{
 			InitializeComponent();
+			Theme.Apply(this);
+			dgvSources.DataBindingComplete += (Sender, Args) => UpdateJobState();
+			dgvSources.RowsRemoved += (Sender, Args) => UpdateJobState();
+			exitToolStripMenuItem.Click += (Sender, Args) => this.Close();
 
 			Settings.LoadSettings(false, false);
 			HelperFunctions.CheckLanguage();
@@ -48,7 +52,8 @@ namespace RoboG
 			try
 			{
 				//this.toolTip.SetToolTip(this.bnAbout, Translations.Get("bnAboutToolTip"));
-				gbBackupSources.Text = Translations.Get("gbBackupSources");
+				String Title = Translations.Get("lblSyncJobs");
+				if (Title != "") lblTitle.Text = Title;
 				this.toolTip.SetToolTip(this.bnAddSource, Translations.Get("bnAddSourceToolTip"));
 				this.toolTip.SetToolTip(this.bnEdit, Translations.Get("bnEditSourceToolTip"));
 				this.toolTip.SetToolTip(this.bnDeleteSource, Translations.Get("bnDeleteSourceToolTip"));
@@ -93,9 +98,23 @@ namespace RoboG
 					dgvSources.Columns["LogOnly"].DisplayIndex = 5;
 					dgvSources.Columns["DisableJob"].DisplayIndex = 6;
 
-					dgvSources.Columns["Name"].Width = 150;
-					dgvSources.Columns["SourcePath"].Width = 200;
-					dgvSources.Columns["TargetPath"].Width = 200;
+					// Names and paths share the spare width; the yes/no columns stay narrow and centred.
+					foreach (String Text in new String[] { "Name", "SourcePath", "TargetPath" }) dgvSources.Columns[Text].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+					dgvSources.Columns["Name"].FillWeight = 22;
+					dgvSources.Columns["SourcePath"].FillWeight = 39;
+					dgvSources.Columns["TargetPath"].FillWeight = 39;
+					foreach (String Flag in new String[] { "MIR", "ShadowCopy", "LogOnly", "DisableJob" })
+					{
+						DataGridViewColumn Column = dgvSources.Columns[Flag];
+						Column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+						Column.Width = 84;
+						Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+						Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+					}
+					dgvSources.Columns["MIR"].HeaderText = "Mirror";
+					dgvSources.Columns["ShadowCopy"].HeaderText = "VSS";
+					dgvSources.Columns["DisableJob"].HeaderText = "Disabled";
+					foreach (DataGridViewColumn Column in dgvSources.Columns) Column.SortMode = DataGridViewColumnSortMode.NotSortable;
 				}
 			}
 			catch (Exception ex)
@@ -105,6 +124,17 @@ namespace RoboG
 
 		}
 
+
+		// Empty-state message, job count, and buttons that need a selected job.
+		private void UpdateJobState()
+		{
+			int Count = dgvSources.Rows.Count;
+			lblEmpty.Visible = Count == 0;
+			lblJobCount.Text = Count == 1 ? "1 job" : Count.ToString() + " jobs";
+			bnEdit.Enabled = bnDuplicate.Enabled = bnDeleteSource.Enabled = Count > 0;
+			bnUp.Enabled = bnDown.Enabled = Count > 1;
+			bnBackup.Enabled = Count > 0;
+		}
 
 		private void SetGlobalData()
 		{
@@ -423,6 +453,7 @@ namespace RoboG
 		{
 			try
 			{
+				if (e.RowIndex < 0) return; // Header double-click.
 				Edit();
 			}
 			catch (Exception ex)

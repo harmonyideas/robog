@@ -68,35 +68,42 @@ namespace RoboG
 			this.btnTargetdir = new System.Windows.Forms.Button();
 			this.chkLogOnly = new System.Windows.Forms.CheckBox();
 			this.chkDisableJob = new System.Windows.Forms.CheckBox();
+			this.pnlLine = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
+			// pnlLine
+			this.pnlLine.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(218)))), ((int)(((byte)(218)))), ((int)(((byte)(222)))));
+			this.pnlLine.Location = new System.Drawing.Point(0, 230);
+			this.pnlLine.Name = "pnlLine";
+			this.pnlLine.Size = new System.Drawing.Size(560, 1);
+			this.pnlLine.TabIndex = 20;
 			// 
 			// lblDirectory
 			// 
 			this.lblDirectory.AutoSize = true;
-			this.lblDirectory.Location = new System.Drawing.Point(9, 41);
+			this.lblDirectory.Location = new System.Drawing.Point(20, 59);
 			this.lblDirectory.Name = "lblDirectory";
 			this.lblDirectory.Size = new System.Drawing.Size(60, 13);
 			this.lblDirectory.TabIndex = 8;
-			this.lblDirectory.Text = "Source Dir:";
+			this.lblDirectory.Text = "Source folder";
 			this.toolTip.SetToolTip(this.lblDirectory, "The directory to backup");
 			// 
 			// lblName
 			// 
 			this.lblName.AutoSize = true;
-			this.lblName.Location = new System.Drawing.Point(9, 15);
+			this.lblName.Location = new System.Drawing.Point(20, 23);
 			this.lblName.Name = "lblName";
 			this.lblName.Size = new System.Drawing.Size(38, 13);
 			this.lblName.TabIndex = 14;
-			this.lblName.Text = "Name:";
+			this.lblName.Text = "Name";
 			this.toolTip.SetToolTip(this.lblName, "Name of the backup source. This will be used as the folder name on the backup dri" +
 					"ve.");
 			// 
 			// txtName
 			// 
 			this.txtName.BackColor = System.Drawing.SystemColors.Window;
-			this.txtName.Location = new System.Drawing.Point(103, 12);
+			this.txtName.Location = new System.Drawing.Point(130, 20);
 			this.txtName.Name = "txtName";
-			this.txtName.Size = new System.Drawing.Size(339, 20);
+			this.txtName.Size = new System.Drawing.Size(410, 23);
 			this.txtName.TabIndex = 0;
 			this.toolTip.SetToolTip(this.txtName, "Name of the backup source. This will be used as the folder name on the backup dri" +
 					"ve.");
@@ -105,57 +112,58 @@ namespace RoboG
 			// lblTargetDirectory
 			// 
 			this.lblTargetDirectory.AutoSize = true;
-			this.lblTargetDirectory.Location = new System.Drawing.Point(9, 67);
+			this.lblTargetDirectory.Location = new System.Drawing.Point(20, 95);
 			this.lblTargetDirectory.Name = "lblTargetDirectory";
 			this.lblTargetDirectory.Size = new System.Drawing.Size(66, 13);
 			this.lblTargetDirectory.TabIndex = 18;
-			this.lblTargetDirectory.Text = "Target Path:";
+			this.lblTargetDirectory.Text = "Target folder";
 			this.toolTip.SetToolTip(this.lblTargetDirectory, "The directory to backup");
 			// 
 			// txtSourceDir
 			// 
 			this.txtSourceDir.BackColor = System.Drawing.SystemColors.Window;
-			this.txtSourceDir.Location = new System.Drawing.Point(103, 38);
+			this.txtSourceDir.Location = new System.Drawing.Point(130, 56);
 			this.txtSourceDir.Name = "txtSourceDir";
-			this.txtSourceDir.Size = new System.Drawing.Size(339, 20);
+			this.txtSourceDir.Size = new System.Drawing.Size(318, 23);
 			this.txtSourceDir.TabIndex = 1;
 			this.toolTip.SetToolTip(this.txtSourceDir, "Source directory to be backed up");
 			// 
 			// txtTargetDir
 			// 
 			this.txtTargetDir.BackColor = System.Drawing.SystemColors.Window;
-			this.txtTargetDir.Location = new System.Drawing.Point(103, 64);
+			this.txtTargetDir.Location = new System.Drawing.Point(130, 92);
 			this.txtTargetDir.Name = "txtTargetDir";
-			this.txtTargetDir.Size = new System.Drawing.Size(339, 20);
+			this.txtTargetDir.Size = new System.Drawing.Size(318, 23);
 			this.txtTargetDir.TabIndex = 3;
 			this.toolTip.SetToolTip(this.txtTargetDir, "Name of the backup source. This will be used as the folder name on the backup dri" +
 					"ve.");
 			// 
 			// chkShadowCopy
 			// 
-			this.chkShadowCopy.Location = new System.Drawing.Point(12, 95);
+			this.chkShadowCopy.Location = new System.Drawing.Point(130, 136);
+			this.chkShadowCopy.AutoSize = true;
 			this.chkShadowCopy.Name = "chkShadowCopy";
 			this.chkShadowCopy.Size = new System.Drawing.Size(303, 21);
 			this.chkShadowCopy.TabIndex = 5;
-			this.chkShadowCopy.Text = "Use shadow copies (to backup files in use, recommended)";
+			this.chkShadowCopy.Text = "Use shadow copies (copies files that are open or locked)";
 			this.chkShadowCopy.UseVisualStyleBackColor = true;
 			this.chkShadowCopy.CheckedChanged += new System.EventHandler(this.chkShadowCopy_CheckedChanged);
 			// 
 			// bnSelectDirectory
 			// 
-			this.bnSelectDirectory.Location = new System.Drawing.Point(448, 38);
+			this.bnSelectDirectory.Location = new System.Drawing.Point(456, 55);
 			this.bnSelectDirectory.Name = "bnSelectDirectory";
-			this.bnSelectDirectory.Size = new System.Drawing.Size(28, 21);
+			this.bnSelectDirectory.Size = new System.Drawing.Size(84, 27);
 			this.bnSelectDirectory.TabIndex = 2;
-			this.bnSelectDirectory.Text = "...";
+			this.bnSelectDirectory.Text = "Browse...";
 			this.bnSelectDirectory.UseVisualStyleBackColor = true;
 			this.bnSelectDirectory.Click += new System.EventHandler(this.bnSelectDirectory_Click);
 			// 
 			// bnOK
 			// 
-			this.bnOK.Location = new System.Drawing.Point(154, 181);
+			this.bnOK.Location = new System.Drawing.Point(352, 248);
 			this.bnOK.Name = "bnOK";
-			this.bnOK.Size = new System.Drawing.Size(76, 28);
+			this.bnOK.Size = new System.Drawing.Size(90, 30);
 			this.bnOK.TabIndex = 8;
 			this.bnOK.Text = "OK";
 			this.bnOK.UseVisualStyleBackColor = true;
@@ -164,9 +172,9 @@ namespace RoboG
 			// bnCancel
 			// 
 			this.bnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bnCancel.Location = new System.Drawing.Point(293, 181);
+			this.bnCancel.Location = new System.Drawing.Point(450, 248);
 			this.bnCancel.Name = "bnCancel";
-			this.bnCancel.Size = new System.Drawing.Size(76, 28);
+			this.bnCancel.Size = new System.Drawing.Size(90, 30);
 			this.bnCancel.TabIndex = 9;
 			this.bnCancel.Text = "Cancel";
 			this.bnCancel.UseVisualStyleBackColor = true;
@@ -175,21 +183,21 @@ namespace RoboG
 			// bnAdvanced
 			// 
 			this.bnAdvanced.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bnAdvanced.Location = new System.Drawing.Point(366, 90);
+			this.bnAdvanced.Location = new System.Drawing.Point(20, 248);
 			this.bnAdvanced.Name = "bnAdvanced";
-			this.bnAdvanced.Size = new System.Drawing.Size(76, 28);
+			this.bnAdvanced.Size = new System.Drawing.Size(140, 30);
 			this.bnAdvanced.TabIndex = 8;
-			this.bnAdvanced.Text = "Advanced";
+			this.bnAdvanced.Text = "Advanced options...";
 			this.bnAdvanced.UseVisualStyleBackColor = true;
 			this.bnAdvanced.Click += new System.EventHandler(this.bnAdvanced_Click);
 			// 
 			// btnTargetdir
 			// 
-			this.btnTargetdir.Location = new System.Drawing.Point(448, 64);
+			this.btnTargetdir.Location = new System.Drawing.Point(456, 91);
 			this.btnTargetdir.Name = "btnTargetdir";
-			this.btnTargetdir.Size = new System.Drawing.Size(28, 21);
+			this.btnTargetdir.Size = new System.Drawing.Size(84, 27);
 			this.btnTargetdir.TabIndex = 4;
-			this.btnTargetdir.Text = "...";
+			this.btnTargetdir.Text = "Browse...";
 			this.btnTargetdir.UseVisualStyleBackColor = true;
 			this.btnTargetdir.Click += new System.EventHandler(this.btnTargetdir_Click);
 			// 
@@ -197,29 +205,32 @@ namespace RoboG
 			// 
 			this.chkLogOnly.Checked = true;
 			this.chkLogOnly.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkLogOnly.Location = new System.Drawing.Point(12, 141);
+			this.chkLogOnly.Location = new System.Drawing.Point(130, 188);
+			this.chkLogOnly.AutoSize = true;
 			this.chkLogOnly.Name = "chkLogOnly";
 			this.chkLogOnly.Size = new System.Drawing.Size(303, 21);
 			this.chkLogOnly.TabIndex = 7;
-			this.chkLogOnly.Text = "Use \"Log Only\" option - no changes will be made";
+			this.chkLogOnly.Text = "Test run only (/L): list what would change, copy nothing";
 			this.chkLogOnly.UseVisualStyleBackColor = true;
 			// 
 			// chkDisableJob
 			// 
-			this.chkDisableJob.Location = new System.Drawing.Point(12, 117);
+			this.chkDisableJob.Location = new System.Drawing.Point(130, 162);
+			this.chkDisableJob.AutoSize = true;
 			this.chkDisableJob.Name = "chkDisableJob";
 			this.chkDisableJob.Size = new System.Drawing.Size(303, 21);
 			this.chkDisableJob.TabIndex = 6;
-			this.chkDisableJob.Text = "Disable job (sets job to be inactive for current profile";
+			this.chkDisableJob.Text = "Disable this job (skip it when the profile runs)";
 			this.chkDisableJob.UseVisualStyleBackColor = true;
 			// 
 			// frmNewSource
 			// 
 			this.AcceptButton = this.bnOK;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.bnCancel;
-			this.ClientSize = new System.Drawing.Size(519, 217);
+			this.ClientSize = new System.Drawing.Size(560, 298);
+			this.Controls.Add(this.pnlLine);
 			this.Controls.Add(this.txtTargetDir);
 			this.Controls.Add(this.txtSourceDir);
 			this.Controls.Add(this.chkDisableJob);
@@ -234,7 +245,7 @@ namespace RoboG
 			this.Controls.Add(this.bnSelectDirectory);
 			this.Controls.Add(this.lblDirectory);
 			this.Controls.Add(this.chkShadowCopy);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -255,6 +266,7 @@ namespace RoboG
 		
 
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Panel pnlLine;
         private System.Windows.Forms.CheckBox chkShadowCopy;
         private System.Windows.Forms.TextBox txtSourceDir;
         private System.Windows.Forms.TextBox txtTargetDir;

@@ -161,7 +161,7 @@ namespace RoboG
 			this.gbProgramBeforeBackup.Controls.Add(this.txtProgramBeforeBackup);
 			this.gbProgramBeforeBackup.Location = new System.Drawing.Point(18, 187);
 			this.gbProgramBeforeBackup.Name = "gbProgramBeforeBackup";
-			this.gbProgramBeforeBackup.Size = new System.Drawing.Size(444, 94);
+			this.gbProgramBeforeBackup.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramBeforeBackup.TabIndex = 3;
 			this.gbProgramBeforeBackup.TabStop = false;
 			this.gbProgramBeforeBackup.Text = "Run program or script before backup";
@@ -169,7 +169,8 @@ namespace RoboG
 			// chkProgramBeforeBackupAdmin
 			// 
 			this.chkProgramBeforeBackupAdmin.AutoSize = true;
-			this.chkProgramBeforeBackupAdmin.Location = new System.Drawing.Point(315, 70);
+			this.chkProgramBeforeBackupAdmin.Location = new System.Drawing.Point(290, 70);
+			this.chkProgramBeforeBackupAdmin.AutoSize = true;
 			this.chkProgramBeforeBackupAdmin.Name = "chkProgramBeforeBackupAdmin";
 			this.chkProgramBeforeBackupAdmin.Size = new System.Drawing.Size(124, 17);
 			this.chkProgramBeforeBackupAdmin.TabIndex = 2;
@@ -215,7 +216,7 @@ namespace RoboG
 			this.gbProgramAfterBackup.Controls.Add(this.txtProgramAfterBackup);
 			this.gbProgramAfterBackup.Location = new System.Drawing.Point(18, 280);
 			this.gbProgramAfterBackup.Name = "gbProgramAfterBackup";
-			this.gbProgramAfterBackup.Size = new System.Drawing.Size(444, 94);
+			this.gbProgramAfterBackup.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramAfterBackup.TabIndex = 4;
 			this.gbProgramAfterBackup.TabStop = false;
 			this.gbProgramAfterBackup.Text = "Run program or script after backup";
@@ -223,7 +224,8 @@ namespace RoboG
 			// chkProgramAfterBackupAdmin
 			// 
 			this.chkProgramAfterBackupAdmin.AutoSize = true;
-			this.chkProgramAfterBackupAdmin.Location = new System.Drawing.Point(315, 70);
+			this.chkProgramAfterBackupAdmin.Location = new System.Drawing.Point(290, 70);
+			this.chkProgramAfterBackupAdmin.AutoSize = true;
 			this.chkProgramAfterBackupAdmin.Name = "chkProgramAfterBackupAdmin";
 			this.chkProgramAfterBackupAdmin.Size = new System.Drawing.Size(124, 17);
 			this.chkProgramAfterBackupAdmin.TabIndex = 2;
@@ -262,7 +264,7 @@ namespace RoboG
 			// 
 			this.bnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.bnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bnCancel.Location = new System.Drawing.Point(243, 480);
+			this.bnCancel.Location = new System.Drawing.Point(408, 480);
 			this.bnCancel.Name = "bnCancel";
 			this.bnCancel.Size = new System.Drawing.Size(76, 28);
 			this.bnCancel.TabIndex = 6;
@@ -272,7 +274,7 @@ namespace RoboG
 			// bnOK
 			// 
 			this.bnOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.bnOK.Location = new System.Drawing.Point(161, 480);
+			this.bnOK.Location = new System.Drawing.Point(326, 480);
 			this.bnOK.Name = "bnOK";
 			this.bnOK.Size = new System.Drawing.Size(76, 28);
 			this.bnOK.TabIndex = 5;
@@ -323,7 +325,7 @@ namespace RoboG
 			this.gbProgramOnError.Controls.Add(this.txtProgramOnError);
 			this.gbProgramOnError.Location = new System.Drawing.Point(18, 380);
 			this.gbProgramOnError.Name = "gbProgramOnError";
-			this.gbProgramOnError.Size = new System.Drawing.Size(444, 94);
+			this.gbProgramOnError.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramOnError.TabIndex = 12;
 			this.gbProgramOnError.TabStop = false;
 			this.gbProgramOnError.Text = "Run program or script on error";
@@ -331,7 +333,8 @@ namespace RoboG
 			// chkProgramOnErrorAdmin
 			// 
 			this.chkProgramOnErrorAdmin.AutoSize = true;
-			this.chkProgramOnErrorAdmin.Location = new System.Drawing.Point(315, 71);
+			this.chkProgramOnErrorAdmin.Location = new System.Drawing.Point(290, 71);
+			this.chkProgramOnErrorAdmin.AutoSize = true;
 			this.chkProgramOnErrorAdmin.Name = "chkProgramOnErrorAdmin";
 			this.chkProgramOnErrorAdmin.Size = new System.Drawing.Size(124, 17);
 			this.chkProgramOnErrorAdmin.TabIndex = 2;
@@ -425,9 +428,9 @@ namespace RoboG
 			this.lblThreadsHint.ForeColor = System.Drawing.SystemColors.GrayText;
 			this.lblThreadsHint.Location = new System.Drawing.Point(300, 46);
 			this.lblThreadsHint.Name = "lblThreadsHint";
-			this.lblThreadsHint.Size = new System.Drawing.Size(165, 26);
+			this.lblThreadsHint.Size = new System.Drawing.Size(190, 28);
 			this.lblThreadsHint.TabIndex = 17;
-			this.lblThreadsHint.Text = "16-32 suits most jobs. Use 1 for EFS raw copy.";
+			this.lblThreadsHint.Text = "16-32 suits most jobs.";
 			this.chkScan.UseVisualStyleBackColor = true;
 			// 
 			// txtProgramOnError
@@ -487,7 +490,7 @@ namespace RoboG
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.bnCancel;
-			this.ClientSize = new System.Drawing.Size(480, 549);
+			this.ClientSize = new System.Drawing.Size(500, 549);
 			this.Controls.Add(this.lblThreadsHint);
 			this.Controls.Add(this.numThreads);
 			this.Controls.Add(this.lblThreads);
@@ -512,7 +515,7 @@ namespace RoboG
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "frmAdvancedSettings";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Advanced Settings";
+			this.Text = "Profile options";
 			this.Load += new System.EventHandler(this.frmAdvancedSettings_Load);
 			this.gbProgramBeforeBackup.ResumeLayout(false);
 			this.gbProgramBeforeBackup.PerformLayout();

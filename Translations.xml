@@ -16,7 +16,7 @@
 		<IconsBy>Icons by Crystal Project - Everaldo Coelho</IconsBy>
 		<!--frmErrorSummary-->
 		<frmErrorSummary>Errors</frmErrorSummary>
-		<lblErrorsCaption>Errors occured while processing these files:</lblErrorsCaption>
+		<lblErrorsCaption>Errors occurred while processing these files:</lblErrorsCaption>
 		<lblErrorMessageCaption>Error message:</lblErrorMessageCaption>
 		<!--frmExcludeFile-->
 		<frmExcludeFile>Exclude File</frmExcludeFile>
@@ -88,6 +88,7 @@
 		<txtNetworkShareToolTip>Path to Windows or Samba file share</txtNetworkShareToolTip>
 		<bnAboutToolTip>About</bnAboutToolTip>
 		<gbBackupSources>Current list of Robocopy jobs for this profile</gbBackupSources>
+		<lblSyncJobs>Sync jobs</lblSyncJobs>
 		<bnAddSourceToolTip>Add directory</bnAddSourceToolTip>
 		<bnEditSourceToolTip>Edit directory</bnEditSourceToolTip>
 		<bnDeleteSourceToolTip>Delete directory</bnDeleteSourceToolTip>
@@ -122,15 +123,15 @@
 		<ExecutableFile>Executable file</ExecutableFile>
 		<gbProgramOnError>Run program or script on errors after backup</gbProgramOnError>
 		<!--frmNewSource-->
-		<frmNewSource>Add directory to backup</frmNewSource>
-		<frmNewSourceEdit>Edit Robocopy Job</frmNewSourceEdit>
-		<lblName>Name:</lblName>
+		<frmNewSource>Add sync job</frmNewSource>
+		<frmNewSourceEdit>Edit sync job</frmNewSourceEdit>
+		<lblName>Name</lblName>
 		<NameToolTip>Name of the backup source. This will be used as the folder name on the backup drive.</NameToolTip>
-		<lblDirectory>Source Dir.:</lblDirectory>
+		<lblDirectory>Source folder</lblDirectory>
 		<DirectoryToolTip>The directory to backup</DirectoryToolTip>
-		<chkShadowCopy>Use shadow copies (to backup files in use, recommended)</chkShadowCopy>
-		<chkLogOnly>Use "/L - Log Only" (no changes will be made)</chkLogOnly>
-		<bnAdvanced>Advanced</bnAdvanced>
+		<chkShadowCopy>Use shadow copies (copies files that are open or locked)</chkShadowCopy>
+		<chkLogOnly>Test run only (/L): list what would change, copy nothing</chkLogOnly>
+		<bnAdvanced>Advanced options...</bnAdvanced>
 		<SelectDirectoryToBackup>Select directory to backup</SelectDirectoryToBackup>
 		<SelectTargetDirectory>Select target directory</SelectTargetDirectory>
 		<ShadowCopiesNotPossible>It is not possible to create shadow copies on this drive, so files in use can't be backed up. Shadow copies only work on local disks formatted with the NTFS file system.</ShadowCopiesNotPossible>
@@ -140,7 +141,7 @@
 		<ErrorNoTargetDirectory>You must enter a destination for a target directory</ErrorNoTargetDirectory>
 		<ErrorResetArchive>It is not possible to use the option "backup only files with the archive attribute set and reset it" together with shadow copies, as shadow copies are read only.</ErrorResetArchive>
 		<!--frmNewSourceAdvanced-->
-		<frmNewSourceAdvanced>Advanced Backup Options</frmNewSourceAdvanced>
+		<frmNewSourceAdvanced>Advanced job options</frmNewSourceAdvanced>
 		<gbAttributes>Attributes</gbAttributes>
 		<gbIncludeAttributes>Include only files with any of the given attributes set:</gbIncludeAttributes>
 		<gbExcludeAttributes>Exclude files with any of the given attributes set:</gbExcludeAttributes>
@@ -180,14 +181,14 @@
 		<chkXN>Exclude newer files</chkXN>
 		<chkXL>Exclude files not in destination folder</chkXL>
 		<chkIT>Include files with changed attributes</chkIT>
-		<chkMIR>Use Mirror mode to synchronize files. (Files will be deleted on target that are not found in source)</chkMIR>
+		<chkMIR>Mirror mode: delete target files that are no longer in the source</chkMIR>
 		<chkCOPY_S>Back up NTFS security information (ACLs)</chkCOPY_S>
 		<chkCOPY_O>Back up NTFS ownership information</chkCOPY_O>
 		<chkCOPY_U>Back up NTFS auditing information</chkCOPY_U>
-		<chkB>Use "backup mode"</chkB>
+		<chkB>Use backup mode (/ZB)</chkB>
 		<chkBToolTip>Backup files you otherwise wouldn't have access to. To use this, make the backup user a member of the group "Backup Operators".</chkBToolTip>
-		<lblBInfo1>(requires "back up files and directories"</lblBInfo1>
-		<lblBInfo2> privilege)</lblBInfo2>
+		<lblBInfo1>(needs the "Back up files and</lblBInfo1>
+		<lblBInfo2>directories" privilege)</lblBInfo2>
 		<SelectDirectoryToExclude>Select directory to exclude</SelectDirectoryToExclude>
 		<!--frmSelectDate-->
 		<frmSelectDate>Select Days / Date</frmSelectDate>
@@ -345,6 +346,7 @@
 		<txtNetworkShareToolTip>Pfad zur Windows- oder Samba-Freigabe</txtNetworkShareToolTip>
 		<bnAboutToolTip>Über</bnAboutToolTip>
 		<gbBackupSources>Zu sichernde Verzeichnisse</gbBackupSources>
+		<lblSyncJobs>Synchronisierungsaufträge</lblSyncJobs>
 		<bnAddSourceToolTip>Verzeichnis hinzufügen</bnAddSourceToolTip>
 		<bnEditSourceToolTip>Augewähltes Verzeichnis bearbeiten</bnEditSourceToolTip>
 		<bnDeleteSourceToolTip>Ausgewähltes Verzeichnis entfernen</bnDeleteSourceToolTip>
@@ -598,6 +600,7 @@
 		<txtNetworkShareToolTip>Chemin du partage Windows ou Samba</txtNetworkShareToolTip>
 		<bnAboutToolTip>A propos</bnAboutToolTip>
 		<gbBackupSources>Répertoires à sauvegarder</gbBackupSources>
+		<lblSyncJobs>Tâches de synchronisation</lblSyncJobs>
 		<bnAddSourceToolTip>Ajouter un répertoire</bnAddSourceToolTip>
 		<bnEditSourceToolTip>Modifier le répertoire</bnEditSourceToolTip>
 		<bnDeleteSourceToolTip>Supprimer le répertoire</bnDeleteSourceToolTip>

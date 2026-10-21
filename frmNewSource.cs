@@ -36,6 +36,7 @@ namespace RoboG
 			_BackupSource = BackupSource;
 
 			InitializeComponent();
+			Theme.Apply(this);
 			SetText();
 		}
 

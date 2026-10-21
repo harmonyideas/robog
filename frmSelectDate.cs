@@ -58,6 +58,7 @@ namespace RoboG
 			try
 			{
 				InitializeComponent();
+			Theme.Apply(this);
 				SetText();
 
 				if (Value == -1)

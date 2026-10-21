@@ -43,6 +43,7 @@ namespace RoboG
 			_Directory = Directory;
 
 			InitializeComponent();
+			Theme.Apply(this);
 			SetText();
 		}
 

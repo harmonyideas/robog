@@ -32,6 +32,10 @@ namespace RoboG
 		public frmAdvancedSettings()
 		{
 			InitializeComponent();
+			Theme.Apply(this);
+			ToolTip ThreadsTip = new ToolTip();
+			ThreadsTip.SetToolTip(numThreads, "Number of files robocopy copies at once (/MT). 16 to 32 suits most jobs; very small files over a network can benefit from more.\r\nSet to 1 to copy EFS-encrypted files in raw mode (/EFSRAW cannot be combined with /MT).");
+			ThreadsTip.SetToolTip(lblThreadsHint, ThreadsTip.GetToolTip(numThreads));
 			SetText();
 			AlignControls();
 		}

@@ -36,6 +36,7 @@ namespace RoboG
 		public frmExcludeFile()
 		{
 			InitializeComponent();
+			Theme.Apply(this);
 			SetText();
 		}
 
