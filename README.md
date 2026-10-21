@@ -56,6 +56,12 @@ A profile's jobs run at the same time, up to **Parallel jobs** (Profile options,
 
 If a job fails, the others carry on, and the failures are listed together when the run ends. Stopping the run stops every running job and doesn't start the waiting ones. Shadow copies and the programs to run before and after a sync happen once for the whole run.
 
+# Network outages
+
+If a job's source or target stops answering (network, NAS or share down), RoboG stops that job's robocopy and shows **Waiting for connection**. It checks every 30 seconds and resumes as soon as the share is back; robocopy skips what was already copied, so the job carries on where it stopped. Jobs that start during an outage wait the same way instead of failing. Files that failed because of the outage aren't counted as errors, since they're tried again. If the connection isn't back within 60 minutes, the job fails with a clear message and the other jobs carry on.
+
+This keeps **Retries** and **Wait time** in Profile options for problems with individual files (locked or access denied), so they can stay low without an outage turning into thousands of errors.
+
 # Large jobs (millions to billions of files)
 
 RoboG streams robocopy's output instead of holding it in memory, so memory use stays flat however many files a job has, and parallel jobs don't add up to more than a few megabytes each. The progress window reads each job's counters twice a second and redraws only the tab you are looking at, so the copy never waits for the screen. For the fastest runs, open **Edit > Advanced settings**:
