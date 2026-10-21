@@ -24,6 +24,28 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 * The ability to run the RoboCopy within the GUI.
 
 
+# Screenshots
+
+**Sync jobs**: every job in the profile, with its source, target and options.
+
+![Main window listing four sync jobs](screenshots/main-window.png "Sync jobs")
+
+**Sync progress**: files copied, speed, elapsed time, time left and errors while a job runs.
+
+![Progress window during a sync](screenshots/sync-progress.png "Sync progress")
+
+**Edit sync job**
+
+![Edit sync job dialog](screenshots/edit-job.png "Edit sync job")
+
+**Advanced job options**: attribute filters, excluded files and folders, age and size limits, mirror mode and NTFS security.
+
+![Advanced job options dialog](screenshots/job-options.png "Advanced job options")
+
+**Profile options**: retries, copy threads, scan and logging, and programs to run before or after a sync.
+
+![Profile options dialog](screenshots/profile-options.png "Profile options")
+
 # Large jobs (millions to billions of files)
 
 RoboG streams robocopy's output instead of holding it in memory, so memory use stays flat however many files a job has. For the fastest runs, open **Edit > Advanced settings**:
@@ -41,11 +63,3 @@ With "Use shadow copies" on, RoboG snapshots all source volumes at the same inst
 # Building
 
 Requires Windows and Visual Studio 2022 or later (Community is fine) with the **.NET desktop development** workload, which includes the .NET Framework 4.8 targeting pack. Open `RoboG.sln`, choose **Release** / **Any CPU** and build; the program is in `bin\Release`. Keep the platform on Any CPU: Windows doesn't allow a 32-bit program to create shadow copies on 64-bit Windows. There are no third-party dependencies.
-
-# Screenshots
-![robog-screenshot1](/screenshots/robog-screenshot1.png "Main Form")
-![robog-screenshot2](/screenshots/robog-screenshot2.png "Advanced Backup Settings")
-![robog-screenshot3](/screenshots/robog-screenshot3.png "Advanced Settings")
-![robog-screenshot3](/screenshots/robog-screenshot4.png "Status Window")
-
-

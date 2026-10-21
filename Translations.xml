@@ -105,7 +105,7 @@
 		<chkIncrementalBackupWarning>If this option is changed, all old backups will be deleted. Do you want to continue?</chkIncrementalBackupWarning>
 		<chkDeleteFilesBeforeCopying>Delete files on backup target location before copying (default)</chkDeleteFilesBeforeCopying>
 		<chkDeleteFilesBeforeCopyingToolTip>This is necessary when hard links are used on the target location to create incremental backups</chkDeleteFilesBeforeCopyingToolTip>
-		<AdvancedSettings>Advanced Settings</AdvancedSettings>
+		<AdvancedSettings>Profile options</AdvancedSettings>
 		<lblRetries>Number of retries on failed operations:</lblRetries>
 		<lblWaitBetweenRetries>Wait time between retries:</lblWaitBetweenRetries>
 		<lblSecond>sec.</lblSecond>
