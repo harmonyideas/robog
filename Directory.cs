@@ -103,7 +103,7 @@ namespace RoboG {
       String TestFile = TestDir + ".dat";
       try {
         using(System.IO.File.Create(Path + TestFile)) {};
-        File.Delete(Path + TestFile);
+        System.IO.File.Delete(Path + TestFile); // RoboG's own test file: not logged.
         Directory.Create(Path + TestDir); // Was created relative to the working directory, not the target.
         Directory.Delete(Path + TestDir, false);
         return true;
@@ -141,7 +141,7 @@ namespace RoboG {
           WinAPI.SetFileAttributes(UNCPath, (uint) System.IO.FileAttributes.Normal); //Cannot delete file if it is readonly
         } catch {}
         try {
-          File.Delete(UNCPath);
+          WinAPI.DeleteFile(UNCPath); // RoboG's own test file: not logged.
         } catch {}
       }
     }

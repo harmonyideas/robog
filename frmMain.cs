@@ -129,14 +129,16 @@ namespace RoboG
 			lstJobs.Columns.Add("Speed", 85, HorizontalAlignment.Right);
 			lstJobs.Columns.Add("Errors", 60, HorizontalAlignment.Right);
 			lstJobs.DoubleClick += new EventHandler(lstJobs_DoubleClick);
-			lstJobs.Bounds = new Rectangle(8, 8, 752, 170);
-			lstJobs.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			lstJobs.Dock = DockStyle.Top;
+			lstJobs.Height = 170;
 
+			// Docked rather than placed, so the layout fits whatever size the tab ends up (window size, DPI).
 			Label lblLog = new Label();
 			lblLog.Text = "Run log";
 			lblLog.ForeColor = Theme.TextMuted;
-			lblLog.Bounds = new Rectangle(8, 186, 300, 18);
-			lblLog.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+			lblLog.Dock = DockStyle.Top;
+			lblLog.Height = 28;
+			lblLog.Padding = new Padding(0, 8, 0, 0);
 
 			txtLog = new TextBox();
 			txtLog.Multiline = true;
@@ -145,12 +147,12 @@ namespace RoboG
 			txtLog.ScrollBars = ScrollBars.Both;
 			txtLog.Font = new Font("Consolas", 9F);
 			txtLog.BorderStyle = BorderStyle.FixedSingle;
-			txtLog.Bounds = new Rectangle(8, 206, 752, 140);
-			txtLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			txtLog.Dock = DockStyle.Fill;
 
-			_OverviewTab.Controls.Add(lstJobs);
-			_OverviewTab.Controls.Add(lblLog);
+			// Docking runs from the last-added control to the first: list at the top, then the caption, then the log fills the rest.
 			_OverviewTab.Controls.Add(txtLog);
+			_OverviewTab.Controls.Add(lblLog);
+			_OverviewTab.Controls.Add(lstJobs);
 			tabJobs.TabPages.Add(_OverviewTab);
 		}
 

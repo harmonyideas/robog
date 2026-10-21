@@ -36,6 +36,8 @@ Unleash RoboCopy's power: Access RoboCopy's advanced features without the comman
 
 **Sync progress, job tab**: one tab per job, with its own progress bar, the folder and file being copied, and that job's log. Tab titles show each job's state at a glance (`Photos · 45%`, `· waiting`, `· done`, `· failed`).
 
+![Progress window, tab of one job](screenshots/sync-progress-job.png "Sync progress: one job")
+
 **Edit sync job**
 
 ![Edit sync job dialog](screenshots/edit-job.png "Edit sync job")
