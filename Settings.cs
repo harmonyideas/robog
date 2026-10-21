@@ -168,6 +168,11 @@ namespace RoboG {
 		private static int _Threads = 16;
 		public static int Threads { get { return _Threads; } set { _Threads = Math.Max(1, Math.Min(MaxThreads, value)); } }
 
+		// Number of jobs that run at the same time, each with its own robocopy process. 1 = one after the other.
+		public const int MaxParallelJobs = 32;
+		private static int _ParallelJobs = 4;
+		public static int ParallelJobs { get { return _ParallelJobs; } set { _ParallelJobs = Math.Max(1, Math.Min(MaxParallelJobs, value)); } }
+
 		// When false, robocopy is run with /NFL /NDL: only errors and the summary are reported (fastest for huge file sets).
 		private static bool _LogFiles = true;
 		public static bool LogFiles { get { return _LogFiles; } set { _LogFiles = value; } }
@@ -417,6 +422,10 @@ namespace RoboG {
 					tw.WriteString(_Threads.ToString());
 					tw.WriteEndElement();
 
+					tw.WriteStartElement("paralleljobs");
+					tw.WriteString(_ParallelJobs.ToString());
+					tw.WriteEndElement();
+
 					tw.WriteStartElement("logfiles");
 					tw.WriteString(_LogFiles.ToString());
 					tw.WriteEndElement();
@@ -653,6 +662,9 @@ namespace RoboG {
 											break;
 										case "threads":
 											if (int.TryParse(Rd.ReadString().Trim(), out TempInt)) Threads = TempInt;
+											break;
+										case "paralleljobs":
+											if (int.TryParse(Rd.ReadString().Trim(), out TempInt)) ParallelJobs = TempInt;
 											break;
 										case "logfiles":
 											Temp = Rd.ReadString().Trim().ToLower();

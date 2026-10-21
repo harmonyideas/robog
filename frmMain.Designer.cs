@@ -56,31 +56,25 @@ namespace RoboG
 			this.DotTimer = new System.Windows.Forms.Timer(this.components);
 			this.CloseTimer = new System.Windows.Forms.Timer(this.components);
 			this.lblStatus = new System.Windows.Forms.Label();
-			this.lblProgressText = new System.Windows.Forms.Label();
-			this.lblDirectoryCaption = new System.Windows.Forms.Label();
-			this.lblDirectory = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
-			this.lblTargetDir = new System.Windows.Forms.Label();
-			this.lblFileCaption = new System.Windows.Forms.Label();
-			this.lblFile = new System.Windows.Forms.Label();
-			this.lblSizeCaption = new System.Windows.Forms.Label();
-			this.lblSize = new System.Windows.Forms.Label();
-			this.lblFilesCaption = new System.Windows.Forms.Label();
-			this.lblSpeedCaption = new System.Windows.Forms.Label();
-			this.lblElapsedCaption = new System.Windows.Forms.Label();
-			this.lblRemainingCaption = new System.Windows.Forms.Label();
-			this.lblErrorsCaption = new System.Windows.Forms.Label();
-			this.lblFilesValue = new System.Windows.Forms.Label();
-			this.lblSpeedValue = new System.Windows.Forms.Label();
-			this.lblElapsedValue = new System.Windows.Forms.Label();
-			this.lblRemainingValue = new System.Windows.Forms.Label();
-			this.lblErrorsValue = new System.Windows.Forms.Label();
 			this.OverallProgress = new System.Windows.Forms.ProgressBar();
+			this.lblProgressText = new System.Windows.Forms.Label();
+			this.lblFilesCaption = new System.Windows.Forms.Label();
+			this.lblFilesValue = new System.Windows.Forms.Label();
+			this.lblSpeedCaption = new System.Windows.Forms.Label();
+			this.lblSpeedValue = new System.Windows.Forms.Label();
+			this.lblElapsedCaption = new System.Windows.Forms.Label();
+			this.lblElapsedValue = new System.Windows.Forms.Label();
+			this.lblRemainingCaption = new System.Windows.Forms.Label();
+			this.lblRemainingValue = new System.Windows.Forms.Label();
+			this.lblErrorsCaption = new System.Windows.Forms.Label();
+			this.lblErrorsValue = new System.Windows.Forms.Label();
+			this.lblJobsCaption = new System.Windows.Forms.Label();
+			this.lblJobsValue = new System.Windows.Forms.Label();
 			this.pnlSeparator = new System.Windows.Forms.Panel();
-			this.bnDetails = new System.Windows.Forms.Button();
+			this.tabJobs = new System.Windows.Forms.TabControl();
+			this.bnLogs = new System.Windows.Forms.Button();
 			this.bnErrors = new System.Windows.Forms.Button();
 			this.bnClose = new System.Windows.Forms.Button();
-			this.txtLog = new System.Windows.Forms.TextBox();
 			this.frmMainStatusStrip = new System.Windows.Forms.StatusStrip();
 			this.lblStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
 			this.frmMainStatusStrip.SuspendLayout();
@@ -100,297 +94,230 @@ namespace RoboG
 			// lblStatus
 			// 
 			this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblStatus.AutoEllipsis = true;
-			this.lblStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
 			this.lblStatus.Location = new System.Drawing.Point(18, 14);
 			this.lblStatus.Name = "lblStatus";
-			this.lblStatus.Size = new System.Drawing.Size(724, 28);
+			this.lblStatus.Size = new System.Drawing.Size(784, 28);
 			this.lblStatus.TabIndex = 1;
 			this.lblStatus.Text = "Starting...";
-			// 
-			// lblProgressText
-			// 
-			this.lblProgressText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblProgressText.AutoEllipsis = true;
-			this.lblProgressText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblProgressText.Location = new System.Drawing.Point(20, 74);
-			this.lblProgressText.Name = "lblProgressText";
-			this.lblProgressText.Size = new System.Drawing.Size(720, 18);
-			this.lblProgressText.TabIndex = 2;
-			// 
-			// lblFilesCaption
-			// 
-			this.lblFilesCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblFilesCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblFilesCaption.Location = new System.Drawing.Point(20, 104);
-			this.lblFilesCaption.Name = "lblFilesCaption";
-			this.lblFilesCaption.Size = new System.Drawing.Size(136, 17);
-			this.lblFilesCaption.TabIndex = 3;
-			this.lblFilesCaption.Text = "Files";
-			// 
-			// lblFilesValue
-			// 
-			this.lblFilesValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblFilesValue.AutoEllipsis = true;
-			this.lblFilesValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblFilesValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-			this.lblFilesValue.Location = new System.Drawing.Point(20, 121);
-			this.lblFilesValue.Name = "lblFilesValue";
-			this.lblFilesValue.Size = new System.Drawing.Size(136, 24);
-			this.lblFilesValue.TabIndex = 4;
-			this.lblFilesValue.Text = "0";
-			// 
-			// lblSpeedCaption
-			// 
-			this.lblSpeedCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblSpeedCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblSpeedCaption.Location = new System.Drawing.Point(166, 104);
-			this.lblSpeedCaption.Name = "lblSpeedCaption";
-			this.lblSpeedCaption.Size = new System.Drawing.Size(136, 17);
-			this.lblSpeedCaption.TabIndex = 5;
-			this.lblSpeedCaption.Text = "Speed";
-			// 
-			// lblSpeedValue
-			// 
-			this.lblSpeedValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblSpeedValue.AutoEllipsis = true;
-			this.lblSpeedValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblSpeedValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-			this.lblSpeedValue.Location = new System.Drawing.Point(166, 121);
-			this.lblSpeedValue.Name = "lblSpeedValue";
-			this.lblSpeedValue.Size = new System.Drawing.Size(136, 24);
-			this.lblSpeedValue.TabIndex = 6;
-			this.lblSpeedValue.Text = "-";
-			// 
-			// lblElapsedCaption
-			// 
-			this.lblElapsedCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblElapsedCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblElapsedCaption.Location = new System.Drawing.Point(312, 104);
-			this.lblElapsedCaption.Name = "lblElapsedCaption";
-			this.lblElapsedCaption.Size = new System.Drawing.Size(136, 17);
-			this.lblElapsedCaption.TabIndex = 7;
-			this.lblElapsedCaption.Text = "Elapsed";
-			// 
-			// lblElapsedValue
-			// 
-			this.lblElapsedValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblElapsedValue.AutoEllipsis = true;
-			this.lblElapsedValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblElapsedValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-			this.lblElapsedValue.Location = new System.Drawing.Point(312, 121);
-			this.lblElapsedValue.Name = "lblElapsedValue";
-			this.lblElapsedValue.Size = new System.Drawing.Size(136, 24);
-			this.lblElapsedValue.TabIndex = 8;
-			this.lblElapsedValue.Text = "-";
-			// 
-			// lblRemainingCaption
-			// 
-			this.lblRemainingCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblRemainingCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblRemainingCaption.Location = new System.Drawing.Point(458, 104);
-			this.lblRemainingCaption.Name = "lblRemainingCaption";
-			this.lblRemainingCaption.Size = new System.Drawing.Size(136, 17);
-			this.lblRemainingCaption.TabIndex = 9;
-			this.lblRemainingCaption.Text = "Time left";
-			// 
-			// lblRemainingValue
-			// 
-			this.lblRemainingValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblRemainingValue.AutoEllipsis = true;
-			this.lblRemainingValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblRemainingValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-			this.lblRemainingValue.Location = new System.Drawing.Point(458, 121);
-			this.lblRemainingValue.Name = "lblRemainingValue";
-			this.lblRemainingValue.Size = new System.Drawing.Size(136, 24);
-			this.lblRemainingValue.TabIndex = 10;
-			this.lblRemainingValue.Text = "-";
-			// 
-			// lblErrorsCaption
-			// 
-			this.lblErrorsCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblErrorsCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblErrorsCaption.Location = new System.Drawing.Point(604, 104);
-			this.lblErrorsCaption.Name = "lblErrorsCaption";
-			this.lblErrorsCaption.Size = new System.Drawing.Size(136, 17);
-			this.lblErrorsCaption.TabIndex = 11;
-			this.lblErrorsCaption.Text = "Errors";
-			// 
-			// lblErrorsValue
-			// 
-			this.lblErrorsValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblErrorsValue.AutoEllipsis = true;
-			this.lblErrorsValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblErrorsValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-			this.lblErrorsValue.Location = new System.Drawing.Point(604, 121);
-			this.lblErrorsValue.Name = "lblErrorsValue";
-			this.lblErrorsValue.Size = new System.Drawing.Size(136, 24);
-			this.lblErrorsValue.TabIndex = 12;
-			this.lblErrorsValue.Text = "-";
-			// 
-			// lblDirectoryCaption
-			// 
-			this.lblDirectoryCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblDirectoryCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblDirectoryCaption.Location = new System.Drawing.Point(20, 168);
-			this.lblDirectoryCaption.Name = "lblDirectoryCaption";
-			this.lblDirectoryCaption.Size = new System.Drawing.Size(72, 17);
-			this.lblDirectoryCaption.TabIndex = 13;
-			this.lblDirectoryCaption.Text = "Source:";
-			// 
-			// lblDirectory
-			// 
-			this.lblDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblDirectory.AutoEllipsis = true;
-			this.lblDirectory.Location = new System.Drawing.Point(95, 168);
-			this.lblDirectory.Name = "lblDirectory";
-			this.lblDirectory.Size = new System.Drawing.Size(645, 17);
-			this.lblDirectory.TabIndex = 14;
-			// 
-			// label1
-			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.label1.Location = new System.Drawing.Point(20, 190);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(72, 17);
-			this.label1.TabIndex = 15;
-			this.label1.Text = "Target:";
-			// 
-			// lblTargetDir
-			// 
-			this.lblTargetDir.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblTargetDir.AutoEllipsis = true;
-			this.lblTargetDir.Location = new System.Drawing.Point(95, 190);
-			this.lblTargetDir.Name = "lblTargetDir";
-			this.lblTargetDir.Size = new System.Drawing.Size(645, 17);
-			this.lblTargetDir.TabIndex = 16;
-			// 
-			// lblFileCaption
-			// 
-			this.lblFileCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblFileCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblFileCaption.Location = new System.Drawing.Point(20, 212);
-			this.lblFileCaption.Name = "lblFileCaption";
-			this.lblFileCaption.Size = new System.Drawing.Size(72, 17);
-			this.lblFileCaption.TabIndex = 17;
-			this.lblFileCaption.Text = "File:";
-			// 
-			// lblFile
-			// 
-			this.lblFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblFile.AutoEllipsis = true;
-			this.lblFile.Location = new System.Drawing.Point(95, 212);
-			this.lblFile.Name = "lblFile";
-			this.lblFile.Size = new System.Drawing.Size(525, 17);
-			this.lblFile.TabIndex = 18;
-			// 
-			// lblSizeCaption
-			// 
-			this.lblSizeCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblSizeCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-			this.lblSizeCaption.Location = new System.Drawing.Point(628, 212);
-			this.lblSizeCaption.Name = "lblSizeCaption";
-			this.lblSizeCaption.Size = new System.Drawing.Size(40, 17);
-			this.lblSizeCaption.TabIndex = 19;
-			this.lblSizeCaption.Text = "Size:";
-			// 
-			// lblSize
-			// 
-			this.lblSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblSize.Location = new System.Drawing.Point(668, 212);
-			this.lblSize.Name = "lblSize";
-			this.lblSize.Size = new System.Drawing.Size(72, 17);
-			this.lblSize.TabIndex = 20;
-			this.lblSize.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.lblStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblStatus.AutoEllipsis = true;
 			// 
 			// OverallProgress
 			// 
 			this.OverallProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
 			this.OverallProgress.Location = new System.Drawing.Point(20, 48);
-			this.OverallProgress.MarqueeAnimationSpeed = 40;
-			this.OverallProgress.Maximum = 1000;
 			this.OverallProgress.Name = "OverallProgress";
-			this.OverallProgress.Size = new System.Drawing.Size(720, 20);
+			this.OverallProgress.Size = new System.Drawing.Size(780, 20);
+			this.OverallProgress.TabIndex = 2;
+			this.OverallProgress.MarqueeAnimationSpeed = 30;
+			this.OverallProgress.Maximum = 10000;
 			this.OverallProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-			this.OverallProgress.TabIndex = 30;
+			// 
+			// lblProgressText
+			// 
+			this.lblProgressText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+			this.lblProgressText.Location = new System.Drawing.Point(20, 74);
+			this.lblProgressText.Name = "lblProgressText";
+			this.lblProgressText.Size = new System.Drawing.Size(780, 18);
+			this.lblProgressText.TabIndex = 3;
+			this.lblProgressText.Text = "";
+			this.lblProgressText.AutoEllipsis = true;
+			this.lblProgressText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblFilesCaption
+			// 
+			this.lblFilesCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblFilesCaption.Location = new System.Drawing.Point(20, 104);
+			this.lblFilesCaption.Name = "lblFilesCaption";
+			this.lblFilesCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblFilesCaption.TabIndex = 4;
+			this.lblFilesCaption.Text = "Files";
+			this.lblFilesCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblFilesValue
+			// 
+			this.lblFilesValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblFilesValue.Location = new System.Drawing.Point(20, 121);
+			this.lblFilesValue.Name = "lblFilesValue";
+			this.lblFilesValue.Size = new System.Drawing.Size(120, 24);
+			this.lblFilesValue.TabIndex = 5;
+			this.lblFilesValue.Text = "0";
+			this.lblFilesValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblFilesValue.AutoEllipsis = true;
+			// 
+			// lblSpeedCaption
+			// 
+			this.lblSpeedCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblSpeedCaption.Location = new System.Drawing.Point(150, 104);
+			this.lblSpeedCaption.Name = "lblSpeedCaption";
+			this.lblSpeedCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblSpeedCaption.TabIndex = 6;
+			this.lblSpeedCaption.Text = "Speed";
+			this.lblSpeedCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblSpeedValue
+			// 
+			this.lblSpeedValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblSpeedValue.Location = new System.Drawing.Point(150, 121);
+			this.lblSpeedValue.Name = "lblSpeedValue";
+			this.lblSpeedValue.Size = new System.Drawing.Size(120, 24);
+			this.lblSpeedValue.TabIndex = 7;
+			this.lblSpeedValue.Text = "-";
+			this.lblSpeedValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblSpeedValue.AutoEllipsis = true;
+			// 
+			// lblElapsedCaption
+			// 
+			this.lblElapsedCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblElapsedCaption.Location = new System.Drawing.Point(280, 104);
+			this.lblElapsedCaption.Name = "lblElapsedCaption";
+			this.lblElapsedCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblElapsedCaption.TabIndex = 8;
+			this.lblElapsedCaption.Text = "Elapsed";
+			this.lblElapsedCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblElapsedValue
+			// 
+			this.lblElapsedValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblElapsedValue.Location = new System.Drawing.Point(280, 121);
+			this.lblElapsedValue.Name = "lblElapsedValue";
+			this.lblElapsedValue.Size = new System.Drawing.Size(120, 24);
+			this.lblElapsedValue.TabIndex = 9;
+			this.lblElapsedValue.Text = "-";
+			this.lblElapsedValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblElapsedValue.AutoEllipsis = true;
+			// 
+			// lblRemainingCaption
+			// 
+			this.lblRemainingCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblRemainingCaption.Location = new System.Drawing.Point(410, 104);
+			this.lblRemainingCaption.Name = "lblRemainingCaption";
+			this.lblRemainingCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblRemainingCaption.TabIndex = 10;
+			this.lblRemainingCaption.Text = "Time left";
+			this.lblRemainingCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblRemainingValue
+			// 
+			this.lblRemainingValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblRemainingValue.Location = new System.Drawing.Point(410, 121);
+			this.lblRemainingValue.Name = "lblRemainingValue";
+			this.lblRemainingValue.Size = new System.Drawing.Size(120, 24);
+			this.lblRemainingValue.TabIndex = 11;
+			this.lblRemainingValue.Text = "-";
+			this.lblRemainingValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblRemainingValue.AutoEllipsis = true;
+			// 
+			// lblErrorsCaption
+			// 
+			this.lblErrorsCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblErrorsCaption.Location = new System.Drawing.Point(540, 104);
+			this.lblErrorsCaption.Name = "lblErrorsCaption";
+			this.lblErrorsCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblErrorsCaption.TabIndex = 12;
+			this.lblErrorsCaption.Text = "Errors";
+			this.lblErrorsCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblErrorsValue
+			// 
+			this.lblErrorsValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblErrorsValue.Location = new System.Drawing.Point(540, 121);
+			this.lblErrorsValue.Name = "lblErrorsValue";
+			this.lblErrorsValue.Size = new System.Drawing.Size(120, 24);
+			this.lblErrorsValue.TabIndex = 13;
+			this.lblErrorsValue.Text = "0";
+			this.lblErrorsValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblErrorsValue.AutoEllipsis = true;
+			// 
+			// lblJobsCaption
+			// 
+			this.lblJobsCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblJobsCaption.Location = new System.Drawing.Point(670, 104);
+			this.lblJobsCaption.Name = "lblJobsCaption";
+			this.lblJobsCaption.Size = new System.Drawing.Size(120, 17);
+			this.lblJobsCaption.TabIndex = 14;
+			this.lblJobsCaption.Text = "Jobs done";
+			this.lblJobsCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+			// 
+			// lblJobsValue
+			// 
+			this.lblJobsValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblJobsValue.Location = new System.Drawing.Point(670, 121);
+			this.lblJobsValue.Name = "lblJobsValue";
+			this.lblJobsValue.Size = new System.Drawing.Size(120, 24);
+			this.lblJobsValue.TabIndex = 15;
+			this.lblJobsValue.Text = "-";
+			this.lblJobsValue.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblJobsValue.AutoEllipsis = true;
 			// 
 			// pnlSeparator
 			// 
 			this.pnlSeparator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-			this.pnlSeparator.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.pnlSeparator.Location = new System.Drawing.Point(20, 156);
 			this.pnlSeparator.Name = "pnlSeparator";
-			this.pnlSeparator.Size = new System.Drawing.Size(720, 1);
-			this.pnlSeparator.TabIndex = 31;
+			this.pnlSeparator.Size = new System.Drawing.Size(780, 1);
+			this.pnlSeparator.TabIndex = 16;
+			this.pnlSeparator.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(218)))), ((int)(((byte)(218)))), ((int)(((byte)(222)))));
 			// 
-			// bnDetails
+			// tabJobs
 			// 
-			this.bnDetails.Location = new System.Drawing.Point(20, 246);
-			this.bnDetails.Name = "bnDetails";
-			this.bnDetails.Size = new System.Drawing.Size(120, 30);
-			this.bnDetails.TabIndex = 0;
-			this.bnDetails.Text = "Show details";
-			this.bnDetails.UseVisualStyleBackColor = true;
-			this.bnDetails.Click += new System.EventHandler(this.bnDetails_Click);
+			this.tabJobs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+			this.tabJobs.Location = new System.Drawing.Point(20, 168);
+			this.tabJobs.Name = "tabJobs";
+			this.tabJobs.Size = new System.Drawing.Size(780, 386);
+			this.tabJobs.TabIndex = 17;
+			this.tabJobs.SelectedIndex = 0;
+			this.tabJobs.Padding = new System.Drawing.Point(10, 5);
+			this.tabJobs.SelectedIndexChanged += new System.EventHandler(this.tabJobs_SelectedIndexChanged);
+			// 
+			// bnLogs
+			// 
+			this.bnLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.bnLogs.Location = new System.Drawing.Point(20, 566);
+			this.bnLogs.Name = "bnLogs";
+			this.bnLogs.Size = new System.Drawing.Size(130, 30);
+			this.bnLogs.TabIndex = 18;
+			this.bnLogs.Text = "Open log folder";
+			this.bnLogs.Click += new System.EventHandler(this.bnLogs_Click);
 			// 
 			// bnErrors
 			// 
-			this.bnErrors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.bnErrors.Location = new System.Drawing.Point(510, 246);
+			this.bnErrors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.bnErrors.Location = new System.Drawing.Point(570, 566);
 			this.bnErrors.Name = "bnErrors";
 			this.bnErrors.Size = new System.Drawing.Size(110, 30);
-			this.bnErrors.TabIndex = 1;
+			this.bnErrors.TabIndex = 19;
 			this.bnErrors.Text = "Show errors";
-			this.bnErrors.UseVisualStyleBackColor = true;
 			this.bnErrors.Visible = false;
 			this.bnErrors.Click += new System.EventHandler(this.bnErrors_Click);
 			// 
 			// bnClose
 			// 
-			this.bnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.bnClose.Location = new System.Drawing.Point(630, 246);
+			this.bnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.bnClose.Location = new System.Drawing.Point(690, 566);
 			this.bnClose.Name = "bnClose";
 			this.bnClose.Size = new System.Drawing.Size(110, 30);
-			this.bnClose.TabIndex = 2;
+			this.bnClose.TabIndex = 20;
 			this.bnClose.Text = "Close";
-			this.bnClose.UseVisualStyleBackColor = true;
+			this.bnClose.Tag = "primary";
 			this.bnClose.Visible = false;
 			this.bnClose.Click += new System.EventHandler(this.bnClose_Click);
-			// 
-			// txtLog
-			// 
-			this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.txtLog.BackColor = System.Drawing.Color.White;
-			this.txtLog.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.txtLog.Location = new System.Drawing.Point(20, 286);
-			this.txtLog.Multiline = true;
-			this.txtLog.Name = "txtLog";
-			this.txtLog.ReadOnly = true;
-			this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.txtLog.Size = new System.Drawing.Size(720, 0);
-			this.txtLog.TabIndex = 3;
-			this.txtLog.Visible = false;
-			this.txtLog.WordWrap = false;
 			// 
 			// frmMainStatusStrip
 			// 
 			this.frmMainStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStripStatus});
-			this.frmMainStatusStrip.Location = new System.Drawing.Point(0, 290);
+			this.frmMainStatusStrip.Location = new System.Drawing.Point(0, 608);
 			this.frmMainStatusStrip.Name = "frmMainStatusStrip";
-			this.frmMainStatusStrip.Size = new System.Drawing.Size(760, 22);
-			this.frmMainStatusStrip.SizingGrip = false;
-			this.frmMainStatusStrip.TabIndex = 32;
+			this.frmMainStatusStrip.Size = new System.Drawing.Size(820, 22);
+			this.frmMainStatusStrip.SizingGrip = true;
+			this.frmMainStatusStrip.TabIndex = 99;
 			// 
 			// lblStripStatus
 			// 
 			this.lblStripStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			this.lblStripStatus.Name = "lblStripStatus";
-			this.lblStripStatus.Size = new System.Drawing.Size(745, 17);
+			this.lblStripStatus.Size = new System.Drawing.Size(790, 17);
 			this.lblStripStatus.Spring = true;
 			this.lblStripStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -399,42 +326,35 @@ namespace RoboG
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.White;
-			this.ClientSize = new System.Drawing.Size(760, 312);
+			this.ClientSize = new System.Drawing.Size(820, 630);
 			this.Controls.Add(this.lblStatus);
-			this.Controls.Add(this.lblProgressText);
-			this.Controls.Add(this.lblDirectoryCaption);
-			this.Controls.Add(this.lblDirectory);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.lblTargetDir);
-			this.Controls.Add(this.lblFileCaption);
-			this.Controls.Add(this.lblFile);
-			this.Controls.Add(this.lblSizeCaption);
-			this.Controls.Add(this.lblSize);
-			this.Controls.Add(this.lblFilesCaption);
-			this.Controls.Add(this.lblSpeedCaption);
-			this.Controls.Add(this.lblElapsedCaption);
-			this.Controls.Add(this.lblRemainingCaption);
-			this.Controls.Add(this.lblErrorsCaption);
-			this.Controls.Add(this.lblFilesValue);
-			this.Controls.Add(this.lblSpeedValue);
-			this.Controls.Add(this.lblElapsedValue);
-			this.Controls.Add(this.lblRemainingValue);
-			this.Controls.Add(this.lblErrorsValue);
 			this.Controls.Add(this.OverallProgress);
+			this.Controls.Add(this.lblProgressText);
+			this.Controls.Add(this.lblFilesCaption);
+			this.Controls.Add(this.lblFilesValue);
+			this.Controls.Add(this.lblSpeedCaption);
+			this.Controls.Add(this.lblSpeedValue);
+			this.Controls.Add(this.lblElapsedCaption);
+			this.Controls.Add(this.lblElapsedValue);
+			this.Controls.Add(this.lblRemainingCaption);
+			this.Controls.Add(this.lblRemainingValue);
+			this.Controls.Add(this.lblErrorsCaption);
+			this.Controls.Add(this.lblErrorsValue);
+			this.Controls.Add(this.lblJobsCaption);
+			this.Controls.Add(this.lblJobsValue);
 			this.Controls.Add(this.pnlSeparator);
-			this.Controls.Add(this.bnDetails);
+			this.Controls.Add(this.tabJobs);
+			this.Controls.Add(this.bnLogs);
 			this.Controls.Add(this.bnErrors);
 			this.Controls.Add(this.bnClose);
-			this.Controls.Add(this.txtLog);
 			this.Controls.Add(this.frmMainStatusStrip);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MinimumSize = new System.Drawing.Size(560, 351);
+			this.MinimumSize = new System.Drawing.Size(660, 520);
 			this.Name = "frmMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "RoboG";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmHaupt_FormClosing);
-			this.Load += new System.EventHandler(this.frmHaupt_Load);
 			this.Shown += new System.EventHandler(this.frmMain_Shown);
 			this.frmMainStatusStrip.ResumeLayout(false);
 			this.frmMainStatusStrip.PerformLayout();
@@ -446,31 +366,25 @@ namespace RoboG
 		#endregion
 
 		private System.Windows.Forms.Label lblStatus;
-		private System.Windows.Forms.Label lblProgressText;
-		private System.Windows.Forms.Label lblDirectoryCaption;
-		private System.Windows.Forms.Label lblDirectory;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label lblTargetDir;
-		private System.Windows.Forms.Label lblFileCaption;
-		private System.Windows.Forms.Label lblFile;
-		private System.Windows.Forms.Label lblSizeCaption;
-		private System.Windows.Forms.Label lblSize;
-		private System.Windows.Forms.Label lblFilesCaption;
-		private System.Windows.Forms.Label lblSpeedCaption;
-		private System.Windows.Forms.Label lblElapsedCaption;
-		private System.Windows.Forms.Label lblRemainingCaption;
-		private System.Windows.Forms.Label lblErrorsCaption;
-		private System.Windows.Forms.Label lblFilesValue;
-		private System.Windows.Forms.Label lblSpeedValue;
-		private System.Windows.Forms.Label lblElapsedValue;
-		private System.Windows.Forms.Label lblRemainingValue;
-		private System.Windows.Forms.Label lblErrorsValue;
 		private System.Windows.Forms.ProgressBar OverallProgress;
+		private System.Windows.Forms.Label lblProgressText;
+		private System.Windows.Forms.Label lblFilesCaption;
+		private System.Windows.Forms.Label lblFilesValue;
+		private System.Windows.Forms.Label lblSpeedCaption;
+		private System.Windows.Forms.Label lblSpeedValue;
+		private System.Windows.Forms.Label lblElapsedCaption;
+		private System.Windows.Forms.Label lblElapsedValue;
+		private System.Windows.Forms.Label lblRemainingCaption;
+		private System.Windows.Forms.Label lblRemainingValue;
+		private System.Windows.Forms.Label lblErrorsCaption;
+		private System.Windows.Forms.Label lblErrorsValue;
+		private System.Windows.Forms.Label lblJobsCaption;
+		private System.Windows.Forms.Label lblJobsValue;
 		private System.Windows.Forms.Panel pnlSeparator;
-		private System.Windows.Forms.Button bnDetails;
+		private System.Windows.Forms.TabControl tabJobs;
+		private System.Windows.Forms.Button bnLogs;
 		private System.Windows.Forms.Button bnErrors;
 		private System.Windows.Forms.Button bnClose;
-		private System.Windows.Forms.TextBox txtLog;
 		private System.Windows.Forms.Timer DotTimer;
 		private System.Windows.Forms.Timer CloseTimer;
 		private System.Windows.Forms.StatusStrip frmMainStatusStrip;

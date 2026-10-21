@@ -36,6 +36,9 @@ namespace RoboG
 			ToolTip ThreadsTip = new ToolTip();
 			ThreadsTip.SetToolTip(numThreads, "Number of files robocopy copies at once (/MT). 16 to 32 suits most jobs; very small files over a network can benefit from more.\r\nSet to 1 to copy EFS-encrypted files in raw mode (/EFSRAW cannot be combined with /MT).");
 			ThreadsTip.SetToolTip(lblThreadsHint, ThreadsTip.GetToolTip(numThreads));
+			ThreadsTip.SetToolTip(lblThreads, ThreadsTip.GetToolTip(numThreads));
+			ThreadsTip.SetToolTip(numParallelJobs, "Number of jobs that sync at the same time, each with its own robocopy and its own tab in the progress window. Others wait and start as soon as one finishes.\r\n2 to 4 suits jobs on different disks or servers. Use 1 when the jobs share one hard disk, so they run one after the other.");
+			ThreadsTip.SetToolTip(lblParallelJobs, ThreadsTip.GetToolTip(numParallelJobs));
 			SetText();
 			AlignControls();
 		}
@@ -110,6 +113,7 @@ namespace RoboG
 				chkScan.Checked = Settings.Scan;
 				chkLogFiles.Checked = Settings.LogFiles;
 				numThreads.Value = Settings.Threads;
+				numParallelJobs.Value = Settings.ParallelJobs;
 				
 
 				txtProgramBeforeBackup.Text = Settings.ProgramBeforeBackup;
@@ -145,6 +149,7 @@ namespace RoboG
 				Settings.Scan = chkScan.Checked;
 				Settings.LogFiles = chkLogFiles.Checked;
 				Settings.Threads = (int)numThreads.Value;
+				Settings.ParallelJobs = (int)numParallelJobs.Value;
 				Settings.ProgramBeforeBackup = txtProgramBeforeBackup.Text;
 				Settings.ArgumentsProgramBeforeBackup = txtArgumentsProgramBeforeBackup.Text;
 				Settings.ProgramBeforeBackupAdmin = chkProgramBeforeBackupAdmin.Checked;
