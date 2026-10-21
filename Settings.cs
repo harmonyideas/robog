@@ -163,10 +163,21 @@ namespace RoboG {
 		private static bool _Scan = true;
 		public static bool Scan { get { return _Scan; } set { _Scan = value; } }
 
-		// Number of robocopy copy threads (/MT:n). 1 = single-threaded, which keeps /EFSRAW for EFS-encrypted files.
+		// Number of robocopy copy threads (/MT:n) for the whole run, shared by the jobs running at the same time
+		// (see ThreadsPerJob). 1 = single-threaded, which keeps /EFSRAW for EFS-encrypted files.
 		public const int MaxThreads = 128;
 		private static int _Threads = 16;
 		public static int Threads { get { return _Threads; } set { _Threads = Math.Max(1, Math.Min(MaxThreads, value)); } }
+
+		/// <summary>
+		/// Copy threads each job gets when <paramref name="RunningJobs"/> jobs run at the same time: the total is
+		/// shared, so 16 threads give one job 16, two jobs 8 each and four jobs 4 each. Too many parallel writes
+		/// slow a single NAS or hard disk down rather than speeding it up.
+		/// </summary>
+		public static int ThreadsPerJob(int RunningJobs)
+		{
+			return Math.Max(1, _Threads / Math.Max(1, RunningJobs));
+		}
 
 		// Number of jobs that run at the same time, each with its own robocopy process. 1 = one after the other.
 		public const int MaxParallelJobs = 32;
@@ -900,13 +911,19 @@ namespace RoboG {
 
 		public String GetRobocopyParameters()
 		{
+			return GetRobocopyParameters(Settings.Threads);
+		}
+
+		/// <param name="Threads">Copy threads for this job (/MT). EFS raw mode is used only when the profile is set to 1 thread.</param>
+		public String GetRobocopyParameters(int Threads)
+		{
 			String Parameters = "";
 
 			// /MT cannot be combined with /EFSRAW, so EFS raw mode is only used for single-threaded copies.
 			// XP026 (Vista) has neither switch.
 			if (GlobalData.RobocopyVersion != "XP026")
 			{
-				if (Settings.Threads > 1) Parameters += " /MT:" + Settings.Threads.ToString();
+				if (Settings.Threads > 1) Parameters += " /MT:" + Math.Max(1, Threads).ToString();
 				else Parameters += " /EFSRAW";
 			}
 			try

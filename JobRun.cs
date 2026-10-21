@@ -52,6 +52,9 @@ namespace RoboG {
     public readonly String Name;
     public readonly LogFile Log = new LogFile();
 
+    /// <summary>Copy threads (/MT) this job uses; set by <see cref="Backup"/> from the run's total and the number of parallel jobs.</summary>
+    public int Threads = Settings.Threads;
+
     /// <summary>How often a job that lost its connection checks whether the source and target are back.</summary>
     public const int ReconnectCheckSeconds = 30;
     /// <summary>How long a job waits for a lost connection before it gives up.</summary>
@@ -247,7 +250,7 @@ namespace RoboG {
       _ScanBytes = 0;
       _ScanChanges = 0;
       String Error;
-      int ExitCode = RunRobocopy(Source, Target, CommonSwitches() + " /L /NFL /NDL" + this.Source.GetRobocopyParameters(), ProcessScanLine, out Error);
+      int ExitCode = RunRobocopy(Source, Target, CommonSwitches() + " /L /NFL /NDL" + this.Source.GetRobocopyParameters(Threads), ProcessScanLine, out Error);
       Step Result = AfterRobocopy(ExitCode, Error);
       if (Result == Step.Ok) Interlocked.Exchange(ref _BytesToCopy, _ScanBytes);
       return Result;
@@ -259,7 +262,7 @@ namespace RoboG {
       // reports how much it copied.
       String Switches = CommonSwitches();
       if (!Settings.LogFiles) Switches += " /NFL /NDL";
-      Switches += this.Source.GetRobocopyParameters();
+      Switches += this.Source.GetRobocopyParameters(Threads);
 
       String Error;
       int ExitCode = RunRobocopy(Source, Target, Switches, ProcessMirrorLine, out Error);

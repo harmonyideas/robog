@@ -66,10 +66,10 @@ This keeps **Retries** and **Wait time** in Profile options for problems with in
 
 RoboG streams robocopy's output instead of holding it in memory, so memory use stays flat however many files a job has, and parallel jobs don't add up to more than a few megabytes each. The progress window reads each job's counters twice a second and redraws only the tab you are looking at, so the copy never waits for the screen. For the fastest runs, open **Edit > Advanced settings**:
 
-* **Copy threads** (default 16) runs robocopy with `/MT`. 16 to 32 suits most jobs; very small files over a network can benefit from more. Set it to 1 only if you need EFS-encrypted files copied in raw mode (`/EFSRAW` cannot be combined with `/MT`).
+* **Copy threads** (default 16) is how many files are copied at once (robocopy `/MT`) for the whole sync. Jobs running at the same time share them: 16 threads give one job 16, two jobs 8 each, four jobs 4 each, so adding parallel jobs doesn't flood the target with writes. 16 suits most targets; a fast SSD or server can take more, while a single NAS with hard disks often does best with 8 to 16. Set it to 1 only if you need EFS-encrypted files copied in raw mode (`/EFSRAW` cannot be combined with `/MT`).
 * **Scan first** does a list-only pass to find the total size, which gives an accurate progress bar and time estimate but means walking the whole tree twice. Turn it off for very large trees.
 * **Show live progress** lists every file in the log. Turning it off (`/NFL /NDL`) is fastest; errors and robocopy's summary are still logged, and each job's files and bytes copied appear when it finishes.
-* **Parallel jobs** (default 4) sets how many jobs run at the same time. Each one also uses the copy threads above, so 4 jobs at 16 threads read up to 64 files at once.
+* **Parallel jobs** (default 4) sets how many jobs run at the same time. They share the copy threads above. Parallel jobs pay off most when the jobs use different disks or servers; for several jobs into one NAS, try 1 or 2.
 
 Logs are written as the run goes, to `%AppData%\RoboG` (**Open log folder** in the progress window):
 

@@ -75,7 +75,11 @@ namespace RoboG {
           Parallel = 1;
         }
 
-        HelperFunctions.WriteLog(Parallel > 1 ? "Running " + _Runs.Count + " jobs, up to " + Parallel + " at the same time." : "Running " + _Runs.Count + " job(s) one after the other.");
+        // The copy threads are shared by the jobs running at the same time, so the total stays the same.
+        int Threads = Settings.ThreadsPerJob(Parallel);
+        foreach (JobRun Run in _Runs) Run.Threads = Threads;
+        String ThreadText = Settings.Threads > 1 ? ", " + Threads + " copy thread(s) each" : "";
+        HelperFunctions.WriteLog(Parallel > 1 ? "Running " + _Runs.Count + " jobs, up to " + Parallel + " at the same time" + ThreadText + "." : "Running " + _Runs.Count + " job(s) one after the other" + ThreadText + ".");
         HelperFunctions.UpdateStatus(Translations.Get("BackingUp").TrimEnd() + "...");
 
         int Next = -1;
