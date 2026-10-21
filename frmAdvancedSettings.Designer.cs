@@ -85,7 +85,10 @@ namespace RoboG
 			this.lblThreads = new System.Windows.Forms.Label();
 			this.numThreads = new System.Windows.Forms.NumericUpDown();
 			this.lblThreadsHint = new System.Windows.Forms.Label();
+			this.lblParallelJobs = new System.Windows.Forms.Label();
+			this.numParallelJobs = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.numThreads)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numParallelJobs)).BeginInit();
 			this.txtProgramOnError = new RoboG.PathTextBox();
 			this.txtProgramAfterBackup = new RoboG.PathTextBox();
 			this.txtProgramBeforeBackup = new RoboG.PathTextBox();
@@ -431,6 +434,38 @@ namespace RoboG
 			this.lblThreadsHint.Size = new System.Drawing.Size(190, 28);
 			this.lblThreadsHint.TabIndex = 17;
 			this.lblThreadsHint.Text = "16-32 suits most jobs.";
+			this.lblThreadsHint.Visible = false;
+			// 
+			// lblParallelJobs
+			// 
+			this.lblParallelJobs.AutoSize = true;
+			this.lblParallelJobs.Location = new System.Drawing.Point(300, 51);
+			this.lblParallelJobs.Name = "lblParallelJobs";
+			this.lblParallelJobs.Size = new System.Drawing.Size(74, 13);
+			this.lblParallelJobs.TabIndex = 18;
+			this.lblParallelJobs.Text = "Parallel jobs:";
+			// 
+			// numParallelJobs
+			// 
+			this.numParallelJobs.Location = new System.Drawing.Point(400, 48);
+			this.numParallelJobs.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+			this.numParallelJobs.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numParallelJobs.Name = "numParallelJobs";
+			this.numParallelJobs.Size = new System.Drawing.Size(50, 20);
+			this.numParallelJobs.TabIndex = 19;
+			this.numParallelJobs.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
 			this.chkScan.UseVisualStyleBackColor = true;
 			// 
 			// txtProgramOnError
@@ -492,6 +527,8 @@ namespace RoboG
 			this.CancelButton = this.bnCancel;
 			this.ClientSize = new System.Drawing.Size(500, 549);
 			this.Controls.Add(this.lblThreadsHint);
+			this.Controls.Add(this.numParallelJobs);
+			this.Controls.Add(this.lblParallelJobs);
 			this.Controls.Add(this.numThreads);
 			this.Controls.Add(this.lblThreads);
 			this.Controls.Add(this.chkLogFiles);
@@ -524,6 +561,7 @@ namespace RoboG
 			this.gbProgramOnError.ResumeLayout(false);
 			this.gbProgramOnError.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numThreads)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numParallelJobs)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -568,5 +606,7 @@ namespace RoboG
 		private System.Windows.Forms.Label lblThreads;
 		private System.Windows.Forms.NumericUpDown numThreads;
 		private System.Windows.Forms.Label lblThreadsHint;
+		private System.Windows.Forms.Label lblParallelJobs;
+		private System.Windows.Forms.NumericUpDown numParallelJobs;
     }
 }

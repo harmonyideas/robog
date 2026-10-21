@@ -17,39 +17,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace RoboG
 {
+	/// <summary>
+	/// Progress window: the whole run at the top, an Overview tab listing every job with the run log,
+	/// and one tab per job with its own progress and log.
+	/// </summary>
 	public partial class frmMain : BackupForm
 	{
-		// The copy thread never touches the UI for per-file progress. It updates counters in IO,
-		// and this timer reads them a few times a second. With billions of files, marshalling
-		// every robocopy line to the UI thread would cap throughput at a few thousand files/s.
+		// The copy threads never touch the UI. Each job updates its own counters, and this timer reads
+		// them a few times a second. With billions of files, marshalling every robocopy line to the UI
+		// thread would cap throughput at a few thousand files/s.
 		private const int RefreshIntervalMs = 500;
 		private const int LogFlushIntervalMs = 2000;
 
 		private volatile bool _Aborting = false;
 		private volatile bool _BackupFinished = false;
-		private volatile bool _Copying = false;
 		private volatile bool _CreatingSnapshot = false;
 		private bool _CycleDots = false;
-		private long _BytesToCopy = 0;
 		private ShadowCopy _ShadowCopy = null;
 		private Thread _BackupThread;
 
 		private readonly System.Windows.Forms.Timer _RefreshTimer = new System.Windows.Forms.Timer();
 		private readonly Stopwatch _JobTime = new Stopwatch();
-		private long _RateBytes = 0;
-		private TimeSpan _RateTime = TimeSpan.Zero;
-		private double _TransferRate = 0;
-		private int _CollapsedHeight = 0;
-		private long _ShownLogVersion = -1;
 		private TimeSpan _LastLogFlush = TimeSpan.Zero;
+
+		private readonly List<JobPanel> _Panels = new List<JobPanel>();
+		private readonly List<TabPage> _JobTabs = new List<TabPage>();
+		private TabPage _OverviewTab;
+		private BufferedListView lstJobs;
+		private TextBox txtLog;
+		private long _ShownLogVersion = -1;
 
 		private delegate void UpdateStatusDelegate(String Parameter, bool SetCycleDots);
 
@@ -57,6 +62,7 @@ namespace RoboG
 		{
 			SetGlobalData();
 			InitializeComponent();
+			BuildOverviewTab();
 			Theme.Apply(this);
 			HelperFunctions.CheckLanguage();
 			SetText();
@@ -64,29 +70,10 @@ namespace RoboG
 			_RefreshTimer.Tick += new EventHandler(RefreshTimer_Tick);
 		}
 
-		private void frmHaupt_Load(object sender, EventArgs e)
-		{
-			try
-			{
-				// Only the width can change until the log is shown.
-				_CollapsedHeight = this.Height;
-				this.MinimumSize = new Size(this.MinimumSize.Width, _CollapsedHeight);
-				this.MaximumSize = new Size(Screen.AllScreens.Max(s => s.Bounds.Width) + 50, _CollapsedHeight);
-			}
-			catch (Exception ex)
-			{
-				HelperFunctions.ShowError(ex);
-			}
-		}
-
 		private void SetText()
 		{
 			try
 			{
-				lblDirectoryCaption.Text = Translations.Get("lblDirectoryCaption");
-				lblFileCaption.Text = Translations.Get("lblFileCaption");
-				lblSizeCaption.Text = Translations.Get("lblSizeCaption");
-				bnDetails.Text = Translations.Get("bnDetails");
 				bnErrors.Text = Translations.Get("bnErrors");
 				bnClose.Text = Translations.Get("Close");
 			}
@@ -109,6 +96,107 @@ namespace RoboG
 			}
 		}
 
+		#region Tabs
+
+		// A ListView that does not flicker when its rows are updated twice a second.
+		private class BufferedListView : ListView
+		{
+			public BufferedListView()
+			{
+				DoubleBuffered = true;
+			}
+		}
+
+		private void BuildOverviewTab()
+		{
+			_OverviewTab = new TabPage("Overview");
+			_OverviewTab.BackColor = Theme.Surface;
+			_OverviewTab.Padding = new Padding(8);
+
+			lstJobs = new BufferedListView();
+			lstJobs.View = View.Details;
+			lstJobs.FullRowSelect = true;
+			lstJobs.HideSelection = true;
+			lstJobs.MultiSelect = false;
+			lstJobs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+			lstJobs.BorderStyle = BorderStyle.FixedSingle;
+			lstJobs.Font = Theme.BaseFont;
+			lstJobs.Columns.Add("Job", 190);
+			lstJobs.Columns.Add("Status", 150);
+			lstJobs.Columns.Add("Progress", 70, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Files", 90, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Copied", 85, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Speed", 85, HorizontalAlignment.Right);
+			lstJobs.Columns.Add("Errors", 60, HorizontalAlignment.Right);
+			lstJobs.DoubleClick += new EventHandler(lstJobs_DoubleClick);
+			lstJobs.Bounds = new Rectangle(8, 8, 752, 170);
+			lstJobs.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+			Label lblLog = new Label();
+			lblLog.Text = "Run log";
+			lblLog.ForeColor = Theme.TextMuted;
+			lblLog.Bounds = new Rectangle(8, 186, 300, 18);
+			lblLog.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+
+			txtLog = new TextBox();
+			txtLog.Multiline = true;
+			txtLog.ReadOnly = true;
+			txtLog.WordWrap = false;
+			txtLog.ScrollBars = ScrollBars.Both;
+			txtLog.Font = new Font("Consolas", 9F);
+			txtLog.BorderStyle = BorderStyle.FixedSingle;
+			txtLog.Bounds = new Rectangle(8, 206, 752, 140);
+			txtLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+			_OverviewTab.Controls.Add(lstJobs);
+			_OverviewTab.Controls.Add(lblLog);
+			_OverviewTab.Controls.Add(txtLog);
+			tabJobs.TabPages.Add(_OverviewTab);
+		}
+
+		// One tab and one Overview row per job. Called once the jobs of this run are known.
+		private void BuildJobTabs()
+		{
+			tabJobs.SuspendLayout();
+			lstJobs.BeginUpdate();
+			foreach (JobRun Run in Backup.Runs)
+			{
+				JobPanel Panel = new JobPanel(Run);
+				Panel.Dock = DockStyle.Fill;
+				TabPage Page = new TabPage(Panel.TabTitle());
+				Page.BackColor = Theme.Surface;
+				Page.Controls.Add(Panel);
+				Page.ToolTipText = Run.Source.SourcePath + " -> " + Run.Source.TargetPath;
+				tabJobs.TabPages.Add(Page);
+				_Panels.Add(Panel);
+				_JobTabs.Add(Page);
+
+				ListViewItem Item = new ListViewItem(new String[] { Run.Number + ". " + Run.Name, "", "", "", "", "", "" });
+				Item.Tag = Page;
+				lstJobs.Items.Add(Item);
+			}
+			tabJobs.ShowToolTips = true;
+			lstJobs.EndUpdate();
+			tabJobs.ResumeLayout();
+			// With a single job its own tab is the interesting one.
+			if (_JobTabs.Count == 1) tabJobs.SelectedTab = _JobTabs[0];
+		}
+
+		private void lstJobs_DoubleClick(object sender, EventArgs e)
+		{
+			if (lstJobs.SelectedItems.Count == 0) return;
+			TabPage Page = lstJobs.SelectedItems[0].Tag as TabPage;
+			if (Page != null) tabJobs.SelectedTab = Page;
+		}
+
+		private void tabJobs_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			_ShownLogVersion = -1;
+			if (_Panels.Count > 0) RefreshTimer_Tick(this, EventArgs.Empty);
+		}
+
+		#endregion
+
 		#region Backup thread
 
 		private void DoBackup()
@@ -122,23 +210,27 @@ namespace RoboG
 				{
 					HelperFunctions.UpdateStatus(Translations.Get("StartingVSS") + "...");
 					IO.CheckSourceDrives();
-					Error = !CreateSnapshot(); // On failure nothing is copied, but the job still finishes normally below.
+					Error = !CreateSnapshot(); // On failure nothing is copied, but the run still finishes normally below.
 				}
 
 				if (!Error)
 				{
-					Backup.Initialize();
-					for (int i = 0; i < Settings.Sources.Count; i++)
+					foreach (JobRun Run in Backup.Runs)
 					{
-						if (Settings.ShadowCopy && Settings.Sources[i].ShadowCopy)
+						BackupSource Source = Run.Source;
+						String Mount;
+						if (Settings.ShadowCopy && Source.ShadowCopy && GlobalData.ShadowCopyMounts.TryGetValue(Source.Volume, out Mount))
 						{
-							Settings.Sources[i].Mount = Settings.Sources[i].SourcePath.Replace(Settings.Sources[i].Volume, GlobalData.ShadowCopyMounts[Settings.Sources[i].Volume]);
+							Source.Mount = Source.SourcePath.Replace(Source.Volume, Mount);
 						}
 					}
 					Error = !Backup.DoBackup();
 				}
+				else
+				{
+					foreach (JobRun Run in Backup.Runs) Run.Skip();
+				}
 
-				ClearFields();
 				if (_ShadowCopy != null)
 				{
 					if (!_Aborting && !_ShadowCopy.IsStillValid())
@@ -152,14 +244,23 @@ namespace RoboG
 					_ShadowCopy = null;
 				}
 
+				// Jobs that failed are reported together, so parallel jobs don't each stop the run with a dialog.
+				StringBuilder Failed = new StringBuilder();
+				foreach (JobRun Run in Backup.Runs)
+				{
+					if (Run.State != JobState.Failed) continue;
+					Error = true;
+					Failed.Append("\n\n").Append(Run.Number).Append(". ").Append(Run.Name).Append(":\n").Append(Run.Message);
+				}
+
 				HelperFunctions.WriteLog(Translations.Get("Done"));
 				FinishLog();
 
 				RunProgram(Settings.ProgramAfterBackup, Settings.ArgumentsProgramAfterBackup, Settings.ProgramAfterBackupAdmin);
 
-				if (Error) HelperFunctions.UpdateStatus(Translations.Get("CompletedWithErrors")); else HelperFunctions.UpdateStatus(Translations.Get("BackupCompleted"));
-				SetProgresssBarStyle(ProgressBarStyle.Blocks);
-				SetProgressBarValue(_Aborting ? 0 : int.MaxValue);
+				if (_Aborting) HelperFunctions.UpdateStatus(Translations.Get("Aborted"));
+				else if (Error) HelperFunctions.UpdateStatus(Translations.Get("CompletedWithErrors"));
+				else HelperFunctions.UpdateStatus(Translations.Get("BackupCompleted"));
 
 				bool RobocopyErrors = IO.ErrorCount > 0;
 				if ((Error || RobocopyErrors) && !_Aborting)
@@ -168,13 +269,14 @@ namespace RoboG
 				}
 
 				_BackupFinished = true; //Don't delete or move. Necessary for this.Close() to work
-				ClearEventHandlers();
+				RunOnUIThread(delegate { RefreshTimer_Tick(this, EventArgs.Empty); });
 
 				if (Settings.AutoExitAlways || GlobalData.AutoExitCmd)
 				{
 					Application.Exit();
 					return;
 				}
+				if (Failed.Length > 0 && !_Aborting) HelperFunctions.ShowError("These jobs could not be completed:" + Failed.ToString());
 				SetVisibility(bnClose, true);
 				if (RobocopyErrors && !_Aborting)
 				{
@@ -187,6 +289,8 @@ namespace RoboG
 			{
 				HelperFunctions.ShowError(ex);
 				FinishLog();
+				_BackupFinished = true;
+				SetVisibility(bnClose, true);
 			}
 		}
 
@@ -224,9 +328,9 @@ namespace RoboG
 			try
 			{
 				GlobalData.SourceVolumes.Clear();
-				for (int i = 0; i < Settings.Sources.Count; i++)
+				foreach (JobRun Run in Backup.Runs)
 				{
-					if (Settings.Sources[i].ShadowCopy && GlobalData.SourceVolumes.IndexOf(Settings.Sources[i].Volume) == -1) GlobalData.SourceVolumes.Add(Settings.Sources[i].Volume);
+					if (Run.Source.ShadowCopy && GlobalData.SourceVolumes.IndexOf(Run.Source.Volume) == -1) GlobalData.SourceVolumes.Add(Run.Source.Volume);
 				}
 				if (GlobalData.SourceVolumes.Count > 0)
 				{
@@ -250,35 +354,6 @@ namespace RoboG
 			return true;
 		}
 
-		void Backup_StartingBackup()
-		{
-			_Copying = true;
-			// With a scan the total is known and the bar shows real progress; without one it keeps animating.
-			if (Interlocked.Read(ref _BytesToCopy) > 0) SetProgresssBarStyle(ProgressBarStyle.Blocks);
-		}
-
-		void Backup_SizeDetermined(Int64 Size)
-		{
-			Interlocked.Exchange(ref _BytesToCopy, Size);
-		}
-
-		private void ClearFields()
-		{
-			_Copying = false;
-			RunOnUIThread(delegate
-			{
-				lblDirectory.Text = "";
-				lblFile.Text = "";
-				lblSize.Text = "";
-			});
-		}
-
-		private void ClearEventHandlers()
-		{
-			Backup.StartingBackup -= new Backup.StartingBackupEventHandler(Backup_StartingBackup);
-			Backup.SizeDetermined -= new Backup.SizeDeterminedEventHandler(Backup_SizeDetermined);
-		}
-
 		#endregion
 
 		#region UI updates
@@ -300,68 +375,91 @@ namespace RoboG
 			RunOnUIThread(delegate { if (!Control.IsDisposed) Control.Visible = Visible; });
 		}
 
-		void SetProgresssBarStyle(ProgressBarStyle Style)
-		{
-			RunOnUIThread(delegate { if (!OverallProgress.IsDisposed) OverallProgress.Style = Style; });
-		}
-
-		void SetProgressBarValue(int Value)
-		{
-			RunOnUIThread(delegate { if (!OverallProgress.IsDisposed) OverallProgress.Value = Math.Max(OverallProgress.Minimum, Math.Min(OverallProgress.Maximum, Value)); });
-		}
-
 		private void RefreshTimer_Tick(object sender, EventArgs e)
 		{
 			try
 			{
 				if (this.IsDisposed) return;
 				TimeSpan Now = _JobTime.Elapsed;
-				long Copied = IO.CopiedBytes;
-				long ToCopy = Interlocked.Read(ref _BytesToCopy);
 
-				if (_Copying)
+				long Copied = 0, Total = 0, Files = 0;
+				bool TotalKnown = Settings.Scan && Settings.LogFiles;
+				double Rate = 0;
+				int Running = 0, Finished = 0, Waiting = 0;
+				for (int i = 0; i < _Panels.Count; i++)
 				{
-					lblDirectory.Text = IO.CurrentDirectory ?? "";
-					lblFile.Text = IO.CurrentFile ?? "";
-					long Size = IO.CurrentFileSize;
-					lblSize.Text = Size > 0 ? HelperFunctions.SizeSuffix(Size) : "";
-					if (ToCopy > 0 && OverallProgress.Style == ProgressBarStyle.Blocks) OverallProgress.Value = (int)Math.Min(OverallProgress.Maximum, Copied * OverallProgress.Maximum / ToCopy);
+					JobPanel Panel = _Panels[i];
+					JobRun Run = Panel.Run;
+					Panel.Sample(Now);
+					Rate += Panel.TransferRate;
+
+					long JobCopied = Run.CopiedBytes;
+					Copied += JobCopied;
+					Files += Run.FilesCopied;
+					if (Run.IsFinished)
+					{
+						Finished++;
+						Total += JobCopied; // A finished job has copied all it is going to.
+					}
+					else
+					{
+						if (Run.IsRunning) Running++; else Waiting++;
+						long ToCopy = Run.BytesToCopy;
+						if (ToCopy < 0) TotalKnown = false; else Total += Math.Max(ToCopy, JobCopied);
+					}
+
+					SetText(_JobTabs[i], Panel.TabTitle());
+					UpdateJobRow(lstJobs.Items[i], Panel);
 				}
 
-				// Transfer rate averaged over at least two seconds, so it doesn't jump from file to file.
-				double Seconds = (Now - _RateTime).TotalSeconds;
-				if (Seconds >= 2)
+				// Whole run.
+				bool Copying = Running > 0;
+				if (TotalKnown && Total > 0 && !_BackupFinished)
 				{
-					_TransferRate = Math.Max(0, (Copied - _RateBytes) / Seconds);
-					_RateBytes = Copied;
-					_RateTime = Now;
+					if (OverallProgress.Style != ProgressBarStyle.Blocks) OverallProgress.Style = ProgressBarStyle.Blocks;
+					OverallProgress.Value = (int)Math.Min(OverallProgress.Maximum, Copied * OverallProgress.Maximum / Total);
+				}
+				else if (_BackupFinished)
+				{
+					if (OverallProgress.Style != ProgressBarStyle.Blocks) OverallProgress.Style = ProgressBarStyle.Blocks;
+					OverallProgress.Value = _Aborting ? 0 : OverallProgress.Maximum;
 				}
 
-				if (!Settings.LogFiles)
+				String Progress = "";
+				if (_Panels.Count > 0)
 				{
-					// robocopy runs with /NFL /NDL in this mode, so it reports no per-file progress.
-					lblFilesValue.Text = "-";
-					lblProgressText.Text = "Live progress is off (fastest mode). See the summary in the log when done.";
+					List<String> Parts = new List<String>();
+					if (Running > 0) Parts.Add(Running + " running");
+					if (Waiting > 0) Parts.Add(Waiting + " waiting");
+					if (Finished > 0) Parts.Add(Finished + " finished");
+					Progress = "Jobs: " + String.Join(", ", Parts.ToArray());
+					if (Backup.Parallel > 1 && !_BackupFinished) Progress += " (up to " + Backup.Parallel + " at a time)";
+					if (!Settings.LogFiles) Progress += ". Live progress is off (fastest mode).";
+					else if (TotalKnown && Total > 0) Progress += ". " + HelperFunctions.SizeSuffix(Copied) + " of " + HelperFunctions.SizeSuffix(Total) + " copied (" + Math.Min(100, Copied * 100 / Total) + "%)";
+					else if (Copied > 0) Progress += ". " + HelperFunctions.SizeSuffix(Copied) + " copied";
 				}
-				else lblFilesValue.Text = IO.FilesCopied.ToString("N0");
-				lblSpeedValue.Text = _Copying && Settings.LogFiles ? HelperFunctions.SizeSuffix((long)_TransferRate) + "/s" : "-";
-				lblElapsedValue.Text = PrintTimeSpan(Now.TotalSeconds);
-				lblErrorsValue.Text = IO.ErrorCount.ToString("N0");
-				lblErrorsValue.ForeColor = IO.ErrorCount > 0 ? Color.Firebrick : lblFilesValue.ForeColor;
-				if (_Copying && ToCopy > Copied && _TransferRate > 0) lblRemainingValue.Text = PrintTimeSpan((ToCopy - Copied) / _TransferRate);
-				else if (!_BackupFinished) lblRemainingValue.Text = "-";
-				else lblRemainingValue.Text = "0s";
+				SetText(lblProgressText, Progress);
 
-				if (!Settings.LogFiles) { }
-				else if (ToCopy > 0) lblProgressText.Text = HelperFunctions.SizeSuffix(Copied) + " of " + HelperFunctions.SizeSuffix(ToCopy) + " copied (" + Math.Min(100, Copied * 100 / ToCopy) + "%)";
-				else if (Copied > 0) lblProgressText.Text = HelperFunctions.SizeSuffix(Copied) + " copied";
-				lblTargetDir.Text = IO.GetTargetDir() ?? "";
+				SetText(lblFilesValue, Settings.LogFiles || _BackupFinished ? Files.ToString("N0") : "-");
+				SetText(lblSpeedValue, Copying && Settings.LogFiles ? HelperFunctions.SizeSuffix((long)Rate) + "/s" : "-");
+				SetText(lblElapsedValue, PrintTimeSpan(Now.TotalSeconds));
+				if (Copying && TotalKnown && Total > Copied && Rate > 0) SetText(lblRemainingValue, PrintTimeSpan((Total - Copied) / Rate));
+				else SetText(lblRemainingValue, _BackupFinished ? "0s" : "-");
+				int Errors = IO.ErrorCount;
+				SetText(lblErrorsValue, Errors.ToString("N0"));
+				lblErrorsValue.ForeColor = Errors > 0 ? Color.Firebrick : Theme.Text;
+				SetText(lblJobsValue, Finished + " of " + _Panels.Count);
 
-				if (txtLog.Visible) ShowRecentLog();
+				// Only the visible tab's details and log are drawn.
+				int Selected = tabJobs.SelectedIndex - 1;
+				if (Selected >= 0 && Selected < _Panels.Count) _Panels[Selected].RefreshView(true);
+				else ShowRecentLog();
 
 				if ((Now - _LastLogFlush).TotalMilliseconds >= LogFlushIntervalMs)
 				{
-					RunLog.Flush(); // Keeps the log file readable while a long job runs.
+					// Keeps the log files readable while a long job runs.
+					RunLog.Flush();
+					foreach (JobPanel Panel in _Panels) if (Panel.Run.IsRunning) Panel.Run.Log.Flush();
 					_LastLogFlush = Now;
 				}
 
@@ -376,6 +474,33 @@ namespace RoboG
 				_RefreshTimer.Stop();
 				HelperFunctions.ShowError(ex);
 			}
+		}
+
+		private void UpdateJobRow(ListViewItem Item, JobPanel Panel)
+		{
+			JobRun Run = Panel.Run;
+			JobState State = Run.State;
+			int Percent = JobPanel.Percent(Run);
+			bool ShowCounts = (Settings.LogFiles || Run.IsFinished) && State != JobState.Waiting;
+			SetText(Item.SubItems[1], JobPanel.StateText(Run));
+			SetText(Item.SubItems[2], State == JobState.Done || State == JobState.NoChanges ? "100%" : State == JobState.Copying && Percent >= 0 ? Percent + "%" : "");
+			SetText(Item.SubItems[3], ShowCounts ? Run.FilesCopied.ToString("N0") : "");
+			SetText(Item.SubItems[4], ShowCounts ? HelperFunctions.SizeSuffix(Run.CopiedBytes) : "");
+			SetText(Item.SubItems[5], Panel.TransferRate > 0 ? HelperFunctions.SizeSuffix((long)Panel.TransferRate) + "/s" : "");
+			SetText(Item.SubItems[6], Run.ErrorCount > 0 ? Run.ErrorCount.ToString("N0") : "");
+			Color Fore = State == JobState.Failed ? Color.Firebrick : State == JobState.Waiting ? Theme.TextMuted : Theme.Text;
+			if (Item.ForeColor != Fore) Item.ForeColor = Fore;
+		}
+
+		// Setting text repaints even when it is unchanged.
+		private static void SetText(Control Control, String Text)
+		{
+			if (Control.Text != Text) Control.Text = Text;
+		}
+
+		private static void SetText(ListViewItem.ListViewSubItem Item, String Text)
+		{
+			if (Item.Text != Text) Item.Text = Text;
 		}
 
 		private void ShowRecentLog()
@@ -401,7 +526,7 @@ namespace RoboG
 			UpdateStatus(Text, true);
 		}
 
-		// Called from the backup thread; never waits for the UI thread.
+		// Called from the backup threads; never waits for the UI thread.
 		private void UpdateStatus(String Text, bool SetCycleDots)
 		{
 			try
@@ -412,16 +537,7 @@ namespace RoboG
 					BeginInvoke(new UpdateStatusDelegate(UpdateStatus), Text, SetCycleDots);
 					return;
 				}
-				if (SetCycleDots)
-				{
-					_CycleDots = Text.EndsWith(".");
-					if (!_Copying)
-					{
-						lblFile.Text = "";
-						lblSize.Text = "";
-						lblDirectory.Text = "";
-					}
-				}
+				if (SetCycleDots) _CycleDots = Text.EndsWith(".");
 				lblStatus.Text = Text;
 			}
 			catch { }
@@ -494,17 +610,26 @@ namespace RoboG
 				if (GlobalData.LogPath != null)
 				{
 					String LogFile = GlobalData.LogPath + "\\RoboG-Log.txt";
-					if (RunLog.Start(LogFile)) lblStripStatus.Text = "Log: " + LogFile;
+					if (RunLog.Start(LogFile)) lblStripStatus.Text = "Log: " + LogFile + "   (one log per job in the Jobs folder)";
 				}
 				NetworkDrives.ResolveJobs();
-				HelperFunctions.StatusCallback = new HelperFunctions.LogDelegate(UpdateStatus);
-				Backup.StartingBackup += new Backup.StartingBackupEventHandler(Backup_StartingBackup);
-				Backup.SizeDetermined += new Backup.SizeDeterminedEventHandler(Backup_SizeDetermined);
 
+				Backup.CreateRuns();
+				if (Backup.Runs.Count == 0)
+				{
+					HelperFunctions.ShowMessage("All jobs of this profile are turned off.", "RoboG");
+					_BackupFinished = true;
+					this.Close();
+					return;
+				}
+				BuildJobTabs();
+
+				HelperFunctions.StatusCallback = new HelperFunctions.LogDelegate(UpdateStatus);
 				_JobTime.Start();
 				_RefreshTimer.Start();
 				_BackupThread = new Thread(new ThreadStart(DoBackup));
 				_BackupThread.IsBackground = true;
+				_BackupThread.Name = "RoboG run";
 				_BackupThread.Start();
 			}
 			catch (Exception ex)
@@ -525,7 +650,6 @@ namespace RoboG
 						{
 							_Aborting = true;
 							UpdateStatus(Translations.Get("Aborting") + "...");
-							ClearEventHandlers();
 							CloseTimer.Enabled = true;
 						}
 					}
@@ -545,31 +669,21 @@ namespace RoboG
 			}
 		}
 
-		private void bnDetails_Click(object sender, EventArgs e)
-		{
-			if (!txtLog.Visible)
-			{
-				this.MaximumSize = new Size(0, 0);
-				this.Height = _CollapsedHeight + 300;
-				txtLog.Top = bnDetails.Bottom + 10;
-				txtLog.Height = frmMainStatusStrip.Top - txtLog.Top - 10;
-				txtLog.Visible = true;
-				_ShownLogVersion = -1;
-				ShowRecentLog();
-				bnDetails.Text = Translations.Get("bnDetails2");
-			}
-			else
-			{
-				txtLog.Visible = false;
-				this.Height = _CollapsedHeight;
-				bnDetails.Text = Translations.Get("bnDetails");
-				this.MaximumSize = new Size(Screen.AllScreens.Max(s => s.Bounds.Width) + 50, _CollapsedHeight);
-			}
-		}
-
 		private void CloseTimer_Tick(object sender, EventArgs e)
 		{
 			this.Close();
+		}
+
+		private void bnLogs_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (GlobalData.LogPath != null && System.IO.Directory.Exists(GlobalData.LogPath)) Process.Start("explorer.exe", "\"" + GlobalData.LogPath + "\"");
+			}
+			catch (Exception ex)
+			{
+				HelperFunctions.ShowError(ex);
+			}
 		}
 
 		private void bnErrors_Click(object sender, EventArgs e)

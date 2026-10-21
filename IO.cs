@@ -25,95 +25,49 @@ using System.Threading;
 
 namespace RoboG {
   /// <summary>
-  /// Runs robocopy and turns its output into progress, log and error information.
-  ///
-  /// Designed for very large jobs (billions of files): memory use does not grow with the
-  /// number of files, the copy thread never waits on the UI (the UI polls the progress
-  /// properties below on a timer), and the log and error list stream to disk.
+  /// Shared helpers: starting robocopy and reading its report, drive checks, app data paths, and the
+  /// error list shared by all jobs of a run. Everything that belongs to one job lives in <see cref="JobRun"/>,
+  /// so several jobs can run at the same time.
   /// </summary>
   static class IO {
     /// <summary>At most this many errors are kept in memory for the error summary window; all of them go to the error log file.</summary>
     public const int MaxStoredErrors = 10000;
 
-    private static readonly char[] _Tab = new char[] { '\t' };
-    private static readonly char[] _Whitespace = new char[] { ' ', '\t' };
-
-    private static volatile bool _Abort = false;
-    private static volatile Process _Cmd = null;
-
-    // Per-run source/target context, used to map shadow-copy paths back to the real source path.
-    private static String _CurrentRealSourceDir = null;
-    private static String _CurrentSourceDir = null;
-    private static volatile String _CurrentTargetDir = null;
-
-    // Scan results.
-    private static long _SpaceNeeded = 0;
-    private static long _ScanChanges = 0;
-
-    // Live progress, written by the copy thread and read by the UI timer.
-    private static long _CopiedBytes = 0;
-    private static long _FilesCopied = 0;
-    private static long _CurrentFileSize = 0;
-    private static volatile String _CurrentFile = null;
-    private static volatile String _CurrentDir = null;
-
-    // Errors.
-    private static readonly object _ErrorLock = new object();
-    private static readonly List<RoboCopyError> _RoboCopyErrors = new List<RoboCopyError>();
-    // Errors robocopy may still retry, by path, and the error the next message line belongs to.
-    private static readonly Dictionary<String, RoboCopyError> _OpenErrors = new Dictionary<String, RoboCopyError>(StringComparer.OrdinalIgnoreCase);
-    private static RoboCopyError _LastError = null;
-    private static int _ErrorCount = 0;
-    private static System.IO.StreamWriter _ErrorLog = null;
-
     private static readonly Char[] _SafeChars = new Char[] {
       '\x8', ' ', '!', '#', '$', '%', '&', '\'', '(', ')', '+', ',', '-', ';', '=', '@', '[', '\\', ']', '^', '_', '`', '{', '}', '~'
     };
 
-    #region Progress and errors (read by the UI)
-
-    public static long CopiedBytes { get { return Interlocked.Read(ref _CopiedBytes); } }
-    public static long FilesCopied { get { return Interlocked.Read(ref _FilesCopied); } }
-    public static long CurrentFileSize { get { return Interlocked.Read(ref _CurrentFileSize); } }
-    public static String CurrentFile { get { return _CurrentFile; } }
-    public static String CurrentDirectory { get { return _CurrentDir; } }
-
-    /// <summary>Total number of robocopy errors in this run (may exceed the number kept in <see cref="RoboCopyErrors"/>).</summary>
-    public static int ErrorCount {
-      get {
-        lock (_ErrorLock) return _ErrorCount;
-      }
+    public static bool IsCharSafe(Char KeyChar) {
+      return Array.IndexOf(_SafeChars, KeyChar) >= 0;
     }
 
-    /// <summary>The first <see cref="MaxStoredErrors"/> errors of this run. Read it once the run has finished.</summary>
+    #region Errors from all jobs
+
+    private static readonly object _ErrorLock = new object();
+    private static readonly List<RoboCopyError> _RoboCopyErrors = new List<RoboCopyError>();
+    private static int _ErrorCount = 0;
+    private static System.IO.StreamWriter _ErrorLog = null;
+
+    public static String ErrorLogPath {
+      get { return GlobalData.LogPath + "\\RoboG-Errors.txt"; }
+    }
+
+    /// <summary>Total number of robocopy errors in this run, all jobs (may exceed the number kept in <see cref="RoboCopyErrors"/>).</summary>
+    public static int ErrorCount {
+      get { return Volatile.Read(ref _ErrorCount); }
+    }
+
+    /// <summary>The first <see cref="MaxStoredErrors"/> errors of this run.</summary>
     public static List<RoboCopyError> RoboCopyErrors {
       get {
         lock (_ErrorLock) return new List<RoboCopyError>(_RoboCopyErrors);
       }
     }
 
-    public static String ErrorLogPath {
-      get { return GlobalData.LogPath + "\\RoboG-Errors.txt"; }
-    }
-
-    public static String GetTargetDir() {
-      return _CurrentTargetDir;
-    }
-
-    #endregion
-
-    public static void Initialize() {
-      _Abort = false;
-      _CurrentFile = null;
-      _CurrentDir = null;
-      Interlocked.Exchange(ref _CopiedBytes, 0);
-      Interlocked.Exchange(ref _FilesCopied, 0);
-      Interlocked.Exchange(ref _CurrentFileSize, 0);
+    public static void ResetErrors() {
       lock (_ErrorLock) {
         _RoboCopyErrors.Clear();
-        _OpenErrors.Clear();
-        _LastError = null;
-        _ErrorCount = 0;
+        Volatile.Write(ref _ErrorCount, 0);
         CloseErrorLog();
         try {
           if (System.IO.File.Exists(ErrorLogPath)) System.IO.File.Delete(ErrorLogPath);
@@ -121,9 +75,41 @@ namespace RoboG {
       }
     }
 
-    public static bool IsCharSafe(Char KeyChar) {
-      return Array.IndexOf(_SafeChars, KeyChar) >= 0;
+    /// <summary>Records a final error (robocopy gave up on a file). Thread-safe; written to the error log immediately.</summary>
+    public static void AddError(RoboCopyError Error) {
+      lock (_ErrorLock) {
+        Volatile.Write(ref _ErrorCount, _ErrorCount + 1);
+        if (_RoboCopyErrors.Count < MaxStoredErrors) _RoboCopyErrors.Add(Error);
+        try {
+          if (_ErrorLog == null) {
+            System.IO.Directory.CreateDirectory(GlobalData.LogPath);
+            _ErrorLog = new System.IO.StreamWriter(ErrorLogPath, false, new UTF8Encoding(false), 1 << 16);
+          }
+          _ErrorLog.WriteLine("[" + Error.Job + "] " + Error.Directory + Error.File + "\t\t" + Error.Text[0]);
+          for (int j = 1; j < Error.Text.Count; j++) _ErrorLog.WriteLine("\t\t\t\t\t" + Error.Text[j]);
+        } catch {
+          CloseErrorLog(); // Not being able to write the error log must not stop the sync.
+        }
+      }
     }
+
+    /// <summary>Finishes the error log for this run. The log itself is written as errors happen.</summary>
+    public static void WriteErrorLog() {
+      lock (_ErrorLock) CloseErrorLog();
+    }
+
+    // Caller holds _ErrorLock.
+    private static void CloseErrorLog() {
+      if (_ErrorLog == null) return;
+      try {
+        _ErrorLog.Dispose();
+      } catch {}
+      _ErrorLog = null;
+    }
+
+    #endregion
+
+    #region Drives and paths
 
     public static List<String> GetBackupRoot(bool TrailingBackslash) {
       try {
@@ -172,14 +158,6 @@ namespace RoboG {
       return Format == "NTFS" || Format == "REFS";
     }
 
-    /// <summary>Finishes the error log for this run. The log itself is written as errors happen.</summary>
-    public static void WriteErrorLog() {
-      lock (_ErrorLock) {
-        EndOfRunErrors();
-        CloseErrorLog();
-      }
-    }
-
     public static String GetCommonApplicationDataPath() {
       return GetWritableAppDataPath(Environment.SpecialFolder.CommonApplicationData, true);
     }
@@ -209,111 +187,22 @@ namespace RoboG {
       return "";
     }
 
-    /// <summary>Stops the running robocopy process.</summary>
-    public static void Abort() {
-      _Abort = true;
-      Process Cmd = _Cmd;
-      if (Cmd == null) return;
-      try {
-        if (!Cmd.HasExited) Cmd.Kill(); // robocopy's /MT worker threads live inside this one process.
-      } catch {} // Already exited.
-    }
+    #endregion
 
     #region Running robocopy
 
     /// <summary>
-    /// Runs robocopy in list-only mode to find how many bytes need copying. Only robocopy's summary is
-    /// requested (/NFL /NDL), so this costs a single pass over the tree and no per-file output.
-    /// Returns -1 on error or abort.
-    /// </summary>
-    public static long GetSpaceNeeded(BackupSource BackupSource) {
-      try {
-        if (BackupSource.DisableJob) return 0;
-        _SpaceNeeded = 0;
-        _ScanChanges = 0;
-        String Source, Target;
-        PrepareRun(BackupSource, out Source, out Target);
-
-        String Switches = CommonSwitches(BackupSource) + " /L /NFL /NDL" + BackupSource.GetRobocopyParameters();
-        String Error;
-        int ExitCode = RunRobocopy(BuildRobocopyArguments(Source, Target, Switches), ProcessScanLine, out Error);
-
-        if (Error != "") {
-          HelperFunctions.ShowError(Translations.Get("RobocopyError") + "\n\n" + Translations.Get("Error") + "\n" + Error);
-          return -1;
-        }
-        if (_Abort) {
-          HelperFunctions.WriteLog(Translations.Get("Aborted"));
-          return -1;
-        }
-        if ((ExitCode & 16) == 16) {
-          HelperFunctions.ShowError(GetRobocopyReadableExitCode(ExitCode));
-          return -1;
-        }
-        if (ExitCode == 0 && _SpaceNeeded == 0 && _ScanChanges == 0) BackupSource.NoChanges = true;
-        HelperFunctions.WriteLog(Translations.Get("ExitCode") + ExitCode + ": " + GetRobocopyReadableExitCode(ExitCode));
-        return _SpaceNeeded;
-      } catch (Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return -1;
-    }
-
-    public static void MirrorDirectory(BackupSource BackupSource) {
-      try {
-        if (BackupSource.DisableJob) return;
-        String Source, Target;
-        PrepareRun(BackupSource, out Source, out Target);
-
-        String Switches = CommonSwitches(BackupSource) + " /NJS";
-        if (!Settings.LogFiles) Switches += " /NFL /NDL";
-        Switches += BackupSource.GetRobocopyParameters();
-
-        String Error;
-        int ExitCode = RunRobocopy(BuildRobocopyArguments(Source, Target, Switches), ProcessMirrorLine, out Error);
-        lock (_ErrorLock) EndOfRunErrors();
-
-        if (Error != "") HelperFunctions.ShowError(Translations.Get("ErrorInRobocopy") + Error);
-        if (_Abort) {
-          HelperFunctions.WriteLog(Translations.Get("Aborted"));
-        } else {
-          if ((ExitCode & 16) == 16) HelperFunctions.ShowError(GetRobocopyReadableExitCode(ExitCode));
-          HelperFunctions.WriteLog(Translations.Get("ExitCode") + ExitCode + ": " + GetRobocopyReadableExitCode(ExitCode));
-        }
-        HelperFunctions.WriteLogLine();
-      } catch (Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-    }
-
-    private static void PrepareRun(BackupSource BackupSource, out String Source, out String Target) {
-      Source = BackupSource.Mount;
-      Target = BackupSource.TargetPath.ToString();
-      _CurrentRealSourceDir = BackupSource.SourcePath;
-      _CurrentSourceDir = Source;
-      _CurrentTargetDir = Target;
-      if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1); // A trailing backslash would escape the closing quote.
-      if (Target.EndsWith("\\") && Target.Length > 3) Target = Target.Substring(0, Target.Length - 1);
-      HelperFunctions.WriteLogLine();
-      HelperFunctions.WriteLog(Translations.Get("StartingRobocopy"));
-    }
-
-    // /NP: no per-file percentage lines. They are pure overhead for many small files and robocopy omits them with /MT anyway.
-    private static String CommonSwitches(BackupSource BackupSource) {
-      return BackupSource.GetBackupMode() + Settings.Retries.ToString() + " /W:" + Settings.WaitBetweenRetries.ToString() + " /FFT /DST /NJH /NP /BYTES /XJ";
-    }
-
-    /// <summary>
     /// Starts robocopy and feeds every line it reports to <paramref name="LineHandler"/> on the calling thread.
-    /// Returns robocopy's exit code (-1 if it could not be started or was killed).
+    /// <paramref name="Started"/> receives the process once it runs, and null when it has finished, so the
+    /// caller can kill it on abort. Returns robocopy's exit code, or -1 if <paramref name="Aborted"/> became true.
     ///
     /// robocopy writes its report to a Unicode log file (/UNILOG) that is read while it grows. Reading the
     /// console pipe instead would turn every file name outside the console code page (accents, CJK, ...)
     /// into '?', because a program without a console window cannot give robocopy a UTF-8 console.
     /// </summary>
-    private static int RunRobocopy(String Arguments, Action<String> LineHandler, out String Error) {
+    public static int RunRobocopy(String Arguments, Action<String> LineHandler, Action<Process> Started, Func<bool> Aborted, LogFile Log, out String Error) {
       Error = "";
-      if (_Abort) return -1;
+      if (Aborted()) return -1;
 
       String UniLog = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RoboG-" + Guid.NewGuid().ToString("N") + ".log");
       Process Cmd = new Process();
@@ -337,30 +226,30 @@ namespace RoboG {
       Cmd.OutputDataReceived += Collect;
       Cmd.ErrorDataReceived += Collect;
 
-      HelperFunctions.WriteLog(GlobalData.RobocopyPath + " " + Arguments);
+      Log.Write(GlobalData.RobocopyPath + " " + Arguments);
       Cmd.Start();
-      _Cmd = Cmd;
+      Started(Cmd);
       try {
         Cmd.BeginOutputReadLine();
         Cmd.BeginErrorReadLine();
         TailLog(UniLog, Cmd, Line => {
-          if (_Abort || Line.Length == 0) return;
+          if (Line.Length == 0 || Aborted()) return;
           try {
             LineHandler(Line);
           } catch (Exception ex) {
             // An unexpected line must never stop the sync; note it and carry on.
-            RunLog.Write("RoboG could not parse robocopy output (" + ex.Message + "): " + Line);
+            Log.Write("RoboG could not parse robocopy output (" + ex.Message + "): " + Line);
           }
         });
         Cmd.WaitForExit();
-        int ExitCode = _Abort ? -1 : Cmd.ExitCode;
-        if ((ExitCode & 16) == 16) {
+        int ExitCode = Aborted() ? -1 : Cmd.ExitCode;
+        if (ExitCode >= 0 && (ExitCode & 16) == 16) {
           // A usage error is reported on the console, not in the log.
           lock (ConsoleText) Error = ConsoleText.ToString().Trim();
         }
         return ExitCode;
       } finally {
-        _Cmd = null;
+        Started(null);
         Cmd.Dispose();
         try {
           System.IO.File.Delete(UniLog);
@@ -417,9 +306,9 @@ namespace RoboG {
       }
     }
 
-    // Quotes one command line argument for CreateProcess (Arguments string, .NET Framework 4.0 has no ArgumentList).
+    // Quotes one command line argument for CreateProcess (Arguments string, .NET Framework has no ArgumentList).
     // Quoting is applied only here, so a path cannot end its argument early and inject further switches.
-    private static String QuoteRobocopyArgument(String Argument) {
+    public static String QuoteRobocopyArgument(String Argument) {
       if (Argument.Length > 0 && Argument.IndexOf(' ') < 0 && Argument.IndexOf('\t') < 0 && Argument.IndexOf('"') < 0) return Argument;
       StringBuilder Quoted = new StringBuilder("\"");
       int Backslashes = 0;
@@ -438,7 +327,7 @@ namespace RoboG {
       return Quoted.ToString();
     }
 
-    private static String BuildRobocopyArguments(String Source, String Target, String Switches) {
+    public static String BuildRobocopyArguments(String Source, String Target, String Switches) {
       return QuoteRobocopyArgument(Source) + " " + QuoteRobocopyArgument(Target) + " " + Switches;
     }
 
@@ -454,164 +343,6 @@ namespace RoboG {
       if (ExitCodeString != "" || ExitCode == 0) return ExitCodeString;
       return Translations.Get("ExitCode-1");
     }
-
-    #endregion
-
-    #region Parsing robocopy output
-
-    // With /NFL /NDL the scan prints only errors and the job summary, e.g. (with /BYTES):
-    //    Dirs :      1200        15      1185         0         0         0
-    //   Bytes :  99999999     12345  99987654         0         0         0
-    // Columns: Total, Copied, Skipped, Mismatch, FAILED, Extras.
-    private static void ProcessScanLine(String Line) {
-      RunLog.Write(Line);
-      String Trimmed = Line.TrimStart();
-      int Colon = Trimmed.IndexOf(':');
-      if (Colon < 0) return;
-      String Label = Trimmed.Substring(0, Colon).Trim();
-      if (Label != "Dirs" && Label != "Files" && Label != "Bytes") return;
-
-      String[] Fields = Trimmed.Substring(Colon + 1).Split(_Whitespace, StringSplitOptions.RemoveEmptyEntries);
-      if (Fields.Length < 6) return;
-      long Copied, Extras;
-      long.TryParse(Fields[1], out Copied);
-      long.TryParse(Fields[5], out Extras);
-      if (Label == "Bytes") _SpaceNeeded += Copied;
-      else _ScanChanges += Copied + Extras;
-    }
-
-    // Mirror output (tab separated):
-    //   directory:  \t   [New Dir]  <count>\t<path>\               (not printed with /MT)
-    //   file:       \t    <Class>\t\t<size>\t<name>              (with /MT: the full path instead of the name)
-    //               Class is capitalised when the file is copied, lower case when skipped, *EXTRA when deleted.
-    //   error:      <date> <time> ERROR <n> (0x...) <what> <path>, followed by message lines
-    private static void ProcessMirrorLine(String Line) {
-      RunLog.Write(Line);
-      if (Char.IsLetterOrDigit(Line[0])) {
-        AddErrorText(Line);
-        return;
-      }
-
-      String[] Columns = Line.Split(_Tab, StringSplitOptions.RemoveEmptyEntries);
-      if (Columns.Length >= 3) {
-        String Class = Columns[0].Trim();
-        if (Class.Length == 0 || !Char.IsUpper(Class[0])) return; // Skipped file, or *EXTRA file being deleted.
-        String Name = Columns[Columns.Length - 1];
-        long Size;
-        long.TryParse(Columns[Columns.Length - 2].Trim(), out Size);
-
-        int Waiting = Name.IndexOf("Waiting ", StringComparison.Ordinal);
-        if (Waiting > 0 && Name.IndexOf(" seconds", Waiting, StringComparison.Ordinal) > 0) Name = Name.Substring(0, Waiting); // Retry notice printed on the same line.
-        int Slash = Name.LastIndexOf('\\');
-        if (Slash >= 0) {
-          _CurrentDir = MapToRealSourcePath(Name.Substring(0, Slash + 1));
-          Name = Name.Substring(Slash + 1);
-        }
-
-        _CurrentFile = Name;
-        Interlocked.Exchange(ref _CurrentFileSize, Size);
-        Interlocked.Add(ref _CopiedBytes, Size);
-        Interlocked.Increment(ref _FilesCopied);
-      } else if (Columns.Length == 2) {
-        if (Columns[0].Trim().StartsWith("*")) return; // *EXTRA Dir being deleted.
-        _CurrentDir = MapToRealSourcePath(Columns[1].Trim());
-      }
-    }
-
-    // Maps a path under the shadow-copy mount back to the source path the user chose.
-    private static String MapToRealSourcePath(String Path) {
-      String Mount = TrimTrailingBackslash(_CurrentSourceDir);
-      String Real = TrimTrailingBackslash(_CurrentRealSourceDir);
-      if (Mount == null || Real == null || Mount == Real) return Path;
-      if (!Path.StartsWith(Mount, StringComparison.OrdinalIgnoreCase)) return Path;
-      return Real + Path.Substring(Mount.Length);
-    }
-
-    private static String TrimTrailingBackslash(String Path) {
-      if (Path != null && Path.Length > 3 && Path.EndsWith("\\")) return Path.Substring(0, Path.Length - 1);
-      return Path;
-    }
-
-    // An error starts with a line like "2026/10/21 05:29:07 ERROR 32 (0x00000020) Copying File C:\\Data\\file.txt",
-    // followed by the Windows message. robocopy then either retries ("Waiting 30 seconds... Retrying...") or gives
-    // up with "ERROR: RETRY LIMIT EXCEEDED.". Only the give-up counts as a failure; an attempt that is retried and
-    // then succeeds is not an error. With /MT, lines from other files arrive in between, so the error's file is
-    // taken from the error line itself and open errors are tracked per file.
-    private static void AddErrorText(String Line) {
-      lock (_ErrorLock) {
-        if (Line.StartsWith("ERROR: RETRY LIMIT EXCEEDED", StringComparison.Ordinal)) {
-          if (_LastError != null) {
-            _LastError.Text.Add(Line);
-            _OpenErrors.Remove(_LastError.Directory + _LastError.File);
-            FinalizeError(_LastError);
-            _LastError = null;
-          }
-          return;
-        }
-        int ErrorAt = Line.IndexOf(" ERROR ", StringComparison.Ordinal);
-        if (ErrorAt < 0 || ErrorAt > 25) {
-          if (_LastError != null && !Line.StartsWith("Waiting ", StringComparison.Ordinal)) _LastError.Text.Add(Line);
-          return;
-        }
-        String File = _CurrentFile, Directory = _CurrentDir ?? _CurrentRealSourceDir ?? "";
-        int PathAt = Line.IndexOf(":\\", ErrorAt, StringComparison.Ordinal);
-        if (PathAt > 0) PathAt--; else PathAt = Line.IndexOf("\\\\", ErrorAt, StringComparison.Ordinal);
-        if (PathAt > 0) {
-          String Path = Line.Substring(PathAt).Trim();
-          int Slash = Path.TrimEnd('\\').LastIndexOf('\\');
-          if (Slash >= 0) {
-            Directory = MapToRealSourcePath(Path.Substring(0, Slash + 1));
-            File = Path.Substring(Slash + 1);
-          }
-        }
-        // With retries off robocopy may not print the retry-limit line, so the previous error is final now.
-        if (Settings.Retries == 0 && _LastError != null) {
-          _OpenErrors.Remove(_LastError.Directory + _LastError.File);
-          FinalizeError(_LastError);
-        }
-        RoboCopyError Error = new RoboCopyError(Line.Trim(), File, Directory);
-        if (_OpenErrors.Count > MaxStoredErrors) _OpenErrors.Clear(); // Bound memory if many errors are retried successfully.
-        _OpenErrors[Error.Directory + Error.File] = Error; // A retry replaces the previous attempt's error.
-        _LastError = Error;
-      }
-    }
-
-    // Caller holds _ErrorLock. An error still waiting for robocopy's verdict when the run ends was retried
-    // successfully (or the run was aborted); it only counts when retries are off.
-    private static void EndOfRunErrors() {
-      if (Settings.Retries == 0 && !_Abort) {
-        foreach (RoboCopyError Error in _OpenErrors.Values) FinalizeError(Error);
-      }
-      _OpenErrors.Clear();
-      _LastError = null;
-    }
-
-    // Caller holds _ErrorLock.
-    private static void FinalizeError(RoboCopyError Error) {
-      _ErrorCount++;
-      if (_RoboCopyErrors.Count < MaxStoredErrors) _RoboCopyErrors.Add(Error);
-      try {
-        if (_ErrorLog == null) {
-          System.IO.Directory.CreateDirectory(GlobalData.LogPath);
-          _ErrorLog = new System.IO.StreamWriter(ErrorLogPath, false, new UTF8Encoding(false), 1 << 16);
-        }
-        _ErrorLog.WriteLine(Error.Directory + Error.File + "\t\t" + Error.Text[0]);
-        for (int j = 1; j < Error.Text.Count; j++) _ErrorLog.WriteLine("\t\t\t\t\t" + Error.Text[j]);
-      } catch {
-        CloseErrorLog(); // Not being able to write the error log must not stop the sync.
-      }
-    }
-
-    // Caller holds _ErrorLock.
-    private static void CloseErrorLog() {
-      if (_ErrorLog == null) return;
-      try {
-        _ErrorLog.Dispose();
-      } catch {}
-      _ErrorLog = null;
-    }
-
-    #endregion
 
     public static bool RobocopyInstalled(out String Version) {
       Version = "";
@@ -631,23 +362,12 @@ namespace RoboG {
       return false;
     }
 
-    public static List<String> GetFreeDriveLetters() {
-      try {
-        String[] LogicalDrives = Environment.GetLogicalDrives();
-        List<String> FreeLetters = new List<string>();
-        for (char Letter = 'B'; Letter <= 'Z'; Letter++) {
-          String Drive = Letter + ":\\";
-          if (!LogicalDrives.Contains(Drive)) FreeLetters.Add(Drive);
-        }
-        return FreeLetters;
-      } catch (Exception ex) {
-        HelperFunctions.ShowError(ex);
-      }
-      return null;
-    }
+    #endregion
   }
 
   class RoboCopyError {
+    /// <summary>Name of the job the error happened in.</summary>
+    public String Job { get; set; }
     public String File { get; set; }
     public String Directory { get; set; }
 
@@ -658,7 +378,8 @@ namespace RoboG {
 
     public RoboCopyError() {}
 
-    public RoboCopyError(String Text, String File, String Directory) {
+    public RoboCopyError(String Job, String Text, String File, String Directory) {
+      this.Job = Job;
       _Text.Add(Text);
       this.File = File;
       this.Directory = Directory.EndsWith("\\") ? Directory : Directory + "\\";
