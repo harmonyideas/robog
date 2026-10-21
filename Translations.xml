@@ -134,7 +134,7 @@
 		<bnAdvanced>Advanced options...</bnAdvanced>
 		<SelectDirectoryToBackup>Select directory to backup</SelectDirectoryToBackup>
 		<SelectTargetDirectory>Select target directory</SelectTargetDirectory>
-		<ShadowCopiesNotPossible>It is not possible to create shadow copies on this drive, so files in use can't be backed up. Shadow copies only work on local disks formatted with the NTFS file system.</ShadowCopiesNotPossible>
+		<ShadowCopiesNotPossible>Shadow copies are not possible for this source folder, so files that are open or locked can't be copied. The source must be on a local drive formatted with NTFS or ReFS (the target can be anywhere, including a network share).</ShadowCopiesNotPossible>
 		<ErrorNoName>You need to enter a name.</ErrorNoName>
 		<ErrorNameInUse>The entered name is already in use.</ErrorNameInUse>
 		<ErrorNoDirectory>You need to enter a directory to backup.</ErrorNoDirectory>

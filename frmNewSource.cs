@@ -80,7 +80,8 @@ namespace RoboG
 					txtTargetDir.Text = _BackupSource.TargetPath;
 					chkLogOnly.Checked = _BackupSource.LogOnly;
 					chkDisableJob.Checked = _BackupSource.DisableJob;
-					if (_BackupSource.SourcePath.Length < 3 || !IO.CheckSourceDrive(_BackupSource.SourcePath.Substring(0, 3)) || _BackupSource.M) { chkShadowCopy.Enabled = false; chkShadowCopy.Checked = false; } else chkShadowCopy.Checked = _BackupSource.ShadowCopy;
+					chkShadowCopy.Checked = _BackupSource.ShadowCopy;
+					UpdateShadowCopyOption(false);
 					txtName.Select(0, 0);
 				}
 			}
@@ -100,16 +101,7 @@ namespace RoboG
 				if (FB.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
 					txtSourceDir.Text = FB.SelectedPath;
-					if (FB.SelectedPath.Length < 3 || !IO.CheckSourceDrive(FB.SelectedPath.Substring(0, 3)))
-					{
-						if (chkShadowCopy.Checked) HelperFunctions.ShowMessage(Translations.Get("ShadowCopiesNotPossible"), "RoboG");
-						chkShadowCopy.Enabled = false;
-						chkShadowCopy.Checked = false;
-					}
-					else
-					{
-						chkShadowCopy.Enabled = true;
-					}
+					UpdateShadowCopyOption(true);
 				}
 			}
 			catch (Exception ex)
@@ -180,16 +172,7 @@ namespace RoboG
 		{
 			frmNewSourceAdvanced frmNewSourceAdvanced = new frmNewSourceAdvanced(ref _BackupSource, txtSourceDir.Text.Trim());
 			frmNewSourceAdvanced.ShowDialog();
-			if (_BackupSource.M)
-			{
-				if (chkShadowCopy.Checked) HelperFunctions.ShowMessage(Translations.Get("ErrorResetArchive"), "RoboG");
-				chkShadowCopy.Checked = false;
-				chkShadowCopy.Enabled = false;
-			}
-			else
-			{
-				chkShadowCopy.Enabled = true;
-			}
+			UpdateShadowCopyOption(true);
 		}
 
 		private void frmNewSource_FormClosing(object sender, FormClosingEventArgs e)
@@ -210,21 +193,28 @@ namespace RoboG
 		{
 			try
 			{
-				if (txtSourceDir.Text.Trim().Length > 0 && (txtSourceDir.Text.Trim().Length < 3 || !IO.CheckSourceDrive(txtSourceDir.Text.Trim().Substring(0, 3))))
-				{
-					if (chkShadowCopy.Checked) HelperFunctions.ShowMessage(Translations.Get("ShadowCopiesNotPossible"), "RoboG");
-					chkShadowCopy.Checked = false;
-					chkShadowCopy.Enabled = false;
-				}
-				else
-				{
-					chkShadowCopy.Enabled = true;
-				}
+				UpdateShadowCopyOption(true);
 			}
 			catch (Exception ex)
 			{
 				HelperFunctions.ShowError(ex);
 			}
+		}
+
+		// Shadow copies snapshot the source drive only, so only the source decides whether they are possible:
+		// it must be a local NTFS or ReFS drive. The target can be anything, including a network share.
+		// Resetting the archive attribute (/M) also rules them out, because a snapshot is read-only.
+		private void UpdateShadowCopyOption(bool Explain)
+		{
+			String Source = txtSourceDir.Text.Trim();
+			bool SourceSupported = Source.Length == 0 || (Source.Length >= 3 && IO.CheckSourceDrive(Source.Substring(0, 3)));
+			bool Allowed = SourceSupported && !_BackupSource.M;
+			if (!Allowed && chkShadowCopy.Checked)
+			{
+				if (Explain) HelperFunctions.ShowMessage(Translations.Get(_BackupSource.M ? "ErrorResetArchive" : "ShadowCopiesNotPossible"), "RoboG");
+				chkShadowCopy.Checked = false;
+			}
+			chkShadowCopy.Enabled = Allowed;
 		}
 
 		private void btnTargetdir_Click(object sender, EventArgs e)
@@ -236,17 +226,7 @@ namespace RoboG
 				if (txtSourceDir.Text.Trim() != "") FB.SelectedPath = txtSourceDir.Text.Trim();
 				if (FB.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
-					txtTargetDir.Text = FB.SelectedPath;
-					if (FB.SelectedPath.Length < 3 || !IO.CheckSourceDrive(FB.SelectedPath.Substring(0, 3)))
-					{
-						if (chkShadowCopy.Checked) HelperFunctions.ShowMessage(Translations.Get("ShadowCopiesNotPossible"), "RoboG");
-						chkShadowCopy.Enabled = false;
-						chkShadowCopy.Checked = false;
-					}
-					else
-					{
-						chkShadowCopy.Enabled = true;
-					}
+					txtTargetDir.Text = FB.SelectedPath; // The target can be any drive or share; shadow copies only apply to the source.
 				}
 			}
 			catch (Exception ex)

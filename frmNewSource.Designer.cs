@@ -124,6 +124,7 @@ namespace RoboG
 			this.txtSourceDir.BackColor = System.Drawing.SystemColors.Window;
 			this.txtSourceDir.Location = new System.Drawing.Point(130, 56);
 			this.txtSourceDir.Name = "txtSourceDir";
+			this.txtSourceDir.Leave += new System.EventHandler(this.txtDirectory_Leave);
 			this.txtSourceDir.Size = new System.Drawing.Size(318, 23);
 			this.txtSourceDir.TabIndex = 1;
 			this.toolTip.SetToolTip(this.txtSourceDir, "Source directory to be backed up");
