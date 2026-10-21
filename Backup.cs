@@ -66,6 +66,12 @@ namespace RoboG {
 
           if (_TargetDirectories[i] == null) return false;
           if (!Directory.IsWriteable(_TargetDirectories[i]) && !System.IO.Directory.Exists(_TargetDirectories[i] + Settings.Subfolder)) {
+            String Target = _TargetDirectories[i];
+            if (Target.Length >= 2 && Target[1] == ':' && !System.IO.Directory.Exists(Target.Substring(0, 2) + "\\")) {
+              HelperFunctions.ShowError("Drive " + Target.Substring(0, 2) + " is not available to RoboG, so " + Target + " cannot be used as a target." +
+                (Processes.Elevated() ? "\n\nRoboG is running as administrator, and Windows keeps mapped network drives separate for administrator programs. Use the network path (\\\\server\\share) instead of the drive letter." : ""));
+              return false;
+            }
             HelperFunctions.ShowError(Translations.Get("DirectoryNotWriteable1") + _TargetDirectories[i] + Translations.Get("DirectoryNotWriteable2"));
             return false;
           }

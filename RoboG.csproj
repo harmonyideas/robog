@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NetworkDrives.cs" />
     <Compile Include="Processes.cs" />
     <Compile Include="RunLog.cs" />
     <Compile Include="Service.cs" />

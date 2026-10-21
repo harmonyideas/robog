@@ -496,6 +496,7 @@ namespace RoboG
 					String LogFile = GlobalData.LogPath + "\\RoboG-Log.txt";
 					if (RunLog.Start(LogFile)) lblStripStatus.Text = "Log: " + LogFile;
 				}
+				NetworkDrives.ResolveJobs();
 				HelperFunctions.StatusCallback = new HelperFunctions.LogDelegate(UpdateStatus);
 				Backup.StartingBackup += new Backup.StartingBackupEventHandler(Backup_StartingBackup);
 				Backup.SizeDetermined += new Backup.SizeDeterminedEventHandler(Backup_SizeDetermined);

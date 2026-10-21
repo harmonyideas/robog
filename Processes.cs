@@ -263,6 +263,8 @@ namespace RoboG
 				RoboG.StartInfo.Arguments = "/Admin /s";
 				if (GlobalData.SettingsInAppData) RoboG.StartInfo.Arguments += " /Settings:" + NewSettingsFile;
 				else RoboG.StartInfo.Arguments += " /User:" + HelperFunctions.GetUserName();
+				// The elevated copy cannot see this session's mapped drives; tell it where they point.
+				RoboG.StartInfo.Arguments += NetworkDrives.GetArguments();
 				RoboG.Start();
 				Environment.Exit(0);
 				return true;

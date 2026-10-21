@@ -62,6 +62,9 @@ namespace RoboG {
           case "/Auto":
             GlobalData.AutoExitCmd = true;
             break;
+          case NetworkDrives.Argument:
+            NetworkDrives.Add(Args[i].Substring(Args[i].IndexOf(':') + 1));
+            break;
           }
         }
 
