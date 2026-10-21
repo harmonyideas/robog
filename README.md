@@ -77,6 +77,24 @@ Logs are written as the run goes, to `%AppData%\RoboG` (**Open log folder** in t
 * `Jobs\Job-NN-<name>.txt`: everything robocopy reported for that job.
 * `RoboG-Errors.txt`: every file that could not be copied, from all jobs, tagged with the job's name.
 
+# Copying to a Samba / Linux server
+
+With many small files, speed is set by how many files per second the target can create, not by MB/s: each file costs several round trips (create, write, set times, close) whatever its size. RoboG shows **Files/s** next to the speed for this reason. If files/s stays the same whatever you set **Copy threads** to, something on the server is handling files one at a time.
+
+**Large folders.** Windows file names are case-insensitive and Linux ones aren't, so before Samba creates a file it reads through the whole folder to check that no name differing only in capitals exists. In a folder with tens of thousands of files that scan happens for every new file, in Samba's single process per client. On one test server this capped copies into folders of 125,000 files at about 60 files/s; this setting in the share's section of `smb.conf` made them about 4 times faster:
+
+```
+case sensitive = yes
+```
+
+Restart Samba afterwards (for example `rc-service samba restart` or `systemctl restart smb`). Names are still stored exactly as copied; the difference is that a lookup must use the same capitals (`Photo.JPG` won't open as `photo.jpg`). robocopy always uses exact names, so backups aren't affected, but people opening files on the share by hand may notice. Keeping folders to a few thousand files each avoids the problem without changing Samba.
+
+**Finding the bottleneck.** While a sync runs, on the server:
+
+* `top`: one `smbd` process at 100% of a core means Samba itself is the limit; more threads in RoboG won't help.
+* `strace -c -f -e trace=getdents64,fsync,fdatasync -p <smbd pid>` for about 10 seconds, then Ctrl+C: thousands of `getdents64` calls mean folder scans (see above); about one `fsync` per file means each file is being forced to disk, which a hard disk can only do around 60 to 120 times per second.
+* If Samba runs in a virtual machine, give it virtio disk and network devices and at least 2 GB of memory; disk cache mode `none` cut the VM's kernel overhead noticeably in testing.
+
 # Shadow copies (VSS)
 
 With "Use shadow copies" on, RoboG snapshots all source volumes at the same instant with the Volume Shadow Copy Service built into Windows, so open and locked files are copied as they were at that moment. Snapshots are released automatically when the job ends, even if RoboG is closed or crashes. RoboG declares a "copy" backup, so applications such as SQL Server or Exchange don't treat the sync as one of their backups. Shadow copies need RoboG to run as administrator (it offers to restart elevated) and a local NTFS or ReFS source drive. If Windows discards a snapshot during a very long job because shadow storage filled up, RoboG reports it rather than leaving you with unexplained file errors.
