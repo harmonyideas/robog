@@ -20,12 +20,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RoboG {
   enum JobState {
     Waiting,
     Scanning,
     Copying,
+    /// <summary>The source or target stopped answering (network or NAS down); the job resumes when it is back.</summary>
+    Reconnecting,
     Done,
     NoChanges,
     Failed,
@@ -48,6 +51,25 @@ namespace RoboG {
     public readonly int Number;
     public readonly String Name;
     public readonly LogFile Log = new LogFile();
+
+    /// <summary>How often a job that lost its connection checks whether the source and target are back.</summary>
+    public const int ReconnectCheckSeconds = 30;
+    /// <summary>How long a job waits for a lost connection before it gives up.</summary>
+    public const int ReconnectTimeoutMinutes = 60;
+    // How long one reachability check may take before the path counts as unreachable.
+    private const int ProbeTimeoutSeconds = 20;
+
+    // Windows errors that mean a network share stopped answering, rather than a problem with one file:
+    // 51 remote computer not available, 53 network path not found, 54 network busy, 59 unexpected network error,
+    // 64 network name no longer available, 67 network name not found, 121 semaphore timeout,
+    // 1231 network location unreachable, 1232 host unreachable, 1236 connection aborted.
+    private static readonly int[] _NetworkErrors = new int[] { 51, 53, 54, 59, 64, 67, 121, 1231, 1232, 1236 };
+
+    private enum Step {
+      Ok,
+      Stop,
+      Reconnect
+    }
 
     private volatile JobState _State = JobState.Waiting;
     private volatile bool _Abort = false;
@@ -72,6 +94,18 @@ namespace RoboG {
     private long _ScanChanges = 0;
     private readonly Dictionary<String, RoboCopyError> _OpenErrors = new Dictionary<String, RoboCopyError>(StringComparer.OrdinalIgnoreCase);
     private RoboCopyError _LastError = null;
+    private String _LastErrorText = "";
+    private bool _LastErrorHasMessage = false;
+    private bool _Scanned = false;
+
+    // Connection loss. A network error starts a check of the source and target in the background; if one
+    // of them is unreachable the job's robocopy is stopped and the job waits for the connection.
+    private volatile bool _ConnectionLost = false;
+    private volatile String _LostPath = null;
+    private int _ProbeRunning = 0;
+    // Files that failed with a network error while the connection was being checked. They count only if the
+    // connection turns out to be fine; after an outage robocopy tries them again when the job resumes.
+    private readonly List<RoboCopyError> _HeldErrors = new List<RoboCopyError>();
 
     public JobRun(BackupSource Source, int Number) {
       this.Source = Source;
@@ -84,7 +118,7 @@ namespace RoboG {
 
     public JobState State { get { return _State; } }
     public bool IsFinished { get { JobState S = _State; return S == JobState.Done || S == JobState.NoChanges || S == JobState.Failed || S == JobState.Aborted; } }
-    public bool IsRunning { get { JobState S = _State; return S == JobState.Scanning || S == JobState.Copying; } }
+    public bool IsRunning { get { JobState S = _State; return S == JobState.Scanning || S == JobState.Copying || S == JobState.Reconnecting; } }
 
     /// <summary>Why the job failed, or other short note about the outcome.</summary>
     public String Message { get { return _Message; } }
@@ -126,21 +160,31 @@ namespace RoboG {
         String From, To;
         PrepareRun(out From, out To);
 
-        if (Settings.Scan && !_Abort) {
-          _State = JobState.Scanning;
-          if (!Scan(From, To)) return;
-          if (_ScanBytes == 0 && _ScanChanges == 0 && !_Abort) {
-            Finish(JobState.NoChanges, Translations.Get("NoChanges"));
+        // Each pass runs until the job is finished, or until the source or target stops answering; then the
+        // job waits for the connection and runs again. robocopy skips what is already copied, so a resumed
+        // job carries on where it stopped.
+        while (true) {
+          if (!WaitForConnection()) return;
+
+          if (Settings.Scan && !_Scanned) {
+            _State = JobState.Scanning;
+            Step Scanned = Scan(From, To);
+            if (Scanned == Step.Reconnect) continue;
+            if (Scanned == Step.Stop) return;
+            _Scanned = true;
+            if (_ScanBytes == 0 && _ScanChanges == 0 && !_Abort) {
+              Finish(JobState.NoChanges, Translations.Get("NoChanges"));
+              return;
+            }
+          }
+          if (_Abort) {
+            Finish(JobState.Aborted, Translations.Get("Aborted"));
             return;
           }
-        }
-        if (_Abort) {
-          Finish(JobState.Aborted, Translations.Get("Aborted"));
-          return;
-        }
 
-        _State = JobState.Copying;
-        Copy(From, To);
+          _State = JobState.Copying;
+          if (Copy(From, To) != Step.Reconnect) return;
+        }
       } catch (Exception ex) {
         Finish(JobState.Failed, ex.Message);
         Log.Write(ex.ToString());
@@ -198,26 +242,18 @@ namespace RoboG {
 
     // Runs robocopy in list-only mode to find how many bytes need copying. Only robocopy's summary is
     // requested (/NFL /NDL), so this costs a single pass over the tree and no per-file output.
-    private bool Scan(String Source, String Target) {
+    private Step Scan(String Source, String Target) {
       Log.Write(Translations.Get("LookingForChanges"));
       _ScanBytes = 0;
       _ScanChanges = 0;
       String Error;
       int ExitCode = RunRobocopy(Source, Target, CommonSwitches() + " /L /NFL /NDL" + this.Source.GetRobocopyParameters(), ProcessScanLine, out Error);
-      if (_Abort) {
-        Finish(JobState.Aborted, Translations.Get("Aborted"));
-        return false;
-      }
-      Log.Write(Translations.Get("ExitCode") + ExitCode + ": " + IO.GetRobocopyReadableExitCode(ExitCode));
-      if (Error != "" || (ExitCode & 16) == 16) {
-        Finish(JobState.Failed, Error != "" ? Error : IO.GetRobocopyReadableExitCode(ExitCode));
-        return false;
-      }
-      Interlocked.Exchange(ref _BytesToCopy, _ScanBytes);
-      return true;
+      Step Result = AfterRobocopy(ExitCode, Error);
+      if (Result == Step.Ok) Interlocked.Exchange(ref _BytesToCopy, _ScanBytes);
+      return Result;
     }
 
-    private void Copy(String Source, String Target) {
+    private Step Copy(String Source, String Target) {
       Log.Write(Translations.Get("StartingRobocopy"));
       // The job summary is kept (no /NJS): in the fastest mode (/NFL /NDL) it is the only place robocopy
       // reports how much it copied.
@@ -228,22 +264,170 @@ namespace RoboG {
       String Error;
       int ExitCode = RunRobocopy(Source, Target, Switches, ProcessMirrorLine, out Error);
       EndOfRunErrors();
+      Step Result = AfterRobocopy(ExitCode, Error);
+      if (Result != Step.Ok) return Result;
 
-      if (_Abort) {
-        Finish(JobState.Aborted, Translations.Get("Aborted"));
-        return;
-      }
-      Log.Write(Translations.Get("ExitCode") + ExitCode + ": " + IO.GetRobocopyReadableExitCode(ExitCode));
-      if (Error != "" || (ExitCode & 16) == 16) {
-        Finish(JobState.Failed, Error != "" ? Error : IO.GetRobocopyReadableExitCode(ExitCode));
-        return;
-      }
       if ((ExitCode & 8) == 8 || ErrorCount > 0) {
         Finish(JobState.Done, ErrorCount.ToString("N0") + " error(s)");
-        return;
+        return Step.Stop;
       }
       Finish(JobState.Done, "");
+      return Step.Stop;
     }
+
+    // Decides what follows a robocopy run: carry on, stop (aborted or failed), or wait for a lost connection.
+    private Step AfterRobocopy(int ExitCode, String Error) {
+      if (_Abort) {
+        Finish(JobState.Aborted, Translations.Get("Aborted"));
+        return Step.Stop;
+      }
+      if (_ConnectionLost) {
+        Log.Write("Stopped robocopy: " + _LostPath + " is not reachable.");
+        DiscardHeldErrors();
+        return Step.Reconnect;
+      }
+      Log.Write(Translations.Get("ExitCode") + ExitCode + ": " + IO.GetRobocopyReadableExitCode(ExitCode));
+      if (ExitCode < 0 || (ExitCode & 16) == 16 || Error != "") {
+        // A fatal error is often robocopy failing to reach the source or target at all.
+        String Down = UnreachablePath();
+        if (Down != null) {
+          _LostPath = Down;
+          DiscardHeldErrors();
+          return Step.Reconnect;
+        }
+        String Message = Error != "" ? Error : _LastErrorText != "" ? _LastErrorText : IO.GetRobocopyReadableExitCode(ExitCode);
+        Finish(JobState.Failed, Message);
+        return Step.Stop;
+      }
+      FlushHeldErrors();
+      return Step.Ok;
+    }
+
+    #region Connection loss
+
+    // Returns once the source and target are reachable (true), or when the job was stopped or the connection
+    // did not come back in time (false, job finished).
+    private bool WaitForConnection() {
+      String Down = UnreachablePath();
+      if (Down == null) {
+        _ConnectionLost = false;
+        return true;
+      }
+      JobState Before = _State;
+      _LostPath = Down;
+      _State = JobState.Reconnecting;
+      _Message = "Lost connection to " + Down + ". Checking every " + ReconnectCheckSeconds + " seconds.";
+      Log.Write(_Message);
+      RunLog.Write("Job " + Number + " (" + Name + "): lost connection to " + Down + ", waiting for it to come back");
+      DiscardHeldErrors();
+
+      Stopwatch Waited = Stopwatch.StartNew();
+      while (!_Abort) {
+        for (int i = 0; i < ReconnectCheckSeconds * 4 && !_Abort; i++) Thread.Sleep(250);
+        if (_Abort) break;
+        Down = UnreachablePath();
+        if (Down == null) {
+          _ConnectionLost = false;
+          _Message = "";
+          _State = Before == JobState.Waiting ? JobState.Copying : Before;
+          Log.Write("Connection is back after " + frmMain.PrintTimeSpan(Waited.Elapsed.TotalSeconds) + "; resuming.");
+          RunLog.Write("Job " + Number + " (" + Name + "): connection is back, resuming");
+          return true;
+        }
+        _LostPath = Down;
+        if (Waited.Elapsed.TotalMinutes >= ReconnectTimeoutMinutes) {
+          Finish(JobState.Failed, "Lost connection to " + Down + ", and it did not come back within " + ReconnectTimeoutMinutes + " minutes.");
+          return false;
+        }
+      }
+      Finish(JobState.Aborted, Translations.Get("Aborted"));
+      return false;
+    }
+
+    // The source or target root that does not answer, or null if both are reachable.
+    private String UnreachablePath() {
+      String Source = ShareRoot(this.Source.Mount);
+      if (Source != null && !Reachable(Source)) return Source;
+      String Target = ShareRoot(this.Source.TargetPath);
+      if (Target != null && !Reachable(Target)) return Target;
+      return null;
+    }
+
+    // "Z:\Data\Folder" -> "Z:\", "\\server\share\Folder" -> "\\server\share\". The folder itself may not
+    // exist yet (robocopy creates the target), so only the drive or share is checked.
+    private static String ShareRoot(String Path) {
+      if (String.IsNullOrEmpty(Path)) return null;
+      if (Path.StartsWith(@"\\")) {
+        int Server = Path.IndexOf('\\', 2);
+        if (Server < 0) return null;
+        int Share = Path.IndexOf('\\', Server + 1);
+        return (Share < 0 ? Path : Path.Substring(0, Share)) + "\\";
+      }
+      if (Path.Length >= 2 && Path[1] == ':') return Path.Substring(0, 2) + "\\";
+      return null;
+    }
+
+    // Directory.Exists on a share that has gone away can block for a long time; it gets a time limit.
+    private static bool Reachable(String Path) {
+      try {
+        Task<bool> Check = Task.Run(() => System.IO.Directory.Exists(Path));
+        return Check.Wait(TimeSpan.FromSeconds(ProbeTimeoutSeconds)) && Check.Result;
+      } catch {
+        return false;
+      }
+    }
+
+    // Called on a network error: checks the connection in the background (one check at a time) and stops
+    // robocopy if the source or target is gone, instead of letting it fail and retry every remaining file.
+    private void CheckConnection() {
+      if (_ConnectionLost || Interlocked.CompareExchange(ref _ProbeRunning, 1, 0) != 0) return;
+      ThreadPool.QueueUserWorkItem(State => {
+        try {
+          String Down = UnreachablePath();
+          if (Down == null) {
+            FlushHeldErrors(); // The share is fine; these were real errors with those files.
+            return;
+          }
+          _LostPath = Down;
+          _ConnectionLost = true;
+          Process Cmd = _Cmd;
+          try {
+            if (Cmd != null && !Cmd.HasExited) Cmd.Kill();
+          } catch {}
+        } finally {
+          Volatile.Write(ref _ProbeRunning, 0);
+        }
+      });
+    }
+
+    private void FlushHeldErrors() {
+      lock (_HeldErrors) {
+        foreach (RoboCopyError Error in _HeldErrors) CountError(Error);
+        _HeldErrors.Clear();
+      }
+    }
+
+    private void DiscardHeldErrors() {
+      lock (_HeldErrors) {
+        if (_HeldErrors.Count > 0) Log.Write(_HeldErrors.Count.ToString("N0") + " file error(s) during the outage are not counted; those files are tried again.");
+        _HeldErrors.Clear();
+      }
+    }
+
+    private static int ErrorCode(String Line) {
+      int At = Line.IndexOf(" ERROR ", StringComparison.Ordinal);
+      if (At < 0) return 0;
+      int Start = At + 7, End = Start;
+      while (End < Line.Length && Char.IsDigit(Line[End])) End++;
+      int Code;
+      return End > Start && int.TryParse(Line.Substring(Start, End - Start), out Code) ? Code : 0;
+    }
+
+    private static bool IsNetworkError(String Line) {
+      return Array.IndexOf(_NetworkErrors, ErrorCode(Line)) >= 0;
+    }
+
+    #endregion
 
     #region Parsing robocopy output
 
@@ -271,6 +455,10 @@ namespace RoboG {
 
     private void ProcessScanLine(String Line) {
       Log.Write(Line);
+      if (Char.IsLetterOrDigit(Line[0])) {
+        NoteErrorLine(Line);
+        return;
+      }
       String Label;
       long Copied, Extras;
       if (!ParseSummaryLine(Line, out Label, out Copied, out Extras)) return;
@@ -343,7 +531,22 @@ namespace RoboG {
     // up with "ERROR: RETRY LIMIT EXCEEDED.". Only the give-up counts as a failure; an attempt that is retried and
     // then succeeds is not an error. With /MT, lines from other files arrive in between, so the error's file is
     // taken from the error line itself and open errors are tracked per file.
+    // Keeps robocopy's latest error and its explanation, e.g. "ERROR 53 (0x00000035) Accessing Destination
+    // Directory Z:\\Data\\ The network path was not found.", to report if robocopy then gives up on the job.
+    private void NoteErrorLine(String Line) {
+      int ErrorAt = Line.IndexOf(" ERROR ", StringComparison.Ordinal);
+      if (ErrorAt >= 0 && ErrorAt <= 25) {
+        _LastErrorText = Line.Substring(ErrorAt + 1).Trim();
+        _LastErrorHasMessage = false;
+        if (IsNetworkError(Line)) CheckConnection();
+      } else if (!_LastErrorHasMessage && _LastErrorText != "" && !Line.StartsWith("Waiting ", StringComparison.Ordinal) && !Line.StartsWith("ERROR: RETRY", StringComparison.Ordinal)) {
+        _LastErrorText += " " + Line.Trim();
+        _LastErrorHasMessage = true;
+      }
+    }
+
     private void AddErrorText(String Line) {
+      NoteErrorLine(Line);
       if (Line.StartsWith("ERROR: RETRY LIMIT EXCEEDED", StringComparison.Ordinal)) {
         if (_LastError != null) {
           _LastError.Text.Add(Line);
@@ -391,6 +594,19 @@ namespace RoboG {
     }
 
     private void FinalizeError(RoboCopyError Error) {
+      if (IsNetworkError(Error.Text[0])) {
+        // Counted once the connection check says the share is fine; dropped if the connection was lost.
+        lock (_HeldErrors) {
+          if (_HeldErrors.Count < IO.MaxStoredErrors) {
+            _HeldErrors.Add(Error);
+            return;
+          }
+        }
+      }
+      CountError(Error);
+    }
+
+    private void CountError(RoboCopyError Error) {
       Interlocked.Increment(ref _ErrorCount);
       IO.AddError(Error);
     }

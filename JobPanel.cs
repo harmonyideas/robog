@@ -150,6 +150,7 @@ namespace RoboG {
         case JobState.Waiting: return "Waiting";
         case JobState.Scanning: return "Looking for changes";
         case JobState.Copying: return "Copying";
+        case JobState.Reconnecting: return "Waiting for connection";
         case JobState.NoChanges: return "No changes";
         case JobState.Failed: return "Failed";
         case JobState.Aborted: return "Stopped";
@@ -176,6 +177,7 @@ namespace RoboG {
           int P = Percent(Run);
           Suffix = P >= 0 ? P + "%" : "copying";
           break;
+        case JobState.Reconnecting: Suffix = "reconnecting"; break;
         case JobState.NoChanges: Suffix = "no changes"; break;
         case JobState.Failed: Suffix = "failed"; break;
         case JobState.Aborted: Suffix = "stopped"; break;
@@ -194,7 +196,7 @@ namespace RoboG {
       String Status = StateText(Run);
       if (Run.Message != "" && (State == JobState.Failed || State == JobState.Aborted)) Status += ": " + Run.Message;
       SetText(lblState, Status);
-      lblState.ForeColor = State == JobState.Failed ? Color.Firebrick : Theme.Text;
+      lblState.ForeColor = State == JobState.Failed ? Color.Firebrick : State == JobState.Reconnecting ? Color.DarkOrange : Theme.Text;
 
       // Progress bar: real progress when the scan found the total, animated while the amount is unknown.
       ProgressBarStyle Style = ProgressBarStyle.Blocks;
@@ -208,6 +210,7 @@ namespace RoboG {
       String Progress = "";
       if (State == JobState.Waiting) Progress = "Starts when a running job finishes.";
       else if (State == JobState.Scanning) Progress = "Finding the files that need copying...";
+      else if (State == JobState.Reconnecting) Progress = Run.Message + " Resumes where it stopped.";
       else if (Copying && !Settings.LogFiles) Progress = "Live progress is off (fastest mode). Totals appear when the job is done.";
       else if (ToCopy > 0) Progress = HelperFunctions.SizeSuffix(Copied) + " of " + HelperFunctions.SizeSuffix(ToCopy) + " copied (" + Math.Min(100, Copied * 100 / ToCopy) + "%)";
       else if (Copied > 0) Progress = HelperFunctions.SizeSuffix(Copied) + " copied";
