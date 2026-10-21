@@ -387,7 +387,7 @@ namespace RoboG
 				long Copied = 0, Total = 0, Files = 0;
 				bool TotalKnown = Settings.Scan && Settings.LogFiles;
 				double Rate = 0;
-				int Running = 0, Finished = 0, Waiting = 0;
+				int Running = 0, Finished = 0, Waiting = 0, Reconnecting = 0;
 				for (int i = 0; i < _Panels.Count; i++)
 				{
 					JobPanel Panel = _Panels[i];
@@ -405,7 +405,9 @@ namespace RoboG
 					}
 					else
 					{
-						if (Run.IsRunning) Running++; else Waiting++;
+						if (Run.State == JobState.Reconnecting) Reconnecting++;
+						else if (Run.IsRunning) Running++;
+						else Waiting++;
 						long ToCopy = Run.BytesToCopy;
 						if (ToCopy < 0) TotalKnown = false; else Total += Math.Max(ToCopy, JobCopied);
 					}
@@ -432,6 +434,7 @@ namespace RoboG
 				{
 					List<String> Parts = new List<String>();
 					if (Running > 0) Parts.Add(Running + " running");
+					if (Reconnecting > 0) Parts.Add(Reconnecting + " waiting for connection");
 					if (Waiting > 0) Parts.Add(Waiting + " waiting");
 					if (Finished > 0) Parts.Add(Finished + " finished");
 					Progress = "Jobs: " + String.Join(", ", Parts.ToArray());
@@ -490,7 +493,7 @@ namespace RoboG
 			SetText(Item.SubItems[4], ShowCounts ? HelperFunctions.SizeSuffix(Run.CopiedBytes) : "");
 			SetText(Item.SubItems[5], Panel.TransferRate > 0 ? HelperFunctions.SizeSuffix((long)Panel.TransferRate) + "/s" : "");
 			SetText(Item.SubItems[6], Run.ErrorCount > 0 ? Run.ErrorCount.ToString("N0") : "");
-			Color Fore = State == JobState.Failed ? Color.Firebrick : State == JobState.Waiting ? Theme.TextMuted : Theme.Text;
+			Color Fore = State == JobState.Failed ? Color.Firebrick : State == JobState.Reconnecting ? Color.DarkOrange : State == JobState.Waiting ? Theme.TextMuted : Theme.Text;
 			if (Item.ForeColor != Fore) Item.ForeColor = Fore;
 		}
 

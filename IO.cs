@@ -219,6 +219,8 @@ namespace RoboG {
       StringBuilder ConsoleText = new StringBuilder();
       DataReceivedEventHandler Collect = (Sender, Args) => {
         if (Args.Data == null) return;
+        // robocopy announces its log file on the console; that is not an error.
+        if (Args.Data.TrimStart().StartsWith("Log File :", StringComparison.OrdinalIgnoreCase) || Args.Data.Trim().Length == 0) return;
         lock (ConsoleText) {
           if (ConsoleText.Length < 8192) ConsoleText.AppendLine(Args.Data);
         }
