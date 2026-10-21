@@ -34,7 +34,7 @@
 		<NoLanguage>Please select a language</NoLanguage>
 		<!--frmMain-->
 		<lblStatusCaption>Status:</lblStatusCaption>
-		<lblDirectoryCaption>Source Dir:</lblDirectoryCaption>
+		<lblDirectoryCaption>Source:</lblDirectoryCaption>
 		<lblFileCaption>File:</lblFileCaption>
 		<lblSizeCaption>Size:</lblSizeCaption>
 		<bnDetails>Show details</bnDetails>

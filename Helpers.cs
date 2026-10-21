@@ -27,7 +27,9 @@ namespace RoboG {
     public delegate void ClosingEventHandler(object Sender, EventArgs e);
 
     public delegate void ShowFormEventHandler(object Sender, BackupForm Form);
+#pragma warning disable 0067 // Subscribed to by App; kept for forms that open other forms.
     public virtual event ShowFormEventHandler ShowForm;
+#pragma warning restore 0067
 
     private delegate void NoParameterDelegate();
 

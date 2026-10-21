@@ -125,7 +125,7 @@ namespace RoboG
 				if (!Save()) return;
 				if (dgvSources.Rows.Count == 0) return;
 
-				if (!GlobalData.Admin && Alphaleonis.Win32.Vss.OperatingSystemInfo.OSVersionName > Alphaleonis.Win32.Vss.OSVersionName.WindowsServer2003 && !Processes.Elevated() && Settings.NeedsAdmin())
+				if (!GlobalData.Admin && Environment.OSVersion.Version.Major >= 6 && !Processes.Elevated() && Settings.NeedsAdmin())
 				{
 					Processes.RestartAsAdmin();
 				}
