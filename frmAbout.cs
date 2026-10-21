@@ -41,8 +41,23 @@ namespace RoboG
 			{
 				this.Text = Translations.Get("frmAbout");
 				this.LabelProductName.Text = AssemblyProduct + " v" + AssemblyVersion;
-				this.LabelCopyright.Text = Translations.Get("Author") + "Michael Thornton";
-				this.LabelCompanyName.Text = AssemblyCompany;
+				// "Author:" followed by the HarmonyIdeas logo (the wordmark, with the lightbulb as the "i").
+				this.LabelCopyright.Text = Translations.Get("Author").TrimEnd();
+				this.LabelCompanyName.Visible = false;
+				using (System.IO.Stream Logo = Assembly.GetExecutingAssembly().GetManifestResourceStream("RoboG.HarmonyIdeas.png"))
+				{
+					if (Logo != null) this.picCompany.Image = new System.Drawing.Bitmap(Logo);
+				}
+				if (this.picCompany.Image == null)
+				{
+					this.LabelCopyright.Text += " " + AssemblyCompany; // Logo missing from the build; fall back to the name.
+					this.picCompany.Visible = false;
+				}
+				else
+				{
+					this.picCompany.Left = this.LabelCopyright.Left + this.LabelCopyright.PreferredWidth + 4;
+					this.picCompany.Top = this.LabelCopyright.Top + (this.LabelCopyright.PreferredHeight - this.picCompany.Height) / 2;
+				}
 				this.TextBoxDescription.Text = "\nThis program is free software: you can redistribute it and/or modify " +
 					"it under the terms of the GNU General Public License as published by " +
 					"the Free Software Foundation, either version 3 of the License, or " +

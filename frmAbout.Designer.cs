@@ -54,6 +54,7 @@ namespace RoboG
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.TextBoxDescription = new System.Windows.Forms.Label();
 			this.LogoPictureBox = new System.Windows.Forms.PictureBox();
+			this.picCompany = new System.Windows.Forms.PictureBox();
 			this.LabelProductName = new System.Windows.Forms.Label();
 			this.LabelCompanyName = new System.Windows.Forms.Label();
 			this.LabelCopyright = new System.Windows.Forms.Label();
@@ -63,6 +64,7 @@ namespace RoboG
 			this.lblIconsBy = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.picCompany)).BeginInit();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -95,6 +97,16 @@ namespace RoboG
 			this.LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.LogoPictureBox.TabIndex = 3;
 			this.LogoPictureBox.TabStop = false;
+			// 
+			// picCompany
+			// 
+			this.picCompany.AccessibleName = "HarmonyIdeas";
+			this.picCompany.Location = new System.Drawing.Point(190, 50);
+			this.picCompany.Name = "picCompany";
+			this.picCompany.Size = new System.Drawing.Size(203, 25);
+			this.picCompany.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.picCompany.TabIndex = 9;
+			this.picCompany.TabStop = false;
 			// 
 			// LabelProductName
 			// 
@@ -191,6 +203,7 @@ namespace RoboG
 			this.Controls.Add(this.LabelCopyright);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.LogoPictureBox);
+			this.Controls.Add(this.picCompany);
 			this.Controls.Add(this.LabelCompanyName);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
@@ -204,6 +217,7 @@ namespace RoboG
 			this.Text = "About";
 			this.groupBox1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.picCompany)).EndInit();
 			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -215,6 +229,7 @@ namespace RoboG
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label TextBoxDescription;
         private System.Windows.Forms.PictureBox LogoPictureBox;
+        private System.Windows.Forms.PictureBox picCompany;
         private System.Windows.Forms.Label LabelProductName;
         private System.Windows.Forms.Label LabelCompanyName;
         private System.Windows.Forms.Label LabelCopyright;

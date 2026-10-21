@@ -198,6 +198,9 @@
     <None Include="Resources\Duplicate.png" />
     <None Include="Resources\button_red_cancel.png" />
     <Content Include="Resources\Up.png" />
+    <EmbeddedResource Include="Resources\HarmonyIdeas.png">
+      <LogicalName>RoboG.HarmonyIdeas.png</LogicalName>
+    </EmbeddedResource>
     <Content Include="RoboG.ico" />
     <Content Include="Translations.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

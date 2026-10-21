@@ -31,9 +31,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("RoboG")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("HarmonyIdeas")]
 [assembly: AssemblyProduct("RoboG")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Copyright © HarmonyIdeas")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
