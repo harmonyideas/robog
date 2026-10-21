@@ -36,6 +36,7 @@ namespace RoboG
 			_RoboCopyErrors = IO.RoboCopyErrors;
 
 			InitializeComponent();
+			Theme.Apply(this);
 			SetText();
 		}
 

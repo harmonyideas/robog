@@ -57,6 +57,7 @@ namespace RoboG
 		{
 			SetGlobalData();
 			InitializeComponent();
+			Theme.Apply(this);
 			HelperFunctions.CheckLanguage();
 			SetText();
 			_RefreshTimer.Interval = RefreshIntervalMs;

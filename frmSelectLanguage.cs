@@ -37,6 +37,7 @@ namespace RoboG
 		public frmSelectLanguage()
 		{
 			InitializeComponent();
+			Theme.Apply(this);
 			_CurrentLanguageTag = System.Globalization.CultureInfo.CurrentUICulture.Name;
 			if (!Translations.Languages.ContainsValue(_CurrentLanguageTag)) _CurrentLanguageTag = "en-US";
 			SetText();

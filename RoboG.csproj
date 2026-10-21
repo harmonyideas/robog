@@ -95,6 +95,7 @@
     <Compile Include="frmSelectDate.Designer.cs">
       <DependentUpon>frmSelectDate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Theme.cs" />
     <Compile Include="Textbox.cs">
       <SubType>Component</SubType>
     </Compile>

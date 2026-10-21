@@ -144,10 +144,10 @@ namespace RoboG
 			// 
 			// bnDeleteExcludedFolder
 			// 
-			this.bnDeleteExcludedFolder.Image = global::RoboG.Properties.Resources.button_delete_blue;
-			this.bnDeleteExcludedFolder.Location = new System.Drawing.Point(47, 172);
+			this.bnDeleteExcludedFolder.Location = new System.Drawing.Point(88, 174);
 			this.bnDeleteExcludedFolder.Name = "bnDeleteExcludedFolder";
-			this.bnDeleteExcludedFolder.Size = new System.Drawing.Size(35, 32);
+			this.bnDeleteExcludedFolder.Text = "Remove";
+			this.bnDeleteExcludedFolder.Size = new System.Drawing.Size(76, 28);
 			this.bnDeleteExcludedFolder.TabIndex = 2;
 			this.toolTip.SetToolTip(this.bnDeleteExcludedFolder, "Remove excluded folder");
 			this.bnDeleteExcludedFolder.UseVisualStyleBackColor = true;
@@ -155,10 +155,10 @@ namespace RoboG
 			// 
 			// bnExcludeFolder
 			// 
-			this.bnExcludeFolder.Image = global::RoboG.Properties.Resources.button_plus_blue;
-			this.bnExcludeFolder.Location = new System.Drawing.Point(6, 172);
+			this.bnExcludeFolder.Location = new System.Drawing.Point(6, 174);
 			this.bnExcludeFolder.Name = "bnExcludeFolder";
-			this.bnExcludeFolder.Size = new System.Drawing.Size(35, 32);
+			this.bnExcludeFolder.Text = "+  Add";
+			this.bnExcludeFolder.Size = new System.Drawing.Size(76, 28);
 			this.bnExcludeFolder.TabIndex = 1;
 			this.toolTip.SetToolTip(this.bnExcludeFolder, "Add folder to exclude");
 			this.bnExcludeFolder.UseVisualStyleBackColor = true;
@@ -166,10 +166,10 @@ namespace RoboG
 			// 
 			// bnDeleteExcludedFile
 			// 
-			this.bnDeleteExcludedFile.Image = global::RoboG.Properties.Resources.button_delete_blue;
-			this.bnDeleteExcludedFile.Location = new System.Drawing.Point(47, 172);
+			this.bnDeleteExcludedFile.Location = new System.Drawing.Point(88, 174);
 			this.bnDeleteExcludedFile.Name = "bnDeleteExcludedFile";
-			this.bnDeleteExcludedFile.Size = new System.Drawing.Size(35, 32);
+			this.bnDeleteExcludedFile.Text = "Remove";
+			this.bnDeleteExcludedFile.Size = new System.Drawing.Size(76, 28);
 			this.bnDeleteExcludedFile.TabIndex = 2;
 			this.toolTip.SetToolTip(this.bnDeleteExcludedFile, "Remove excluded file");
 			this.bnDeleteExcludedFile.UseVisualStyleBackColor = true;
@@ -177,10 +177,10 @@ namespace RoboG
 			// 
 			// bnExcluceFile
 			// 
-			this.bnExcluceFile.Image = global::RoboG.Properties.Resources.button_plus_blue;
-			this.bnExcluceFile.Location = new System.Drawing.Point(6, 172);
+			this.bnExcluceFile.Location = new System.Drawing.Point(6, 174);
 			this.bnExcluceFile.Name = "bnExcluceFile";
-			this.bnExcluceFile.Size = new System.Drawing.Size(35, 32);
+			this.bnExcluceFile.Text = "+  Add";
+			this.bnExcluceFile.Size = new System.Drawing.Size(76, 28);
 			this.bnExcluceFile.TabIndex = 1;
 			this.toolTip.SetToolTip(this.bnExcluceFile, "Add file to exlude");
 			this.bnExcluceFile.UseVisualStyleBackColor = true;
@@ -949,8 +949,10 @@ namespace RoboG
 			// chkMIR
 			// 
 			this.chkMIR.Location = new System.Drawing.Point(8, 104);
+			this.chkMIR.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.chkMIR.TextAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.chkMIR.Name = "chkMIR";
-			this.chkMIR.Size = new System.Drawing.Size(195, 54);
+			this.chkMIR.Size = new System.Drawing.Size(222, 36);
 			this.chkMIR.TabIndex = 4;
 			this.chkMIR.Text = "Use \"mirror mode\" (destination files will be deleted if they do not exist in the " +
 				"source";
@@ -970,7 +972,7 @@ namespace RoboG
 			// lblBInfo2
 			// 
 			this.lblBInfo2.AutoSize = true;
-			this.lblBInfo2.Location = new System.Drawing.Point(300, 121);
+			this.lblBInfo2.Location = new System.Drawing.Point(255, 121);
 			this.lblBInfo2.Name = "lblBInfo2";
 			this.lblBInfo2.Size = new System.Drawing.Size(52, 13);
 			this.lblBInfo2.TabIndex = 12;

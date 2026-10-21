@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace RoboG
 {
-    public partial class frmSettings : BackupForm
+    partial class frmSettings : BackupForm
     {
         /// <summary>
         /// Required designer variable.
@@ -52,24 +52,23 @@ namespace RoboG
         private void InitializeComponent()
         {
         this.components = new System.ComponentModel.Container();
-        System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-        System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-        System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-        System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-        System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
         this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-        this.btnSettingsCancel = new System.Windows.Forms.Button();
-        this.bnBackup = new System.Windows.Forms.Button();
+        this.lblTitle = new System.Windows.Forms.Label();
+        this.lblSubtitle = new System.Windows.Forms.Label();
+        this.bnAddSource = new System.Windows.Forms.Button();
+        this.bnEdit = new System.Windows.Forms.Button();
+        this.bnDuplicate = new System.Windows.Forms.Button();
         this.bnDeleteSource = new System.Windows.Forms.Button();
         this.bnUp = new System.Windows.Forms.Button();
         this.bnDown = new System.Windows.Forms.Button();
-        this.bnAddSource = new System.Windows.Forms.Button();
-        this.bnEdit = new System.Windows.Forms.Button();
-        this.panel1 = new System.Windows.Forms.Panel();
-        this.gbBackupSources = new System.Windows.Forms.GroupBox();
         this.dgvSources = new System.Windows.Forms.DataGridView();
-        this.bnDuplicate = new System.Windows.Forms.Button();
+        this.lblEmpty = new System.Windows.Forms.Label();
+        this.panel1 = new System.Windows.Forms.Panel();
+        this.pnlBarLine = new System.Windows.Forms.Panel();
+        this.lblJobCount = new System.Windows.Forms.Label();
+        this.btnSettingsCancel = new System.Windows.Forms.Button();
+        this.bnBackup = new System.Windows.Forms.Button();
         this.menuStrip1 = new System.Windows.Forms.MenuStrip();
         this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
         this.newProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,189 +80,176 @@ namespace RoboG
         this.generateScriptFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
         this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
         this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-        this.panel1.SuspendLayout();
-        this.gbBackupSources.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.dgvSources)).BeginInit();
+        this.panel1.SuspendLayout();
         this.menuStrip1.SuspendLayout();
         this.SuspendLayout();
         // 
-        // btnSettingsCancel
+        // lblTitle
         // 
-        this.btnSettingsCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-        this.btnSettingsCancel.BackColor = System.Drawing.SystemColors.ButtonFace;
-        this.btnSettingsCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.btnSettingsCancel.Image = global::RoboG.Properties.Resources.button_red_cancel;
-        this.btnSettingsCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.btnSettingsCancel.Location = new System.Drawing.Point(615, 5);
-        this.btnSettingsCancel.Name = "btnSettingsCancel";
-        this.btnSettingsCancel.Size = new System.Drawing.Size(116, 55);
-        this.btnSettingsCancel.TabIndex = 6;
-        this.btnSettingsCancel.Text = "CLOSE";
-        this.btnSettingsCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-        this.toolTip.SetToolTip(this.btnSettingsCancel, "Start backup");
-        this.btnSettingsCancel.UseVisualStyleBackColor = false;
-        this.btnSettingsCancel.Click += new System.EventHandler(this.btnSettingsCancel_Click);
+        this.lblTitle.AutoSize = true;
+        this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.lblTitle.Location = new System.Drawing.Point(16, 40);
+        this.lblTitle.Name = "lblTitle";
+        this.lblTitle.Size = new System.Drawing.Size(84, 25);
+        this.lblTitle.TabIndex = 0;
+        this.lblTitle.Text = "Sync jobs";
         // 
-        // bnBackup
+        // lblSubtitle
         // 
-        this.bnBackup.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-        this.bnBackup.BackColor = System.Drawing.SystemColors.ButtonFace;
-        this.bnBackup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.bnBackup.Image = global::RoboG.Properties.Resources.button_blue_play;
-        this.bnBackup.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.bnBackup.Location = new System.Drawing.Point(111, 5);
-        this.bnBackup.Name = "bnBackup";
-        this.bnBackup.Size = new System.Drawing.Size(116, 55);
-        this.bnBackup.TabIndex = 4;
-        this.bnBackup.Text = "START";
-        this.bnBackup.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-        this.toolTip.SetToolTip(this.bnBackup, "Start backup");
-        this.bnBackup.UseVisualStyleBackColor = false;
-        this.bnBackup.Click += new System.EventHandler(this.bnBackup_Click);
-        // 
-        // bnDeleteSource
-        // 
-        this.bnDeleteSource.Image = global::RoboG.Properties.Resources.button_delete_blue;
-        this.bnDeleteSource.Location = new System.Drawing.Point(394, 399);
-        this.bnDeleteSource.Name = "bnDeleteSource";
-        this.bnDeleteSource.Size = new System.Drawing.Size(35, 32);
-        this.bnDeleteSource.TabIndex = 3;
-        this.toolTip.SetToolTip(this.bnDeleteSource, "Delete backup source");
-        this.bnDeleteSource.UseVisualStyleBackColor = true;
-        this.bnDeleteSource.Click += new System.EventHandler(this.bnDeleteSource_Click);
-        // 
-        // bnUp
-        // 
-        this.bnUp.Image = global::RoboG.Properties.Resources.Up;
-        this.bnUp.Location = new System.Drawing.Point(435, 399);
-        this.bnUp.Name = "bnUp";
-        this.bnUp.Size = new System.Drawing.Size(35, 32);
-        this.bnUp.TabIndex = 4;
-        this.toolTip.SetToolTip(this.bnUp, "Move backup source up");
-        this.bnUp.UseVisualStyleBackColor = true;
-        this.bnUp.Click += new System.EventHandler(this.bnUp_Click);
-        // 
-        // bnDown
-        // 
-        this.bnDown.Image = global::RoboG.Properties.Resources.Down;
-        this.bnDown.Location = new System.Drawing.Point(476, 399);
-        this.bnDown.Name = "bnDown";
-        this.bnDown.Size = new System.Drawing.Size(35, 32);
-        this.bnDown.TabIndex = 5;
-        this.toolTip.SetToolTip(this.bnDown, "Move backup source down");
-        this.bnDown.UseVisualStyleBackColor = true;
-        this.bnDown.Click += new System.EventHandler(this.bnDown_Click);
+        this.lblSubtitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+        this.lblSubtitle.AutoEllipsis = true;
+        this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+        this.lblSubtitle.Location = new System.Drawing.Point(18, 68);
+        this.lblSubtitle.Name = "lblSubtitle";
+        this.lblSubtitle.Size = new System.Drawing.Size(820, 18);
+        this.lblSubtitle.TabIndex = 1;
+        this.lblSubtitle.Text = "Each job copies a source folder to a target folder with robocopy. Double-click a job to edit it.";
         // 
         // bnAddSource
         // 
-        this.bnAddSource.Image = global::RoboG.Properties.Resources.button_plus_blue;
-        this.bnAddSource.Location = new System.Drawing.Point(312, 399);
+        this.bnAddSource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+        this.bnAddSource.Location = new System.Drawing.Point(20, 100);
         this.bnAddSource.Name = "bnAddSource";
-        this.bnAddSource.Size = new System.Drawing.Size(35, 32);
-        this.bnAddSource.TabIndex = 1;
-        this.toolTip.SetToolTip(this.bnAddSource, "Add backup source");
-        this.bnAddSource.UseVisualStyleBackColor = true;
+        this.bnAddSource.Size = new System.Drawing.Size(104, 30);
+        this.bnAddSource.TabIndex = 2;
+        this.bnAddSource.Text = "+  Add job";
         this.bnAddSource.Click += new System.EventHandler(this.bnAddSource_Click);
         // 
         // bnEdit
         // 
-        this.bnEdit.Image = global::RoboG.Properties.Resources.Edit;
-        this.bnEdit.Location = new System.Drawing.Point(353, 399);
+        this.bnEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+        this.bnEdit.Location = new System.Drawing.Point(130, 100);
         this.bnEdit.Name = "bnEdit";
-        this.bnEdit.Size = new System.Drawing.Size(35, 32);
-        this.bnEdit.TabIndex = 2;
-        this.toolTip.SetToolTip(this.bnEdit, "Edit backup source");
-        this.bnEdit.UseVisualStyleBackColor = true;
+        this.bnEdit.Size = new System.Drawing.Size(72, 30);
+        this.bnEdit.TabIndex = 3;
+        this.bnEdit.Text = "Edit";
         this.bnEdit.Click += new System.EventHandler(this.bnEdit_Click);
         // 
-        // panel1
+        // bnDuplicate
         // 
-        this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-        this.panel1.Controls.Add(this.btnSettingsCancel);
-        this.panel1.Controls.Add(this.bnBackup);
-        this.panel1.Location = new System.Drawing.Point(-1, 530);
-        this.panel1.Name = "panel1";
-        this.panel1.Size = new System.Drawing.Size(860, 65);
-        this.panel1.TabIndex = 9;
+        this.bnDuplicate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+        this.bnDuplicate.Location = new System.Drawing.Point(208, 100);
+        this.bnDuplicate.Name = "bnDuplicate";
+        this.bnDuplicate.Size = new System.Drawing.Size(88, 30);
+        this.bnDuplicate.TabIndex = 4;
+        this.bnDuplicate.Text = "Duplicate";
+        this.bnDuplicate.Click += new System.EventHandler(this.bnDuplicate_Click);
         // 
-        // gbBackupSources
+        // bnDeleteSource
         // 
-        this.gbBackupSources.Controls.Add(this.bnDeleteSource);
-        this.gbBackupSources.Controls.Add(this.dgvSources);
-        this.gbBackupSources.Controls.Add(this.bnDuplicate);
-        this.gbBackupSources.Controls.Add(this.bnUp);
-        this.gbBackupSources.Controls.Add(this.bnDown);
-        this.gbBackupSources.Controls.Add(this.bnAddSource);
-        this.gbBackupSources.Controls.Add(this.bnEdit);
-        this.gbBackupSources.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.gbBackupSources.Location = new System.Drawing.Point(1, 65);
-        this.gbBackupSources.Name = "gbBackupSources";
-        this.gbBackupSources.Size = new System.Drawing.Size(853, 433);
-        this.gbBackupSources.TabIndex = 2;
-        this.gbBackupSources.TabStop = false;
-        this.gbBackupSources.Text = "Backup sources";
+        this.bnDeleteSource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+        this.bnDeleteSource.Location = new System.Drawing.Point(302, 100);
+        this.bnDeleteSource.Name = "bnDeleteSource";
+        this.bnDeleteSource.Size = new System.Drawing.Size(80, 30);
+        this.bnDeleteSource.TabIndex = 5;
+        this.bnDeleteSource.Text = "Remove";
+        this.bnDeleteSource.Click += new System.EventHandler(this.bnDeleteSource_Click);
+        // 
+        // bnUp
+        // 
+        this.bnUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+        this.bnUp.Location = new System.Drawing.Point(388, 100);
+        this.bnUp.Name = "bnUp";
+        this.bnUp.Size = new System.Drawing.Size(84, 30);
+        this.bnUp.TabIndex = 6;
+        this.bnUp.Text = "Move up";
+        this.bnUp.Click += new System.EventHandler(this.bnUp_Click);
+        // 
+        // bnDown
+        // 
+        this.bnDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+        this.bnDown.Location = new System.Drawing.Point(478, 100);
+        this.bnDown.Name = "bnDown";
+        this.bnDown.Size = new System.Drawing.Size(94, 30);
+        this.bnDown.TabIndex = 7;
+        this.bnDown.Text = "Move down";
+        this.bnDown.Click += new System.EventHandler(this.bnDown_Click);
         // 
         // dgvSources
         // 
         this.dgvSources.AllowUserToAddRows = false;
         this.dgvSources.AllowUserToDeleteRows = false;
         this.dgvSources.AllowUserToOrderColumns = true;
-        dataGridViewCellStyle1.BackColor = System.Drawing.Color.Gainsboro;
-        dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.LightSlateGray;
-        this.dgvSources.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+        this.dgvSources.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
         this.dgvSources.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-        this.dgvSources.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-        this.dgvSources.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.RaisedVertical;
-        dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-        dataGridViewCellStyle2.BackColor = System.Drawing.Color.Gainsboro;
-        dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-        dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.LightSlateGray;
-        dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-        dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-        this.dgvSources.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-        this.dgvSources.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-        dataGridViewCellStyle3.BackColor = System.Drawing.Color.Transparent;
-        dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-        dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.SlateGray;
-        dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-        dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-        this.dgvSources.DefaultCellStyle = dataGridViewCellStyle3;
-        this.dgvSources.Location = new System.Drawing.Point(7, 22);
+        this.dgvSources.Location = new System.Drawing.Point(20, 142);
+        this.dgvSources.MultiSelect = false;
         this.dgvSources.Name = "dgvSources";
         this.dgvSources.ReadOnly = true;
-        dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-        dataGridViewCellStyle4.BackColor = System.Drawing.Color.WhiteSmoke;
-        dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-        dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.LightSlateGray;
-        dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-        dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-        this.dgvSources.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
-        this.dgvSources.RowHeadersVisible = false;
-        dataGridViewCellStyle5.BackColor = System.Drawing.Color.WhiteSmoke;
-        dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.LightSlateGray;
-        this.dgvSources.RowsDefaultCellStyle = dataGridViewCellStyle5;
         this.dgvSources.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-        this.dgvSources.Size = new System.Drawing.Size(836, 361);
-        this.dgvSources.TabIndex = 1;
-        this.dgvSources.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSources_CellDoubleClick);
+        this.dgvSources.Size = new System.Drawing.Size(820, 330);
+        this.dgvSources.TabIndex = 8;
+        this.dgvSources.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSources_CellDoubleClick);
         // 
-        // bnDuplicate
+        // lblEmpty
         // 
-        this.bnDuplicate.Image = global::RoboG.Properties.Resources.Duplicate;
-        this.bnDuplicate.Location = new System.Drawing.Point(517, 399);
-        this.bnDuplicate.Name = "bnDuplicate";
-        this.bnDuplicate.Size = new System.Drawing.Size(35, 32);
-        this.bnDuplicate.TabIndex = 6;
-        this.bnDuplicate.UseVisualStyleBackColor = true;
-        this.bnDuplicate.Click += new System.EventHandler(this.bnDuplicate_Click);
+        this.lblEmpty.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+        this.lblEmpty.BackColor = System.Drawing.Color.White;
+        this.lblEmpty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+        this.lblEmpty.Location = new System.Drawing.Point(21, 177);
+        this.lblEmpty.Name = "lblEmpty";
+        this.lblEmpty.Size = new System.Drawing.Size(818, 294);
+        this.lblEmpty.TabIndex = 9;
+        this.lblEmpty.Text = "No sync jobs yet.\r\nClick \"Add job\" to choose a source and target folder.";
+        this.lblEmpty.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+        this.lblEmpty.Visible = false;
+        // 
+        // panel1
+        // 
+        this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(247)))), ((int)(((byte)(248)))));
+        this.panel1.Controls.Add(this.pnlBarLine);
+        this.panel1.Controls.Add(this.lblJobCount);
+        this.panel1.Controls.Add(this.btnSettingsCancel);
+        this.panel1.Controls.Add(this.bnBackup);
+        this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+        this.panel1.Location = new System.Drawing.Point(0, 492);
+        this.panel1.Name = "panel1";
+        this.panel1.Size = new System.Drawing.Size(860, 64);
+        this.panel1.TabIndex = 10;
+        // 
+        // pnlBarLine
+        // 
+        this.pnlBarLine.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(218)))), ((int)(((byte)(218)))), ((int)(((byte)(222)))));
+        this.pnlBarLine.Dock = System.Windows.Forms.DockStyle.Top;
+        this.pnlBarLine.Location = new System.Drawing.Point(0, 0);
+        this.pnlBarLine.Name = "pnlBarLine";
+        this.pnlBarLine.Size = new System.Drawing.Size(860, 1);
+        this.pnlBarLine.TabIndex = 0;
+        // 
+        // lblJobCount
+        // 
+        this.lblJobCount.AutoSize = true;
+        this.lblJobCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(100)))));
+        this.lblJobCount.Location = new System.Drawing.Point(18, 24);
+        this.lblJobCount.Name = "lblJobCount";
+        this.lblJobCount.Size = new System.Drawing.Size(40, 15);
+        this.lblJobCount.TabIndex = 1;
+        this.lblJobCount.Text = "0 jobs";
+        // 
+        // btnSettingsCancel
+        // 
+        this.btnSettingsCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+        this.btnSettingsCancel.Location = new System.Drawing.Point(604, 16);
+        this.btnSettingsCancel.Name = "btnSettingsCancel";
+        this.btnSettingsCancel.Size = new System.Drawing.Size(100, 32);
+        this.btnSettingsCancel.TabIndex = 11;
+        this.btnSettingsCancel.Text = "Close";
+        this.btnSettingsCancel.Click += new System.EventHandler(this.btnSettingsCancel_Click);
+        // 
+        // bnBackup
+        // 
+        this.bnBackup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+        this.bnBackup.Location = new System.Drawing.Point(712, 16);
+        this.bnBackup.Name = "bnBackup";
+        this.bnBackup.Size = new System.Drawing.Size(128, 32);
+        this.bnBackup.TabIndex = 12;
+        this.bnBackup.Tag = "primary";
+        this.bnBackup.Text = "Start sync";
+        this.bnBackup.Click += new System.EventHandler(this.bnBackup_Click);
         // 
         // menuStrip1
         // 
-        this.menuStrip1.BackColor = System.Drawing.Color.LightGray;
         this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
@@ -281,7 +267,6 @@ namespace RoboG
             this.loadProfileToolStripMenuItem,
             this.saveProfileToolStripMenuItem,
             this.exitToolStripMenuItem});
-        this.fileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
         this.fileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
         this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
@@ -323,7 +308,6 @@ namespace RoboG
         this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.profileOptionsToolStripMenuItem,
             this.generateScriptFileToolStripMenuItem});
-        this.editToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.editToolStripMenuItem.Name = "editToolStripMenuItem";
         this.editToolStripMenuItem.Size = new System.Drawing.Size(47, 24);
         this.editToolStripMenuItem.Text = "Edit";
@@ -348,7 +332,6 @@ namespace RoboG
         // 
         this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
-        this.helpToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
         this.helpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.H)));
         this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
@@ -364,25 +347,34 @@ namespace RoboG
         // 
         // frmSettings
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(862, 608);
+        this.BackColor = System.Drawing.Color.White;
+        this.ClientSize = new System.Drawing.Size(860, 556);
+        this.Controls.Add(this.lblEmpty);
+        this.Controls.Add(this.dgvSources);
+        this.Controls.Add(this.bnDown);
+        this.Controls.Add(this.bnUp);
+        this.Controls.Add(this.bnDeleteSource);
+        this.Controls.Add(this.bnDuplicate);
+        this.Controls.Add(this.bnEdit);
+        this.Controls.Add(this.bnAddSource);
+        this.Controls.Add(this.lblSubtitle);
+        this.Controls.Add(this.lblTitle);
         this.Controls.Add(this.panel1);
-        this.Controls.Add(this.gbBackupSources);
         this.Controls.Add(this.menuStrip1);
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MainMenuStrip = this.menuStrip1;
-        this.MaximizeBox = false;
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.MinimumSize = new System.Drawing.Size(720, 420);
         this.Name = "frmSettings";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "RoboG";
         this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmSettings_FormClosing);
         this.Load += new System.EventHandler(this.frmSettings_Load);
-        this.panel1.ResumeLayout(false);
-        this.gbBackupSources.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.dgvSources)).EndInit();
+        this.panel1.ResumeLayout(false);
+        this.panel1.PerformLayout();
         this.menuStrip1.ResumeLayout(false);
         this.menuStrip1.PerformLayout();
         this.ResumeLayout(false);
@@ -393,7 +385,11 @@ namespace RoboG
         #endregion
 
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.GroupBox gbBackupSources;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblSubtitle;
+        private System.Windows.Forms.Label lblEmpty;
+        private System.Windows.Forms.Label lblJobCount;
+        private System.Windows.Forms.Panel pnlBarLine;
         private System.Windows.Forms.Button bnDeleteSource;
         private System.Windows.Forms.Button bnAddSource;
         private System.Windows.Forms.Button bnDown;
@@ -414,6 +410,6 @@ namespace RoboG
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem profileOptionsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem generateScriptFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generateScriptFileToolStripMenuItem;
     }
 }

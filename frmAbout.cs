@@ -31,6 +31,7 @@ namespace RoboG
 		public frmAbout()
 		{
 			InitializeComponent();
+			Theme.Apply(this);
 			SetText();
 		}
 
