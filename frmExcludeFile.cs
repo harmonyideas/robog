@@ -53,6 +53,7 @@ namespace RoboG
 				this.Text = Translations.Get("frmExcludeFile");
 				lblFileToExcludeCaption.Text = Translations.Get("lblFileToExcludeCaption");
 				lblWildcards.Text = Translations.Get("lblWildcards");
+				Translations.Set(bnOK, "OK");
 				lblExample.Text = Translations.Get("lblExample");
 				bnCancel.Text = Translations.Get("Cancel");
 			}

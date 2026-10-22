@@ -34,10 +34,10 @@ namespace RoboG
 			InitializeComponent();
 			Theme.Apply(this);
 			ToolTip ThreadsTip = new ToolTip();
-			ThreadsTip.SetToolTip(numThreads, "Number of files copied at once (robocopy /MT) for the whole sync. Jobs running at the same time share them:\r\n16 threads give 1 job 16, 2 jobs 8 each, 4 jobs 4 each.\r\n16 suits most targets; a fast SSD or server can take more, a single NAS with hard disks often does best with 8 to 16.\r\nSet to 1 to copy EFS-encrypted files in raw mode (/EFSRAW cannot be combined with /MT).");
+			ThreadsTip.SetToolTip(numThreads, String.Join("\r\n", new String[] { Translations.Get("ThreadsToolTip1"), Translations.Get("ThreadsToolTip2"), Translations.Get("ThreadsToolTip3"), Translations.Get("ThreadsToolTip4") }));
 			ThreadsTip.SetToolTip(lblThreadsHint, ThreadsTip.GetToolTip(numThreads));
 			ThreadsTip.SetToolTip(lblThreads, ThreadsTip.GetToolTip(numThreads));
-			ThreadsTip.SetToolTip(numParallelJobs, "Number of jobs that sync at the same time, each with its own robocopy and its own tab in the progress window. Others wait and start as soon as one finishes. The copy threads are shared between the jobs running at the same time.\r\n2 to 4 suits jobs on different disks or servers. Use 1 when the jobs share one hard disk, so they run one after the other.");
+			ThreadsTip.SetToolTip(numParallelJobs, Translations.Get("ParallelJobsToolTip1") + "\r\n" + Translations.Get("ParallelJobsToolTip2"));
 			ThreadsTip.SetToolTip(lblParallelJobs, ThreadsTip.GetToolTip(numParallelJobs));
 			SetText();
 			AlignControls();
@@ -59,6 +59,15 @@ namespace RoboG
 				chkAutoExit.Text = Translations.Get("chkAutoExit");
 				chkAutoExit2.Text = Translations.Get("chkAutoExit2");
 				chkSilentMode.Text = Translations.Get("chkSilentMode");
+				Translations.Set(chkScan, "chkScan");
+				Translations.Set(chkLogFiles, "chkLogFiles");
+				Translations.Set(lblThreads, "lblThreads");
+				Translations.Set(lblParallelJobs, "lblParallelJobs");
+				Translations.Set(bnOK, "OK");
+				Translations.Set(bnCancel, "Cancel");
+				// A longer translated label pushes both number boxes right, keeping them aligned.
+				int NumberLeft = Math.Max(numThreads.Left, Math.Max(lblThreads.Right, lblParallelJobs.Right) + 6);
+				numThreads.Left = numParallelJobs.Left = NumberLeft;
 
 				gbProgramBeforeBackup.Text = Translations.Get("gbProgramBeforeBackup");
 				lblProgram1.Text = Translations.Get("lblProgram");

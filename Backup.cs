@@ -118,8 +118,8 @@ namespace RoboG {
     private static bool CheckTarget(String Target) {
       if (Target == null) return false;
       if (Target.Length >= 2 && Target[1] == ':' && !System.IO.Directory.Exists(Target.Substring(0, 2) + "\\")) {
-        HelperFunctions.ShowError("Drive " + Target.Substring(0, 2) + " is not available to RoboG, so " + Target + " cannot be used as a target." +
-          (Processes.Elevated() ? "\n\nRoboG is running as administrator, and Windows keeps mapped network drives separate for administrator programs. Use the network path (\\\\server\\share) instead of the drive letter." : ""));
+        HelperFunctions.ShowError(Translations.Format("DriveNotAvailable", Target.Substring(0, 2), Target) +
+          (Processes.Elevated() ? "\n\n" + Translations.Get("DriveNotAvailableAdmin") : ""));
         return false;
       }
       if (!System.IO.Directory.Exists(Target)) {
@@ -129,7 +129,7 @@ namespace RoboG {
           System.IO.Directory.CreateDirectory(Target);
           HelperFunctions.WriteLog("Created missing target folder " + Target);
         } catch (Exception ex) {
-          HelperFunctions.ShowError("Could not create the target folder " + Target + ":\n\n" + ex.Message);
+          HelperFunctions.ShowError(Translations.Format("CreateTargetFailed", Target) + "\n\n" + ex.Message);
           return false;
         }
       }

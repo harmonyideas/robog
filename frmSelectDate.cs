@@ -89,6 +89,7 @@ namespace RoboG
 				this.Text = Translations.Get("frmSelectDate");
 				rdbNotSet.Text = Translations.Get("rdbNotSet");
 				lblDays.Text = Translations.Get("lblDays");
+				Translations.Set(bnOK, "OK");
 				rdbDate.Text = Translations.Get("rdbDate");
 				bnCancel.Text = Translations.Get("Cancel");
 			}

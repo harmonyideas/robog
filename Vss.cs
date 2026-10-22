@@ -176,28 +176,28 @@ namespace RoboG {
       String Text;
       switch (Code) {
       case E_ACCESSDENIED:
-        Text = "Access denied. Shadow copies require RoboG to run as administrator.";
+        Text = Translations.Get("VssAccessDenied");
         break;
       case VSS_E_VOLUME_NOT_SUPPORTED:
       case VSS_E_VOLUME_NOT_SUPPORTED_BY_PROVIDER:
-        Text = "This volume does not support shadow copies. Only local NTFS or ReFS volumes can be snapshotted.";
+        Text = Translations.Get("VssNotSupported");
         break;
       case VSS_E_INSUFFICIENT_STORAGE:
-        Text = "Not enough free space for the shadow copy. Free up space or increase shadow storage (vssadmin resize shadowstorage).";
+        Text = Translations.Get("VssNoSpace");
         break;
       case VSS_E_MAXIMUM_NUMBER_OF_SNAPSHOTS_REACHED:
-        Text = "The volume already has the maximum number of shadow copies. Delete old ones (vssadmin delete shadows) and try again.";
+        Text = Translations.Get("VssMaxShadows");
         break;
       case VSS_E_SNAPSHOT_SET_IN_PROGRESS:
-        Text = "Another program is creating a shadow copy right now. Try again in a few minutes.";
+        Text = Translations.Get("VssBusy");
         break;
       case VSS_E_FLUSH_WRITES_TIMEOUT:
       case VSS_E_HOLD_WRITES_TIMEOUT:
-        Text = "Windows could not pause disk writes long enough to take the snapshot (the disk is very busy). Try again when it is quieter.";
+        Text = Translations.Get("VssFlushTimeout");
         break;
       case VSS_E_PROVIDER_VETO:
       case VSS_E_UNEXPECTED_PROVIDER_ERROR:
-        Text = "The shadow copy provider refused or failed. Check the Windows Application event log (source VSS or volsnap) for details.";
+        Text = Translations.Get("VssProviderError");
         break;
       default:
         Text = ex.Message;

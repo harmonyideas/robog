@@ -67,12 +67,12 @@ namespace RoboG
 			{
 				if (Environment.OSVersion.Version.Major < 6)
 				{
-					HelperFunctions.ShowError("Shadow copies require Windows Vista or later.");
+					HelperFunctions.ShowError(Translations.Get("VssNeedsVista"));
 					return false;
 				}
 				if (!Service.IsServiceUsable("VSS"))
 				{
-					HelperFunctions.ShowError("The Volume Shadow Copy service (VSS) is disabled. Set it to Manual in services.msc to use shadow copies.");
+					HelperFunctions.ShowError(Translations.Get("VssServiceDisabled"));
 					return false;
 				}
 

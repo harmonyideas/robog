@@ -64,6 +64,8 @@ namespace RoboG
 			{
 				this.Text = Translations.Get(_CurrentLanguageTag, "SelectLanguage");
 				lblLanguage.Text = Translations.Get(_CurrentLanguageTag, "Language");
+				String OK = Translations.Get(_CurrentLanguageTag, "OK");
+				if (OK != "") bnOK.Text = OK;
 			}
 			catch (Exception ex)
 			{

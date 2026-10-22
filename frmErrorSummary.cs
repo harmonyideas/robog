@@ -52,6 +52,7 @@ namespace RoboG
 				this.Text = Translations.Get("frmErrorSummary");
 				lblErrorsCaption.Text = Translations.Get("lblErrorsCaption");
 				lblErrorMessageCaption.Text = Translations.Get("lblErrorMessageCaption");
+				Translations.Set(bnClose, "Close");
 			}
 			catch (Exception ex)
 			{
@@ -80,7 +81,7 @@ namespace RoboG
 				if (Total > _RoboCopyErrors.Count)
 				{
 					// Only the first errors are kept in memory; the full list is in the error log.
-					this.Text += " (" + _RoboCopyErrors.Count.ToString("N0") + " of " + Total.ToString("N0") + ", see " + IO.ErrorLogPath + ")";
+					this.Text += Translations.Format("ErrorsShownOf", _RoboCopyErrors.Count.ToString("N0"), Total.ToString("N0"), IO.ErrorLogPath);
 				}
 			}
 			catch (Exception ex)

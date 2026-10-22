@@ -67,15 +67,15 @@ namespace RoboG {
       lblProgress.ForeColor = Theme.TextMuted;
       lblProgress.AutoEllipsis = true;
 
-      lblFiles = Tile("Files", 0);
-      lblSpeed = Tile("Speed", 1);
-      lblFileRate = Tile("Files/s", 2);
-      lblElapsed = Tile("Elapsed", 3);
-      lblRemaining = Tile("Time left", 4);
-      lblErrors = Tile("Errors", 5);
+      lblFiles = Tile(Translations.Get("TileFiles"), 0);
+      lblSpeed = Tile(Translations.Get("TileSpeed"), 1);
+      lblFileRate = Tile(Translations.Get("TileFileRate"), 2);
+      lblElapsed = Tile(Translations.Get("TileElapsed"), 3);
+      lblRemaining = Tile(Translations.Get("TileRemaining"), 4);
+      lblErrors = Tile(Translations.Get("TileErrors"), 5);
 
       Caption(Translations.Get("lblDirectoryCaption"), 136);
-      Caption("Target:", 156);
+      Caption(Translations.Get("lblTargetCaption"), 156);
       Caption(Translations.Get("lblFileCaption"), 176);
       Place(lblSource, 80, 136, 668, 18, TLR);
       Place(lblTarget, 80, 156, 668, 18, TLR);
@@ -165,14 +165,14 @@ namespace RoboG {
 
     public static String StateText(JobRun Run) {
       switch (Run.State) {
-        case JobState.Waiting: return "Waiting";
-        case JobState.Scanning: return "Looking for changes";
-        case JobState.Copying: return "Copying";
-        case JobState.Reconnecting: return "Waiting for connection";
-        case JobState.NoChanges: return "No changes";
-        case JobState.Failed: return "Failed";
-        case JobState.Aborted: return "Stopped";
-        default: return Run.ErrorCount > 0 ? "Done, " + Run.ErrorCount.ToString("N0") + " error(s)" : "Done";
+        case JobState.Waiting: return Translations.Get("StateWaiting");
+        case JobState.Scanning: return Translations.Get("StateScanning");
+        case JobState.Copying: return Translations.Get("StateCopying");
+        case JobState.Reconnecting: return Translations.Get("StateReconnecting");
+        case JobState.NoChanges: return Translations.Get("StateNoChanges");
+        case JobState.Failed: return Translations.Get("StateFailed");
+        case JobState.Aborted: return Translations.Get("StateStopped");
+        default: return Run.ErrorCount > 0 ? Translations.Format("StateDoneErrors", Run.ErrorCount.ToString("N0")) : Translations.Get("StateDone");
       }
     }
 
@@ -189,17 +189,17 @@ namespace RoboG {
       if (Name.Length > 28) Name = Name.Substring(0, 26) + "…";
       String Suffix;
       switch (Run.State) {
-        case JobState.Waiting: Suffix = "waiting"; break;
-        case JobState.Scanning: Suffix = "scanning"; break;
+        case JobState.Waiting: Suffix = Translations.Get("TabWaiting"); break;
+        case JobState.Scanning: Suffix = Translations.Get("TabScanning"); break;
         case JobState.Copying:
           int P = Percent(Run);
-          Suffix = P >= 0 ? P + "%" : "copying";
+          Suffix = P >= 0 ? P + "%" : Translations.Get("TabCopying");
           break;
-        case JobState.Reconnecting: Suffix = "reconnecting"; break;
-        case JobState.NoChanges: Suffix = "no changes"; break;
-        case JobState.Failed: Suffix = "failed"; break;
-        case JobState.Aborted: Suffix = "stopped"; break;
-        default: Suffix = Run.ErrorCount > 0 ? "done, errors" : "done"; break;
+        case JobState.Reconnecting: Suffix = Translations.Get("TabReconnecting"); break;
+        case JobState.NoChanges: Suffix = Translations.Get("TabNoChanges"); break;
+        case JobState.Failed: Suffix = Translations.Get("TabFailed"); break;
+        case JobState.Aborted: Suffix = Translations.Get("TabStopped"); break;
+        default: Suffix = Run.ErrorCount > 0 ? Translations.Get("TabDoneErrors") : Translations.Get("TabDone"); break;
       }
       return Name + " · " + Suffix;
     }
@@ -226,12 +226,12 @@ namespace RoboG {
       if (Style == ProgressBarStyle.Blocks && Bar.Value != Value) Bar.Value = Value;
 
       String Progress = "";
-      if (State == JobState.Waiting) Progress = "Starts when a running job finishes.";
-      else if (State == JobState.Scanning) Progress = "Finding the files that need copying...";
-      else if (State == JobState.Reconnecting) Progress = Run.Message + " Resumes where it stopped.";
-      else if (Copying && !Settings.LogFiles) Progress = "Live progress is off (fastest mode). Totals appear when the job is done.";
-      else if (ToCopy > 0) Progress = HelperFunctions.SizeSuffix(Copied) + " of " + HelperFunctions.SizeSuffix(ToCopy) + " copied (" + Math.Min(100, Copied * 100 / ToCopy) + "%)";
-      else if (Copied > 0) Progress = HelperFunctions.SizeSuffix(Copied) + " copied";
+      if (State == JobState.Waiting) Progress = Translations.Get("ProgressWaiting");
+      else if (State == JobState.Scanning) Progress = Translations.Get("ProgressScanning");
+      else if (State == JobState.Reconnecting) Progress = Run.Message + " " + Translations.Get("ProgressResumes");
+      else if (Copying && !Settings.LogFiles) Progress = Translations.Get("LiveProgressOff") + " " + Translations.Get("TotalsAtEnd");
+      else if (ToCopy > 0) Progress = Translations.Format("CopiedOf", HelperFunctions.SizeSuffix(Copied), HelperFunctions.SizeSuffix(ToCopy), Math.Min(100, Copied * 100 / ToCopy));
+      else if (Copied > 0) Progress = Translations.Format("CopiedSoFar", HelperFunctions.SizeSuffix(Copied));
       SetText(lblProgress, Progress);
 
       bool ShowCounts = Settings.LogFiles || Run.IsFinished;

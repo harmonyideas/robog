@@ -4,8 +4,6 @@
 		<!--Multiple files-->
 		<Cancel>Cancel</Cancel>
 		<Close>Close</Close>
-		<WrongFileSystem1>You have to format drive "</WrongFileSystem1>
-		<WrongFileSystem2>" with the NTFS file system to use it as a backup drive.</WrongFileSystem2>
 		<DirectoryNotWriteable1>The directory </DirectoryNotWriteable1>
 		<DirectoryNotWriteable2> is not writeable.</DirectoryNotWriteable2>
 		<Error>Error:</Error>
@@ -24,70 +22,39 @@
 		<lblWildcards>Allowed wildcards: * ?</lblWildcards>
 		<lblExample>Examples: *.txt  *.xls  tmp*  tmp??  unwanted  C:\Unwanted\unwanted.txt</lblExample>
 		<!--frmInitializeDrive-->
-		<frmInitializeDrive>Initialize Backup Drive</frmInitializeDrive>
-		<lblDrive>Select drive to initialize:</lblDrive>
-		<NoDrive>Please select a drive</NoDrive>
-		<DriveInformationError>Could not read drive information. Is the device ready?</DriveInformationError>
 		<!--frmSelectLanguage-->
 		<SelectLanguage>Select Language</SelectLanguage>
 		<Language>Language:</Language>
 		<NoLanguage>Please select a language</NoLanguage>
 		<!--frmMain-->
-		<lblStatusCaption>Status:</lblStatusCaption>
 		<lblDirectoryCaption>Source:</lblDirectoryCaption>
 		<lblFileCaption>File:</lblFileCaption>
 		<lblSizeCaption>Size:</lblSizeCaption>
-		<bnDetails>Show details</bnDetails>
-		<bnDetails2>Hide details</bnDetails2>
 		<bnErrors>Show errors</bnErrors>
 		<StartingProgram>Starting program/script: </StartingProgram>
 		<StartingVSS>Starting Volume Shadow Copy services</StartingVSS>
 		<DeletingSnapshots>Deleting snapshots</DeletingSnapshots>
-		<StoppingVSS>Stopping Volume Shadow Copy services</StoppingVSS>
 		<CompletedWithErrors>Backup completed with errors</CompletedWithErrors>
 		<Done>Done</Done>
 		<CreatingSnapshots>Creating snapshots</CreatingSnapshots>
 		<AbortQuestion>Do you really want to abort the backup?</AbortQuestion>
-		<DeleteSourceDirectory>Are you sure you want to delete selected source directory?</DeleteSourceDirectory>
+		<DeleteSourceDirectory>Remove the selected job? Its files are not deleted.</DeleteSourceDirectory>
 		<CreateNewProfile>Do you want to delete current profile settings and create a new one?</CreateNewProfile>
 		<Aborting>Aborting</Aborting>
 		<NoRobocopy>Robocopy is not installed. Please download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx in order to use RoboG.</NoRobocopy>
 		<RobocopyTooOld>Your version of Robocopy is too old (version " + RobocopyVersion + "). Please download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy version XP026) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx in order to use RoboG.</RobocopyTooOld>
 		<NoSources>No backup sources defined. Please check the settings file.</NoSources>
-		<LookingForDrive>Looking for backup drive</LookingForDrive>
-		<NoBackupDrive>Could not find backup drive. Do you want to initialize a backup drive now?</NoBackupDrive>
-		<DriveNotInitialized>Drive could not be initialized: </DriveNotInitialized>
 		<!--Backup.cs-->
 		<DirectoryNoAttributes1>The directory </DirectoryNoAttributes1>
 		<DirectoryNoAttributes2> doesn't support file attributes. If this directory is on a linux file share, please make sure, it is possible to set Dos file attributes. For more information visit: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
-		<HardLinksNotSupported>The file system on the backup drive does not support hard links. Please make sure the backup hard disk is formatted with the NTFS file system. If the backup location is a network share, make sure it supports hard links.</HardLinksNotSupported>
 		<LookingForChanges>Looking for changes...</LookingForChanges>
 		<NoChanges>No changes.</NoChanges>
-		<SpaceNeeded>Space needed: </SpaceNeeded>
-		<NotEnoughSpace1>Not enough space</NotEnoughSpace1>
-		<NotEnoughSpace2>You need </NotEnoughSpace2>
-		<NotEnoughSpace3> more space on your backup drive.</NotEnoughSpace3>
-		<NotEnoughSpace4> Should I delete the oldest backups to free space?</NotEnoughSpace4>
-		<MovingOldBackups>Moving old backups...</MovingOldBackups>
-		<CreatingHardLinks>Creating hard links to previously backed up files...</CreatingHardLinks>
 		<BackingUp>Backing up </BackingUp>
-		<BackingUpSource>Backing up directory </BackingUpSource>
-		<WarningMIR>Job(s) detected in this profile with Mirror Mode selected. Files WILL be deleted on Target Directorie(s) not found in source. Continue?</WarningMIR>
-		<CantAbort>Can't abort while creating hard links. Please wait.</CantAbort>
-		<WrongDirFormat1>The name of directory "</WrongDirFormat1>
-		<WrongDirFormat2>" has not the correct name format and could not be renamed. Please move or delete the directory manually.</WrongDirFormat2>
+		<WarningMIR>One or more jobs in this profile use mirror mode. Mirror mode DELETES files in the target that are not in the source. Continue?</WarningMIR>
 		<!--File.cs-->
 		<DeletingFile>Deleting file </DeletingFile>
 		<!--frmSettings-->
-		<rbnLocalDrive>Backup to external hard disk</rbnLocalDrive>
-		<rbnLocalDriveToolTip>You can select which drive to use when you start the backup.</rbnLocalDriveToolTip>
-		<lblSubfolder>Subfolder:</lblSubfolder>
-		<SubfolderToolTip>The folder where the backups are stored on the backup drive. Can be empty</SubfolderToolTip>
-		<rbnNetworkShare>Backup to network share</rbnNetworkShare>
-		<rbnNetworkShareToolTip>This can be a Windows or Samba file share.</rbnNetworkShareToolTip>
-		<txtNetworkShareToolTip>Path to Windows or Samba file share</txtNetworkShareToolTip>
 		<bnAboutToolTip>About</bnAboutToolTip>
-		<gbBackupSources>Current list of Robocopy jobs for this profile</gbBackupSources>
 		<lblSyncJobs>Sync jobs</lblSyncJobs>
 		<bnAddSourceToolTip>Add directory</bnAddSourceToolTip>
 		<bnEditSourceToolTip>Edit directory</bnEditSourceToolTip>
@@ -96,15 +63,9 @@
 		<bnSourceDownToolTip>Move item down</bnSourceDownToolTip>
 		<bnDuplicateToolTip>Duplicate selected item</bnDuplicateToolTip>
 		<bnBackupToolTip>Start backup</bnBackupToolTip>
-		<bnAdvancedSettings>Advanced settings</bnAdvancedSettings>
 		<ExitAnyway>Do you want to exit anyway?</ExitAnyway>
 		<Copy>- copy</Copy>
 		<!--frmAdvancedSettings-->
-		<chkIncrementalBackup>Create incremental backups</chkIncrementalBackup>
-		<chkIncrementalBackupToolTip>If this option is disabled, files will only be synchronized with the target location</chkIncrementalBackupToolTip>
-		<chkIncrementalBackupWarning>If this option is changed, all old backups will be deleted. Do you want to continue?</chkIncrementalBackupWarning>
-		<chkDeleteFilesBeforeCopying>Delete files on backup target location before copying (default)</chkDeleteFilesBeforeCopying>
-		<chkDeleteFilesBeforeCopyingToolTip>This is necessary when hard links are used on the target location to create incremental backups</chkDeleteFilesBeforeCopyingToolTip>
 		<AdvancedSettings>Profile options</AdvancedSettings>
 		<lblRetries>Number of retries on failed operations:</lblRetries>
 		<lblWaitBetweenRetries>Wait time between retries:</lblWaitBetweenRetries>
@@ -133,12 +94,12 @@
 		<chkLogOnly>Test run only (/L): list what would change, copy nothing</chkLogOnly>
 		<bnAdvanced>Advanced options...</bnAdvanced>
 		<SelectDirectoryToBackup>Select directory to backup</SelectDirectoryToBackup>
-		<SelectTargetDirectory>Select target directory</SelectTargetDirectory>
+		<SelectTargetDirectory>Select the target folder</SelectTargetDirectory>
 		<ShadowCopiesNotPossible>Shadow copies are not possible for this source folder, so files that are open or locked can't be copied. The source must be on a local drive formatted with NTFS or ReFS (the target can be anywhere, including a network share).</ShadowCopiesNotPossible>
 		<ErrorNoName>You need to enter a name.</ErrorNoName>
 		<ErrorNameInUse>The entered name is already in use.</ErrorNameInUse>
 		<ErrorNoDirectory>You need to enter a directory to backup.</ErrorNoDirectory>
-		<ErrorNoTargetDirectory>You must enter a destination for a target directory</ErrorNoTargetDirectory>
+		<ErrorNoTargetDirectory>Please choose a target folder.</ErrorNoTargetDirectory>
 		<ErrorResetArchive>It is not possible to use the option "backup only files with the archive attribute set and reset it" together with shadow copies, as shadow copies are read only.</ErrorResetArchive>
 		<!--frmNewSourceAdvanced-->
 		<frmNewSourceAdvanced>Advanced job options</frmNewSourceAdvanced>
@@ -202,9 +163,7 @@
 		<CreateDirectoryError2>". Make sure, "</CreateDirectoryError2>
 		<CreateDirectoryError3>" is writeable for RoboG.</CreateDirectoryError3>
 		<DeletingDirectory>Deleting Directory </DeletingDirectory>
-		<DriveTooSmall>There is still not enough space available on the backup drive.</DriveTooSmall>
 		<StartingRobocopy>Starting Robocopy...</StartingRobocopy>
-		<RobocopyError>Error in Robocopy. Please make sure Robocopy (at least version XP026) is installed. If not download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx.</RobocopyError>
 		<Aborted>Aborted</Aborted>
 		<ExitCode>Exitcode </ExitCode>
 		<ExitCode16>Serious error. Robocopy did not copy any files. This is either a usage error or an error due to insufficient access privileges on the source or destination directories. </ExitCode16>
@@ -213,18 +172,7 @@
 		<ExitCode2>Some extra files or directories were detected. </ExitCode2>
 		<ExitCode1>One or more files were copied successfully (that is, new files have arrived). </ExitCode1>
 		<ExitCode-1>Unknown error. See log for more details.</ExitCode-1>
-		<ErrorInRobocopy>Error in Robocopy: </ErrorInRobocopy>
-		<DirMoveError1>Could not move directory "</DirMoveError1>
-		<DirMoveError2>". Please make sure no other program is accessing it. Do you want to try moving it again?</DirMoveError2>
-		<Win32ErrorCode>Win32 error code: </Win32ErrorCode>
-		<HardLinkError>Could not create hard link. </HardLinkError>
-		<HardLinkError2>Could not create hard link to file </HardLinkError2>
-		<DeleteFileError>Could not delete file</DeleteFileError>
-		<DeleteNonTargetFolders>Deleting folders not belonging in backup directory...</DeleteNonTargetFolders>
 		<!--Service.cs-->
-		<StartingVSService>Starting VSS...</StartingVSService>
-		<StoppingVSService>Stopping VSS...</StoppingVSService>
-		<VSSStartError>Could not start Volume Shadow Copy Service. If not done so, please start RoboG as Administrator or disable the use of shadow copies.</VSSStartError>
 		<!--Settings.cs-->
 		<SettingsSaveError>Could not save settings.</SettingsSaveError>
 		<InvalidSource>Invalid source.</InvalidSource>
@@ -232,41 +180,159 @@
 		<LoadError1>Could not load file "</LoadError1>
 		<LoadError2>". Please make sure, the file is readable. Error: </LoadError2>
 		<!--ShadowCopy.cs-->
-		<WrongVersion64>To use shadow copies install the x64 version of the program.</WrongVersion64>
-		<WrongVersion32>To use shadow copies install the x86 version of the program.</WrongVersion32>
-		<LoadingVSSImplementation>Loading VSS implementation...</LoadingVSSImplementation>
 		<ShadowCopyError>Could not create shadow copy.</ShadowCopyError>
-		<VCRedist64>Please make sure, the Microsoft Visual C++ 2010 Redistributable Package (x64) is installed: http://www.microsoft.com/download/en/details.aspx?id=13523</VCRedist64>
-		<VCRedistIA64>Please make sure, the Microsoft Visual C++ 2010 Redistributable Package (IA64) is installed: http://www.microsoft.com/download/en/details.aspx?id=21051</VCRedistIA64>
-		<VCRedist32>Please make sure, the Microsoft Visual C++ 2010 Redistributable Package (x86) is installed: http://www.microsoft.com/download/en/details.aspx?id=8328</VCRedist32>
 		<CreatingBackupComponents>Creating VSS backup components...</CreatingBackupComponents>
 		<InitializingVSSBackup>Initializing VSS backup...</InitializingVSSBackup>
-		<SettingVSSContext>Setting VSS context...</SettingVSSContext>
 		<SettingVSSBackupState>Setting VSS backup state...</SettingVSSBackupState>
 		<GatheringWriterMetadata>Gathering writer metadata...</GatheringWriterMetadata>
 		<CreatingSnapshotSet>Creating snapshot set...</CreatingSnapshotSet>
 		<AddingToSnapshotSet1>Adding "</AddingToSnapshotSet1>
 		<AddingToSnapshotSet2>" to snapshot set...</AddingToSnapshotSet2>
-		<SavingSnapshotSetID>Saving snapshot set id...</SavingSnapshotSetID>
 		<PreparingVSSBackup>Preparing VSS backup...</PreparingVSSBackup>
 		<CreatingVSSSnapshots>Creating snapshots...</CreatingVSSSnapshots>
 		<ExposingSnapshots>Exposing snapshots...</ExposingSnapshots>
-		<ExposingSnapshotsDirError>Could not create directory for exposing snapshots.</ExposingSnapshotsDirError>
 		<SnapshotSuccessful>Snapshot successfully created.</SnapshotSuccessful>
-		<LoadingSnapshotIDs>Loading snapshot set ids of last backup...</LoadingSnapshotIDs>
-		<DeletingOldSnapshots>Deleting old snapshots...</DeletingOldSnapshots>
-		<QueryingSnapshots>Querying snapshots...</QueryingSnapshots>
-		<Unexposing>Unexposing </Unexposing>
-		<DeletingSnapshot>Deleting </DeletingSnapshot>
 		<DeletingSnapshotSet>Deleting snapshot set...</DeletingSnapshotSet>
 		<SnapshotSetDeleted>Snapshot set deleted.</SnapshotSetDeleted>
+		<!--RoboG 1.0: sync jobs window, progress window, parallel jobs, network outages, switches-->
+		<OK>OK</OK>
+		<Browse>Browse...</Browse>
+		<bnAdd>+  Add</bnAdd>
+		<bnRemove>Remove</bnRemove>
+		<Bytes>Bytes</Bytes>
+		<DaysCount>{0} days</DaysCount>
+		<SyncJobsSubtitle>Each job copies a source folder to a target folder with robocopy. Double-click a job to edit it.</SyncJobsSubtitle>
+		<NoJobsYet1>No sync jobs yet.</NoJobsYet1>
+		<NoJobsYet2>Click "Add job" to choose a source and target folder.</NoJobsYet2>
+		<bnAddJob>+  Add job</bnAddJob>
+		<bnEditJob>Edit</bnEditJob>
+		<bnDuplicateJob>Duplicate</bnDuplicateJob>
+		<bnMoveUp>Move up</bnMoveUp>
+		<bnMoveDown>Move down</bnMoveDown>
+		<bnStartSync>Start sync</bnStartSync>
+		<JobCountOne>1 job</JobCountOne>
+		<JobCountMany>{0} jobs</JobCountMany>
+		<ColJobName>Job Name</ColJobName>
+		<ColSourceDirectory>Source Directory</ColSourceDirectory>
+		<ColTargetDirectory>Target Directory</ColTargetDirectory>
+		<ColMirror>Mirror</ColMirror>
+		<ColLogOnly>Log Only</ColLogOnly>
+		<ColDisabled>Disabled</ColDisabled>
+		<FlagColumnToolTip>Click a box to turn this on or off for that job</FlagColumnToolTip>
+		<MenuFile>&amp;File</MenuFile>
+		<MenuNewProfile>&amp;New Profile</MenuNewProfile>
+		<MenuLoadProfile>&amp;Load Profile</MenuLoadProfile>
+		<MenuSaveProfile>&amp;Save Profile</MenuSaveProfile>
+		<MenuExit>&amp;Exit</MenuExit>
+		<MenuEdit>&amp;Edit</MenuEdit>
+		<MenuProfileOptions>&amp;Profile Options</MenuProfileOptions>
+		<MenuGenerateScript>&amp;Generate Script File</MenuGenerateScript>
+		<MenuHelp>&amp;Help</MenuHelp>
+		<MenuAbout>&amp;About RoboG</MenuAbout>
+		<SettingsSaved>Settings were saved successfully.</SettingsSaved>
+		<ScriptFileFilter>Script files (*.script)|*.script|All files (*.*)|*.*</ScriptFileFilter>
+		<XmlFileFilter>XML files (*.xml)|*.xml|All files (*.*)|*.*</XmlFileFilter>
+		<InvalidSettingsFile>Please select a valid XML settings file.</InvalidSettingsFile>
+		<lblTargetDirectory>Target folder</lblTargetDirectory>
+		<chkDisableJob>Disable this job (skip it when the profile runs)</chkDisableJob>
+		<InvalidJobPath>The source or target folder is not a valid path.</InvalidJobPath>
+		<InvalidJobTarget>The target folder must not be a drive root, the source folder itself, a folder inside the source, or a folder that contains the source.</InvalidJobTarget>
+		<chkScan>Scan first to show overall progress (adds a full pass; turn off for very large jobs)</chkScan>
+		<chkLogFiles>Show live progress and list every file in the log (turn off for fastest speed)</chkLogFiles>
+		<lblThreads>Copy threads:</lblThreads>
+		<lblParallelJobs>Parallel jobs:</lblParallelJobs>
+		<ThreadsToolTip1>Number of files copied at once (robocopy /MT) for the whole sync. Jobs running at the same time share them:</ThreadsToolTip1>
+		<ThreadsToolTip2>16 threads give 1 job 16, 2 jobs 8 each, 4 jobs 4 each.</ThreadsToolTip2>
+		<ThreadsToolTip3>16 suits most targets; a fast SSD or server can take more, a single NAS with hard disks often does best with 8 to 16.</ThreadsToolTip3>
+		<ThreadsToolTip4>Set to 1 to copy EFS-encrypted files in raw mode (/EFSRAW cannot be combined with /MT).</ThreadsToolTip4>
+		<ParallelJobsToolTip1>Number of jobs that sync at the same time, each with its own robocopy and its own tab in the progress window. Others wait and start as soon as one finishes. The copy threads are shared between the jobs running at the same time.</ParallelJobsToolTip1>
+		<ParallelJobsToolTip2>2 to 4 suits jobs on different disks or servers. Use 1 when the jobs share one hard disk, so they run one after the other.</ParallelJobsToolTip2>
+		<ProgressStarting>Starting...</ProgressStarting>
+		<TileFiles>Files</TileFiles>
+		<TileSpeed>Speed</TileSpeed>
+		<TileFileRate>Files/s</TileFileRate>
+		<TileElapsed>Elapsed</TileElapsed>
+		<TileRemaining>Time left</TileRemaining>
+		<TileErrors>Errors</TileErrors>
+		<TileJobsDone>Jobs done</TileJobsDone>
+		<bnOpenLogFolder>Open log folder</bnOpenLogFolder>
+		<bnViewCommand>View command...</bnViewCommand>
+		<TabOverview>Overview</TabOverview>
+		<ColJob>Job</ColJob>
+		<ColStatus>Status</ColStatus>
+		<ColProgress>Progress</ColProgress>
+		<ColCopied>Copied</ColCopied>
+		<RunLogCaption>Run log</RunLogCaption>
+		<JobsSummary>Jobs: {0}</JobsSummary>
+		<JobsRunning>{0} running</JobsRunning>
+		<JobsReconnecting>{0} waiting for connection</JobsReconnecting>
+		<JobsWaiting>{0} waiting</JobsWaiting>
+		<JobsFinished>{0} finished</JobsFinished>
+		<JobsAtATime> (up to {0} at a time)</JobsAtATime>
+		<LiveProgressOff>Live progress is off (fastest mode).</LiveProgressOff>
+		<TotalsAtEnd>Totals appear when the job is done.</TotalsAtEnd>
+		<CopiedOf>{0} of {1} copied ({2}%)</CopiedOf>
+		<CopiedSoFar>{0} copied</CopiedSoFar>
+		<StatusLogFile>Log: {0}   (one log per job in the Jobs folder)</StatusLogFile>
+		<AllJobsDisabled>All jobs of this profile are turned off.</AllJobsDisabled>
+		<JobsNotCompleted>These jobs could not be completed:</JobsNotCompleted>
+		<ShadowCopyDiscarded1>Windows discarded the shadow copy during the sync, most likely because shadow storage on the source drive filled up. Files read after that point were not copied.</ShadowCopyDiscarded1>
+		<ShadowCopyDiscarded2>Increase shadow storage (vssadmin resize shadowstorage) or sync while the drive is less busy, then run the job again.</ShadowCopyDiscarded2>
+		<lblTargetCaption>Target:</lblTargetCaption>
+		<StateWaiting>Waiting</StateWaiting>
+		<StateScanning>Looking for changes</StateScanning>
+		<StateCopying>Copying</StateCopying>
+		<StateReconnecting>Waiting for connection</StateReconnecting>
+		<StateNoChanges>No changes</StateNoChanges>
+		<StateFailed>Failed</StateFailed>
+		<StateStopped>Stopped</StateStopped>
+		<StateDone>Done</StateDone>
+		<StateDoneErrors>Done, {0} error(s)</StateDoneErrors>
+		<TabWaiting>waiting</TabWaiting>
+		<TabScanning>scanning</TabScanning>
+		<TabCopying>copying</TabCopying>
+		<TabReconnecting>reconnecting</TabReconnecting>
+		<TabNoChanges>no changes</TabNoChanges>
+		<TabFailed>failed</TabFailed>
+		<TabStopped>stopped</TabStopped>
+		<TabDone>done</TabDone>
+		<TabDoneErrors>done, errors</TabDoneErrors>
+		<ProgressWaiting>Starts when a running job finishes.</ProgressWaiting>
+		<ProgressScanning>Finding the files that need copying...</ProgressScanning>
+		<ProgressResumes>Resumes where it stopped.</ProgressResumes>
+		<NotStarted>Not started</NotStarted>
+		<ErrorCountText>{0} error(s)</ErrorCountText>
+		<ConnectionLost>Lost connection to {0}. Checking every {1} seconds.</ConnectionLost>
+		<ConnectionNotBack>Lost connection to {0}, and it did not come back within {1} minutes.</ConnectionNotBack>
+		<DriveNotAvailable>Drive {0} is not available to RoboG, so {1} cannot be used as a target.</DriveNotAvailable>
+		<DriveNotAvailableAdmin>RoboG is running as administrator, and Windows keeps mapped network drives separate for administrator programs. Use the network path (\\server\share) instead of the drive letter.</DriveNotAvailableAdmin>
+		<CreateTargetFailed>Could not create the target folder {0}:</CreateTargetFailed>
+		<gbShadowCopies>Shadow copies</gbShadowCopies>
+		<VssNeedsVista>Shadow copies require Windows Vista or later.</VssNeedsVista>
+		<VssServiceDisabled>The Volume Shadow Copy service (VSS) is disabled. Set it to Manual in services.msc to use shadow copies.</VssServiceDisabled>
+		<VssAccessDenied>Access denied. Shadow copies require RoboG to run as administrator.</VssAccessDenied>
+		<VssNotSupported>This volume does not support shadow copies. Only local NTFS or ReFS volumes can be snapshotted.</VssNotSupported>
+		<VssNoSpace>Not enough free space for the shadow copy. Free up space or increase shadow storage (vssadmin resize shadowstorage).</VssNoSpace>
+		<VssMaxShadows>The volume already has the maximum number of shadow copies. Delete old ones (vssadmin delete shadows) and try again.</VssMaxShadows>
+		<VssBusy>Another program is creating a shadow copy right now. Try again in a few minutes.</VssBusy>
+		<VssFlushTimeout>Windows could not pause disk writes long enough to take the snapshot (the disk is very busy). Try again when it is quieter.</VssFlushTimeout>
+		<VssProviderError>The shadow copy provider refused or failed. Check the Windows Application event log (source VSS or volsnap) for details.</VssProviderError>
+		<ErrorsShownOf> ({0} of {1}, see {2})</ErrorsShownOf>
+		<SwitchesTitle>robocopy switches - {0}</SwitchesTitle>
+		<SwitchesCaption>What each part does</SwitchesCaption>
+		<SwitchesColSwitch>Switch</SwitchesColSwitch>
+		<SwitchesColMeaning>What it does</SwitchesColMeaning>
+		<bnCopyCommand>Copy command</bnCopyCommand>
+		<SwitchesProgram>The robocopy program.</SwitchesProgram>
+		<SwitchesSource>Source folder.</SwitchesSource>
+		<SwitchesTarget>Target folder.</SwitchesTarget>
+		<SwitchesFiles>File name or pattern to copy (default *.*).</SwitchesFiles>
+		<SwitchesUnknown>No description available. See "robocopy /?".</SwitchesUnknown>
 	</en-US>
 	<de-DE name="Deutsch">
 		<!--Multiple files-->
 		<Cancel>Abbrechen</Cancel>
 		<Close>Schließen</Close>
-		<WrongFileSystem1>Laufwerk "</WrongFileSystem1>
-		<WrongFileSystem2>" muss mit dem NTFS-Dateisystem formatiert werden, um als Sicherungslaufwerk genutzt werden zu können.</WrongFileSystem2>
 		<DirectoryNotWriteable1>Das Verzeichnis </DirectoryNotWriteable1>
 		<DirectoryNotWriteable2> ist schreibgeschützt.</DirectoryNotWriteable2>
 		<Error>Fehler:</Error>
@@ -285,26 +351,18 @@
 		<lblWildcards>Erlaubte Platzhalter: * ?</lblWildcards>
 		<lblExample>Beispiele: *.txt  *.xls  tmp*  tmp??  unerwünscht  C:\Unerwünscht\unerwünscht.txt</lblExample>
 		<!--frmInitializeDrive-->
-		<frmInitializeDrive>Sicherungslaufwerk initialisieren</frmInitializeDrive>
-		<lblDrive>Zu initialisierendes Laufwerk:</lblDrive>
-		<NoDrive>Bitte wählen Sie ein Laufwerk aus.</NoDrive>
-		<DriveInformationError>Laufwerksinformationen konnten nicht gelesen werden. Ist das Laufwerk bereit?</DriveInformationError>
 		<!--frmSelectLanguage-->
 		<SelectLanguage>Sprache wählen</SelectLanguage>
 		<Language>Sprache:</Language>
 		<NoLanguage>Bitte wählen Sie eine Sprache</NoLanguage>
 		<!--frmMain-->
-		<lblStatusCaption>Status:</lblStatusCaption>
 		<lblDirectoryCaption>Verzeichnis:</lblDirectoryCaption>
 		<lblFileCaption>Datei:</lblFileCaption>
 		<lblSizeCaption>Größe:</lblSizeCaption>
-		<bnDetails>Details einblenden</bnDetails>
-		<bnDetails2>Details ausblenden</bnDetails2>
 		<bnErrors>Fehler anzeigen</bnErrors>
 		<StartingProgram>Starte Programm/Script: </StartingProgram>
 		<StartingVSS>Starte Volumenschattenkopie-Dienste</StartingVSS>
 		<DeletingSnapshots>Lösche Snapshots</DeletingSnapshots>
-		<StoppingVSS>Stoppe Volumenschattenkopie-Dienste</StoppingVSS>
 		<CompletedWithErrors>Sicherung mit Fehlern abgeschlossen</CompletedWithErrors>
 		<Done>Fertig</Done>
 		<CreatingSnapshots>Erstelle Schnappschüsse</CreatingSnapshots>
@@ -313,39 +371,16 @@
 		<NoRobocopy>Robocopy ist nicht installiert. Bitte downloaden und installieren Sie "Utility Spotlight - Robocopy GUI" (enthält Robocopy) von http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx, um RoboG nutzen zu können.</NoRobocopy>
 		<RobocopyTooOld>Ihre Robocopy-Version ist zu alt (Version " + RobocopyVersion + "). Bitte downloaden und installieren Sie "Utility Spotlight - Robocopy GUI" (enthält Robocopy Version XP026) von http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx, um RoboG nutzen zu können.</RobocopyTooOld>
 		<NoSources>Keine Sicherungs-Quellen definiert. Bitte überprüfen Sie die Einstellungen.</NoSources>
-		<LookingForDrive>Suche Sicherungslaufwerk</LookingForDrive>
-		<NoBackupDrive>Es konnte kein Sicherungslaufwerk gefunden werden. Soll ein neues Sicherungslaufwerk initialisiert werden?</NoBackupDrive>
-		<DriveNotInitialized>Sicherungslaufwerk konnte nicht initialisiert werden: </DriveNotInitialized>
 		<!--Backup.cs-->
 		<DirectoryNoAttributes1>Das Verzeichnis </DirectoryNoAttributes1>
 		<DirectoryNoAttributes2> unterstützt keine Dateiattribute. Fall sich das Verzeichnis auf einem Linux-Server befindet, stellen Sie bitte sicher, dass Dos-Dateiattribute unterstützt werden. Weitere Informationen finden Sie hier: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
-		<HardLinksNotSupported>Das Dateisystem des Sicherungslaufwerks unterstützt keine Hardlinks. Bitte stellen Sie sicher, dass der Sicherungsdatenträger mit dem NTFS-Dateisystem formatiert wurde.</HardLinksNotSupported>
 		<LookingForChanges>Suche nach Änderungen...</LookingForChanges>
 		<NoChanges>Keine Änderungen.</NoChanges>
-		<SpaceNeeded>Benötigter Speicherplatz: </SpaceNeeded>
-		<NotEnoughSpace1>Nicht genügend Speicherplatz</NotEnoughSpace1>
-		<NotEnoughSpace2>Sie benötigen </NotEnoughSpace2>
-		<NotEnoughSpace3> mehr Speicherplatz auf dem Sicherungsdatenträger.</NotEnoughSpace3>
-		<NotEnoughSpace4> Sollen die ältesten Sicherungen gelöscht werden, um Speicherplatz zu schaffen?</NotEnoughSpace4>
-		<MovingOldBackups>Verschiebe alte Sicherungen...</MovingOldBackups>
-		<CreatingHardLinks>Erstelle Hardlinks zur letzten Sicherung...</CreatingHardLinks>
 		<BackingUp>Sichere </BackingUp>
-		<BackingUpSource>Sichere Verzeichnis </BackingUpSource>
-		<CantAbort>Sie können die Sicherung nicht Abbrechen, während Hardlinks zur letzten Sicherung erzeugt werden. Bitte gedulden Sie sich ein wenig.</CantAbort>
-		<WrongDirFormat1>Der Name des Verzeichnis "</WrongDirFormat1>
-		<WrongDirFormat2>" hat ein falsches Format und konnte nicht geändert werden. Bitte verschieben oder löschen Sie das Verzeichnis manuell.</WrongDirFormat2>
 		<!--File.cs-->
 		<DeletingFile>Lösche Datei </DeletingFile>
 		<!--frmSettings-->
-		<rbnLocalDrive>Auf externe Festplatte sichern</rbnLocalDrive>
-		<rbnLocalDriveToolTip>Sie können nach dem Klick auf "Starte Sicherung" ein Laufwerk auswählen.</rbnLocalDriveToolTip>
-		<lblSubfolder>Unterordner:</lblSubfolder>
-		<SubfolderToolTip>Der Ordner auf dem Sicherungslaufwerk, in dem die Sicherungen angelegt werden (optional)</SubfolderToolTip>
-		<rbnNetworkShare>Auf Netzlaufwerk sichern</rbnNetworkShare>
-		<rbnNetworkShareToolTip>Windows- und Samba-Freigaben sind erlaubt.</rbnNetworkShareToolTip>
-		<txtNetworkShareToolTip>Pfad zur Windows- oder Samba-Freigabe</txtNetworkShareToolTip>
 		<bnAboutToolTip>Über</bnAboutToolTip>
-		<gbBackupSources>Zu sichernde Verzeichnisse</gbBackupSources>
 		<lblSyncJobs>Synchronisierungsaufträge</lblSyncJobs>
 		<bnAddSourceToolTip>Verzeichnis hinzufügen</bnAddSourceToolTip>
 		<bnEditSourceToolTip>Augewähltes Verzeichnis bearbeiten</bnEditSourceToolTip>
@@ -354,15 +389,9 @@
 		<bnSourceDownToolTip>Ausgewähltes Verzeichnis nach unten verschieben</bnSourceDownToolTip>
 		<bnDuplicateToolTip>Ausgewähltes Element duplizieren</bnDuplicateToolTip>
 		<bnBackupToolTip>Starte Sicherung</bnBackupToolTip>
-		<bnAdvancedSettings>Erweiterte Einstellungen</bnAdvancedSettings>
 		<ExitAnyway>Möchten Sie RoboG dennoch beenden?</ExitAnyway>
 		<Copy>- Kopie</Copy>
 		<!--frmAdvancedSettings-->
-		<chkIncrementalBackup>Inkrementelle Sicherungen anlegen</chkIncrementalBackup>
-		<chkIncrementalBackupToolTip>Bei Deaktivierung dieser Option, werden Dateien mit dem Zielverzeichnis ausschließlich synchronisiert.</chkIncrementalBackupToolTip>
-		<chkIncrementalBackupWarning>Wenn Sie diese Option deaktivieren, werden alle vorhergehenden Sicherung auf dem Sicherungsdatenträger gelöscht. Wollen Sie wirklich fortfahren?</chkIncrementalBackupWarning>
-		<chkDeleteFilesBeforeCopying>Lösche Dateien vor dem Kopieren im Zielverzeichnis (standard)</chkDeleteFilesBeforeCopying>
-		<chkDeleteFilesBeforeCopyingToolTip>Dies ist notwendig, wenn Hard links im Zielverzeichnis zum Erstellen inkrementeller Backups verwendet werden</chkDeleteFilesBeforeCopyingToolTip>
 		<AdvancedSettings>Erweiterte Einstellungen</AdvancedSettings>
 		<lblRetries>Wiederholungsversuche bei fehlerhaften Dateioperationen:</lblRetries>
 		<lblWaitBetweenRetries>Wartezeit zwischen Wiederholungsversuchen:</lblWaitBetweenRetries>
@@ -390,7 +419,7 @@
 		<chkShadowCopy>Verwende Schattenkopien (empfohlen, ermöglicht Sicherung von Dateien in Verwendung)</chkShadowCopy>
 		<bnAdvanced>Erweitert</bnAdvanced>
 		<SelectDirectoryToBackup>Bitte wählen Sie ein Verzeichnis aus, das gesichert werden soll</SelectDirectoryToBackup>
-		<ShadowCopiesNotPossible>Es ist nicht möglich, Schattenkopien dieses Datenträgers zu erzeugen. Schattenkopien funktionieren ausschließlich auf an den Computer direkt angeschlossenen Datenträgern, welche mit dem NTFS-Dateisystem formatiert sind.</ShadowCopiesNotPossible>
+		<ShadowCopiesNotPossible>Für diesen Quellordner sind keine Schattenkopien möglich, daher können geöffnete oder gesperrte Dateien nicht kopiert werden. Die Quelle muss auf einem lokalen, mit NTFS oder ReFS formatierten Laufwerk liegen (das Ziel kann beliebig sein, auch eine Netzwerkfreigabe).</ShadowCopiesNotPossible>
 		<ErrorNoName>Bitte geben Sie einen Namen ein.</ErrorNoName>
 		<ErrorNameInUse>Der eingegebene Name wird bereits verwendet.</ErrorNameInUse>
 		<ErrorNoDirectory>Bitte wählen Sie ein Verzeichnis aus.</ErrorNoDirectory>
@@ -456,9 +485,7 @@
 		<CreateDirectoryError2>" nich anlegen. Stellen Sie sicher, dass "</CreateDirectoryError2>
 		<CreateDirectoryError3>" für RoboG beschreibbar ist.</CreateDirectoryError3>
 		<DeletingDirectory>Lösche Verzeichnis </DeletingDirectory>
-		<DriveTooSmall>Auf dem Sicherungslaufwerk ist nach wie vor nicht genügend Speicherplatz für die Sicherung vorhanden.</DriveTooSmall>
 		<StartingRobocopy>Starte Robocopy...</StartingRobocopy>
-		<RobocopyError>Error in Robocopy. Please make sure Robocopy (at least version XP026) is installed. If not download and install "Utility Spotlight - Robocopy GUI" (contains Robocopy) from http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx.</RobocopyError>
 		<Aborted>Abgebrochen</Aborted>
 		<ExitCode>Rückgabecode </ExitCode>
 		<ExitCode16>Schwerwiegender Fehler. Robocopy hat keine Dateien kopiert. Dies ist entweder ein Nutzungsfehler oder ein Fehler aufgrund mangelnder Berechtigungen für das Quell- oder Zielverzeichnis. </ExitCode16>
@@ -467,18 +494,7 @@
 		<ExitCode2>Einige Extradateien oder -Verzeichnisse wurden gefunden. </ExitCode2>
 		<ExitCode1>Eine oder mehr Dateien wurden erfolgreich kopiert. </ExitCode1>
 		<ExitCode-1>Unbekannter Fehler. Siehe Log für weitere Informationen.</ExitCode-1>
-		<ErrorInRobocopy>Fehler in Robocopy: </ErrorInRobocopy>
-		<DirMoveError1>Konnte Verzeichnis "</DirMoveError1>
-		<DirMoveError2>" nicht verschieben. Bitte stellen Sie sicher das kein anderes Programm auf dieses zugreift. Soll erneut versucht werden, das Verzeichnis zu verschieben?</DirMoveError2>
-		<Win32ErrorCode>Win32 Fehlercode: </Win32ErrorCode>
-		<HardLinkError>Hardlink konnte nicht erzeugt werden. </HardLinkError>
-		<HardLinkError2>Konnte keinen Hardlink zu folgender Datei erzeugen: </HardLinkError2>
-		<DeleteFileError>Datei konnte nicht gelöscht werden</DeleteFileError>
-		<DeleteNonTargetFolders>Lösche Verzeichnisse, welche nicht in das Sicherungsverzeichnis gehören...</DeleteNonTargetFolders>
 		<!--Service.cs-->
-		<StartingVSService>Starte VSS...</StartingVSService>
-		<StoppingVSService>Stoppe VSS...</StoppingVSService>
-		<VSSStartError>Konnte Volumenschattenkopie-Dienste nicht starten. Falls nicht der Fall, starten Sie RoboG mit Administratorrechten oder deaktivieren Sie die Nutzung von Schattenkopien.</VSSStartError>
 		<!--Settings.cs-->
 		<SettingsSaveError>Konnte Einstellungen nicht speichern.</SettingsSaveError>
 		<InvalidSource>Ungültige Quelle.</InvalidSource>
@@ -486,41 +502,166 @@
 		<LoadError1>Konnte Datei "</LoadError1>
 		<LoadError2>" nicht laden. Bitte stellen Sie sicher, dass die Datei lesbar ist. Fehler: </LoadError2>
 		<!--ShadowCopy.cs-->
-		<WrongVersion64>Installieren Sie bitte die 64-Bit-Version des Programmes, um Schattenkopien nutzen zu können.</WrongVersion64>
-		<WrongVersion32>Installieren Sie bitte die 32-Bit-Version des Programmes, um Schattenkopien nutzen zu können.</WrongVersion32>
-		<LoadingVSSImplementation>Lade VSS-Implementierung...</LoadingVSSImplementation>
 		<ShadowCopyError>Konnte Schattenkopien nicht anlegen.</ShadowCopyError>
-		<VCRedist64>Bitte stellen Sie sicher, dass das "Microsoft Visual C++ 2010 Redistributable Package (x64)" installiert ist: http://www.microsoft.com/download/en/details.aspx?id=13523</VCRedist64>
-		<VCRedistIA64>Bitte stellen Sie sicher, dass das "Microsoft Visual C++ 2010 Redistributable Package (IA64)" installiert ist: http://www.microsoft.com/download/en/details.aspx?id=21051</VCRedistIA64>
-		<VCRedist32>Bitte stellen Sie sicher, dass das "Microsoft Visual C++ 2010 Redistributable Package (x86)" installiert ist: http://www.microsoft.com/download/en/details.aspx?id=8328</VCRedist32>
 		<CreatingBackupComponents>Erstelle VSS-Sicherungskomponenten...</CreatingBackupComponents>
 		<InitializingVSSBackup>Initialisiere VSS-Sicherung...</InitializingVSSBackup>
-		<SettingVSSContext>Setze VSS-Kontext...</SettingVSSContext>
 		<SettingVSSBackupState>Setze VSS-Sicherungsstatus...</SettingVSSBackupState>
 		<GatheringWriterMetadata>Sammle Writer-Metadaten...</GatheringWriterMetadata>
 		<CreatingSnapshotSet>Erstelle Schnappschuss-Satz...</CreatingSnapshotSet>
 		<AddingToSnapshotSet1>Füge "</AddingToSnapshotSet1>
 		<AddingToSnapshotSet2>" zum Schnappschuss-Satz hinzu...</AddingToSnapshotSet2>
-		<SavingSnapshotSetID>Speichere Schnappschuss-Satz-ID...</SavingSnapshotSetID>
 		<PreparingVSSBackup>Bereite VSS-Sicherung vor...</PreparingVSSBackup>
 		<CreatingVSSSnapshots>Erstelle Schnappschüsse...</CreatingVSSSnapshots>
 		<ExposingSnapshots>Mappe Schnappschuss...</ExposingSnapshots>
-		<ExposingSnapshotsDirError>Das Verzeichnis zum Mappen des Schnappschusses konnte nicht angelegt werden.</ExposingSnapshotsDirError>
 		<SnapshotSuccessful>Schnappschuss erfolgreich erstellt.</SnapshotSuccessful>
-		<LoadingSnapshotIDs>Lade Schnappschuss-Satz-IDs der letzten Sicherung...</LoadingSnapshotIDs>
-		<DeletingOldSnapshots>Lösche alte Schnappschüsse...</DeletingOldSnapshots>
-		<QueryingSnapshots>Suche Schnappschüsse...</QueryingSnapshots>
-		<Unexposing>Lösche Schappschuss-Mappings </Unexposing>
-		<DeletingSnapshot>Lösche </DeletingSnapshot>
 		<DeletingSnapshotSet>Lösche Schnappschuss-Satz...</DeletingSnapshotSet>
 		<SnapshotSetDeleted>Schnappschuss-Satz gelöscht.</SnapshotSetDeleted>
+		<WarningMIR>Mindestens ein Auftrag in diesem Profil verwendet den Spiegelmodus. Der Spiegelmodus LÖSCHT Dateien im Ziel, die nicht in der Quelle sind. Fortfahren?</WarningMIR>
+		<chkMIR>Spiegelmodus: Dateien im Ziel löschen, die nicht mehr in der Quelle sind</chkMIR>
+		<chkLogOnly>Nur Testlauf (/L): anzeigen, was sich ändern würde, nichts kopieren</chkLogOnly>
+		<DeleteSourceDirectory>Den ausgewählten Auftrag entfernen? Seine Dateien werden nicht gelöscht.</DeleteSourceDirectory>
+		<CreateNewProfile>Möchten Sie die aktuellen Profileinstellungen verwerfen und ein neues Profil erstellen?</CreateNewProfile>
+		<ErrorNoTargetDirectory>Bitte wählen Sie einen Zielordner.</ErrorNoTargetDirectory>
+		<SelectTargetDirectory>Zielordner auswählen</SelectTargetDirectory>
+		<!--RoboG 1.0: sync jobs window, progress window, parallel jobs, network outages, switches-->
+		<OK>OK</OK>
+		<Browse>Durchsuchen...</Browse>
+		<bnAdd>+  Hinzufügen</bnAdd>
+		<bnRemove>Entfernen</bnRemove>
+		<Bytes>Bytes</Bytes>
+		<DaysCount>{0} Tage</DaysCount>
+		<SyncJobsSubtitle>Jeder Auftrag kopiert einen Quellordner mit robocopy in einen Zielordner. Doppelklicken Sie auf einen Auftrag, um ihn zu bearbeiten.</SyncJobsSubtitle>
+		<NoJobsYet1>Noch keine Synchronisierungsaufträge.</NoJobsYet1>
+		<NoJobsYet2>Klicken Sie auf „Auftrag hinzufügen“, um einen Quell- und einen Zielordner auszuwählen.</NoJobsYet2>
+		<bnAddJob>+  Auftrag hinzufügen</bnAddJob>
+		<bnEditJob>Bearbeiten</bnEditJob>
+		<bnDuplicateJob>Duplizieren</bnDuplicateJob>
+		<bnMoveUp>Nach oben</bnMoveUp>
+		<bnMoveDown>Nach unten</bnMoveDown>
+		<bnStartSync>Synchronisieren</bnStartSync>
+		<JobCountOne>1 Auftrag</JobCountOne>
+		<JobCountMany>{0} Aufträge</JobCountMany>
+		<ColJobName>Auftrag</ColJobName>
+		<ColSourceDirectory>Quellordner</ColSourceDirectory>
+		<ColTargetDirectory>Zielordner</ColTargetDirectory>
+		<ColMirror>Spiegeln</ColMirror>
+		<ColLogOnly>Nur Test</ColLogOnly>
+		<ColDisabled>Deaktiviert</ColDisabled>
+		<FlagColumnToolTip>Klicken Sie auf ein Kästchen, um dies für den Auftrag ein- oder auszuschalten</FlagColumnToolTip>
+		<MenuFile>&amp;Datei</MenuFile>
+		<MenuNewProfile>&amp;Neues Profil</MenuNewProfile>
+		<MenuLoadProfile>Profil &amp;laden</MenuLoadProfile>
+		<MenuSaveProfile>Profil &amp;speichern</MenuSaveProfile>
+		<MenuExit>&amp;Beenden</MenuExit>
+		<MenuEdit>&amp;Bearbeiten</MenuEdit>
+		<MenuProfileOptions>&amp;Profiloptionen</MenuProfileOptions>
+		<MenuGenerateScript>&amp;Skriptdatei erstellen</MenuGenerateScript>
+		<MenuHelp>&amp;Hilfe</MenuHelp>
+		<MenuAbout>&amp;Über RoboG</MenuAbout>
+		<SettingsSaved>Die Einstellungen wurden gespeichert.</SettingsSaved>
+		<ScriptFileFilter>Skriptdateien (*.script)|*.script|Alle Dateien (*.*)|*.*</ScriptFileFilter>
+		<XmlFileFilter>XML-Dateien (*.xml)|*.xml|Alle Dateien (*.*)|*.*</XmlFileFilter>
+		<InvalidSettingsFile>Bitte wählen Sie eine gültige XML-Einstellungsdatei.</InvalidSettingsFile>
+		<lblTargetDirectory>Zielordner</lblTargetDirectory>
+		<chkDisableJob>Diesen Auftrag deaktivieren (beim Ausführen des Profils überspringen)</chkDisableJob>
+		<InvalidJobPath>Der Quell- oder Zielordner ist kein gültiger Pfad.</InvalidJobPath>
+		<InvalidJobTarget>Der Zielordner darf kein Laufwerksstamm sein, nicht der Quellordner selbst, nicht in der Quelle liegen und die Quelle nicht enthalten.</InvalidJobTarget>
+		<chkScan>Zuerst scannen für den Gesamtfortschritt (ein zusätzlicher Durchlauf; bei sehr großen Aufträgen ausschalten)</chkScan>
+		<chkLogFiles>Live-Fortschritt anzeigen und jede Datei protokollieren (für höchste Geschwindigkeit ausschalten)</chkLogFiles>
+		<lblThreads>Threads:</lblThreads>
+		<lblParallelJobs>Gleichzeitig:</lblParallelJobs>
+		<ThreadsToolTip1>Anzahl der gleichzeitig kopierten Dateien (robocopy /MT) für die ganze Synchronisierung. Gleichzeitig laufende Aufträge teilen sie sich:</ThreadsToolTip1>
+		<ThreadsToolTip2>16 Threads ergeben 1 Auftrag 16, 2 Aufträgen je 8, 4 Aufträgen je 4.</ThreadsToolTip2>
+		<ThreadsToolTip3>16 passt für die meisten Ziele; eine schnelle SSD oder ein Server verträgt mehr, ein einzelnes NAS mit Festplatten läuft oft mit 8 bis 16 am besten.</ThreadsToolTip3>
+		<ThreadsToolTip4>1 wählen, um EFS-verschlüsselte Dateien im Rohformat zu kopieren (/EFSRAW lässt sich nicht mit /MT kombinieren).</ThreadsToolTip4>
+		<ParallelJobsToolTip1>Anzahl der Aufträge, die gleichzeitig synchronisieren, jeder mit eigenem robocopy und eigener Registerkarte im Fortschrittsfenster. Die übrigen warten und starten, sobald einer fertig ist. Die Kopier-Threads werden zwischen den gleichzeitig laufenden Aufträgen geteilt.</ParallelJobsToolTip1>
+		<ParallelJobsToolTip2>2 bis 4 passt für Aufträge auf verschiedenen Datenträgern oder Servern. Wählen Sie 1, wenn die Aufträge eine Festplatte teilen, damit sie nacheinander laufen.</ParallelJobsToolTip2>
+		<ProgressStarting>Starte...</ProgressStarting>
+		<TileFiles>Dateien</TileFiles>
+		<TileSpeed>Geschwindigkeit</TileSpeed>
+		<TileFileRate>Dateien/s</TileFileRate>
+		<TileElapsed>Verstrichen</TileElapsed>
+		<TileRemaining>Restzeit</TileRemaining>
+		<TileErrors>Fehler</TileErrors>
+		<TileJobsDone>Fertige Aufträge</TileJobsDone>
+		<bnOpenLogFolder>Protokolle öffnen</bnOpenLogFolder>
+		<bnViewCommand>Befehl anzeigen...</bnViewCommand>
+		<TabOverview>Übersicht</TabOverview>
+		<ColJob>Auftrag</ColJob>
+		<ColStatus>Status</ColStatus>
+		<ColProgress>Fortschritt</ColProgress>
+		<ColCopied>Kopiert</ColCopied>
+		<RunLogCaption>Laufprotokoll</RunLogCaption>
+		<JobsSummary>Aufträge: {0}</JobsSummary>
+		<JobsRunning>{0} laufen</JobsRunning>
+		<JobsReconnecting>{0} warten auf Verbindung</JobsReconnecting>
+		<JobsWaiting>{0} warten</JobsWaiting>
+		<JobsFinished>{0} fertig</JobsFinished>
+		<JobsAtATime> (bis zu {0} gleichzeitig)</JobsAtATime>
+		<LiveProgressOff>Live-Fortschritt ist aus (schnellster Modus).</LiveProgressOff>
+		<TotalsAtEnd>Die Summen erscheinen, wenn der Auftrag fertig ist.</TotalsAtEnd>
+		<CopiedOf>{0} von {1} kopiert ({2} %)</CopiedOf>
+		<CopiedSoFar>{0} kopiert</CopiedSoFar>
+		<StatusLogFile>Protokoll: {0}   (ein Protokoll pro Auftrag im Ordner Jobs)</StatusLogFile>
+		<AllJobsDisabled>Alle Aufträge dieses Profils sind deaktiviert.</AllJobsDisabled>
+		<JobsNotCompleted>Diese Aufträge konnten nicht abgeschlossen werden:</JobsNotCompleted>
+		<ShadowCopyDiscarded1>Windows hat die Schattenkopie während der Synchronisierung verworfen, vermutlich weil der Schattenkopiespeicher auf dem Quelllaufwerk voll war. Danach gelesene Dateien wurden nicht kopiert.</ShadowCopyDiscarded1>
+		<ShadowCopyDiscarded2>Vergrößern Sie den Schattenkopiespeicher (vssadmin resize shadowstorage) oder synchronisieren Sie, wenn das Laufwerk weniger ausgelastet ist, und führen Sie den Auftrag erneut aus.</ShadowCopyDiscarded2>
+		<lblTargetCaption>Ziel:</lblTargetCaption>
+		<StateWaiting>Wartet</StateWaiting>
+		<StateScanning>Suche nach Änderungen</StateScanning>
+		<StateCopying>Kopiert</StateCopying>
+		<StateReconnecting>Wartet auf Verbindung</StateReconnecting>
+		<StateNoChanges>Keine Änderungen</StateNoChanges>
+		<StateFailed>Fehlgeschlagen</StateFailed>
+		<StateStopped>Abgebrochen</StateStopped>
+		<StateDone>Fertig</StateDone>
+		<StateDoneErrors>Fertig, {0} Fehler</StateDoneErrors>
+		<TabWaiting>wartet</TabWaiting>
+		<TabScanning>sucht</TabScanning>
+		<TabCopying>kopiert</TabCopying>
+		<TabReconnecting>verbindet</TabReconnecting>
+		<TabNoChanges>unverändert</TabNoChanges>
+		<TabFailed>fehlgeschlagen</TabFailed>
+		<TabStopped>abgebrochen</TabStopped>
+		<TabDone>fertig</TabDone>
+		<TabDoneErrors>fertig, Fehler</TabDoneErrors>
+		<ProgressWaiting>Startet, sobald ein laufender Auftrag fertig ist.</ProgressWaiting>
+		<ProgressScanning>Suche nach Dateien, die kopiert werden müssen...</ProgressScanning>
+		<ProgressResumes>Wird dort fortgesetzt, wo er aufgehört hat.</ProgressResumes>
+		<NotStarted>Nicht gestartet</NotStarted>
+		<ErrorCountText>{0} Fehler</ErrorCountText>
+		<ConnectionLost>Verbindung zu {0} verloren. Prüfe alle {1} Sekunden.</ConnectionLost>
+		<ConnectionNotBack>Verbindung zu {0} verloren; sie kam nicht innerhalb von {1} Minuten zurück.</ConnectionNotBack>
+		<DriveNotAvailable>Laufwerk {0} ist für RoboG nicht verfügbar, daher kann {1} nicht als Ziel verwendet werden.</DriveNotAvailable>
+		<DriveNotAvailableAdmin>RoboG läuft als Administrator, und Windows trennt verbundene Netzlaufwerke für Administratorprogramme. Verwenden Sie den Netzwerkpfad (\\server\freigabe) statt des Laufwerksbuchstabens.</DriveNotAvailableAdmin>
+		<CreateTargetFailed>Der Zielordner {0} konnte nicht erstellt werden:</CreateTargetFailed>
+		<gbShadowCopies>Schattenkopien</gbShadowCopies>
+		<VssNeedsVista>Schattenkopien erfordern Windows Vista oder neuer.</VssNeedsVista>
+		<VssServiceDisabled>Der Dienst Volumeschattenkopie (VSS) ist deaktiviert. Stellen Sie ihn in services.msc auf „Manuell“, um Schattenkopien zu verwenden.</VssServiceDisabled>
+		<VssAccessDenied>Zugriff verweigert. Für Schattenkopien muss RoboG als Administrator laufen.</VssAccessDenied>
+		<VssNotSupported>Dieses Volume unterstützt keine Schattenkopien. Nur lokale NTFS- oder ReFS-Volumes sind möglich.</VssNotSupported>
+		<VssNoSpace>Nicht genug freier Speicher für die Schattenkopie. Geben Sie Speicher frei oder vergrößern Sie den Schattenkopiespeicher (vssadmin resize shadowstorage).</VssNoSpace>
+		<VssMaxShadows>Das Volume hat bereits die maximale Anzahl an Schattenkopien. Löschen Sie alte (vssadmin delete shadows) und versuchen Sie es erneut.</VssMaxShadows>
+		<VssBusy>Ein anderes Programm erstellt gerade eine Schattenkopie. Versuchen Sie es in einigen Minuten erneut.</VssBusy>
+		<VssFlushTimeout>Windows konnte Schreibzugriffe nicht lange genug anhalten, um die Momentaufnahme zu erstellen (der Datenträger ist sehr ausgelastet). Versuchen Sie es später erneut.</VssFlushTimeout>
+		<VssProviderError>Der Schattenkopie-Anbieter hat abgelehnt oder ist fehlgeschlagen. Details finden Sie in der Ereignisanzeige unter Anwendung (Quelle VSS oder volsnap).</VssProviderError>
+		<ErrorsShownOf> ({0} von {1}, siehe {2})</ErrorsShownOf>
+		<SwitchesTitle>robocopy-Schalter - {0}</SwitchesTitle>
+		<SwitchesCaption>Was jeder Teil bewirkt</SwitchesCaption>
+		<SwitchesColSwitch>Schalter</SwitchesColSwitch>
+		<SwitchesColMeaning>Bedeutung</SwitchesColMeaning>
+		<bnCopyCommand>Befehl kopieren</bnCopyCommand>
+		<SwitchesProgram>Das Programm robocopy.</SwitchesProgram>
+		<SwitchesSource>Quellordner.</SwitchesSource>
+		<SwitchesTarget>Zielordner.</SwitchesTarget>
+		<SwitchesFiles>Zu kopierender Dateiname oder Muster (Standard *.*).</SwitchesFiles>
+		<SwitchesUnknown>Keine Beschreibung verfügbar. Siehe „robocopy /?“.</SwitchesUnknown>
 	</de-DE>
 	<fr-FR name="Français">
 		<!--Multiple files-->
 		<Cancel>Annuler</Cancel>
 		<Close>Fermer</Close>
-		<WrongFileSystem1>Vous devez formatter le disque "</WrongFileSystem1>
-		<WrongFileSystem2>" en NTFS pour l'utiliser comme disque de sauvegarde.</WrongFileSystem2>
 		<DirectoryNotWriteable1>Le répertoire </DirectoryNotWriteable1>
 		<DirectoryNotWriteable2> est en lecture seule.</DirectoryNotWriteable2>
 		<Error>Erreur:</Error>
@@ -539,26 +680,18 @@
 		<lblWildcards>Wildcards autorisés: * ?</lblWildcards>
 		<lblExample>Exemples: *.txt  *.xls  tmp*  tmp??  Liste  C:\Exclus\exclus.txt</lblExample>
 		<!--frmInitializeDrive-->
-		<frmInitializeDrive>Initialisation du disque de sauvegarde</frmInitializeDrive>
-		<lblDrive>Sélectionnez le disque à initialiser:</lblDrive>
-		<NoDrive>Sélectionnez un disque</NoDrive>
-		<DriveInformationError>Lecture du disque impossible. Le disque est-il prêt ?</DriveInformationError>
 		<!--frmSelectLanguage-->
 		<SelectLanguage>Sélection de langue</SelectLanguage>
 		<Language>Langue:</Language>
 		<NoLanguage>Sélectionnez une langue</NoLanguage>
 		<!--frmMain-->
-		<lblStatusCaption>Statut:</lblStatusCaption>
 		<lblDirectoryCaption>Répertoire:</lblDirectoryCaption>
 		<lblFileCaption>Fichier:</lblFileCaption>
 		<lblSizeCaption>Taille:</lblSizeCaption>
-		<bnDetails>Afficher les détails</bnDetails>
-		<bnDetails2>Masquer les détails</bnDetails2>
 		<bnErrors>Afficher les erreurs</bnErrors>
 		<StartingProgram>Démarrage programme/script: </StartingProgram>
 		<StartingVSS>Démarrage du service Volume Shadow Copy</StartingVSS>
 		<DeletingSnapshots>Suppression des snapshots</DeletingSnapshots>
-		<StoppingVSS>Arrêt du service Volume Shadow Copy</StoppingVSS>
 		<CompletedWithErrors>Sauvegarde terminée avec erreurs</CompletedWithErrors>
 		<Done>Terminé</Done>
 		<CreatingSnapshots>Creation des snapshots</CreatingSnapshots>
@@ -567,39 +700,16 @@
 		<NoRobocopy>Robocopy n'est pas installé. Téléchargez et installez "Utility Spotlight - Robocopy GUI" (incluant Robocopy) depuis http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx pour utiliser RoboG.</NoRobocopy>
 		<RobocopyTooOld>Votre version de Robocopy est trop ancienne (version " + RobocopyVersion + "). Téléchargez et installez "Utility Spotlight - Robocopy GUI" (incluant Robocopy version XP026) depuis http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx pour utiliser RoboG.</RobocopyTooOld>
 		<NoSources>Aucune source définie. Vérifiez le fichier settings.</NoSources>
-		<LookingForDrive>Recherche d'un disque de sauvegarde</LookingForDrive>
-		<NoBackupDrive>Disque de sauvegarde non trouvé. Voulez-vous initialiser un disque maintenant ?</NoBackupDrive>
-		<DriveNotInitialized>Le disque ne peut être initialisé: </DriveNotInitialized>
 		<!--Backup.cs-->
 		<DirectoryNoAttributes1>Le répertoire </DirectoryNoAttributes1>
 		<DirectoryNoAttributes2> ne supporte pas les attributs de fichiers. Si le répertoire est un partage linux, vérifiez qu'il supporte les attributs de fichiers Dos. Pour plus d'informations visitez: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
-		<HardLinksNotSupported>Le système de fichiers du disque de sauvegarde ne supporte pas les liens physiques. vérifiez que le disque soit formaté en NTFS. Si la destination de sauvegarde est un partage réseau, vérifiez qu'il supporte les liens physiques.</HardLinksNotSupported>
 		<LookingForChanges>Recherche de changements...</LookingForChanges>
 		<NoChanges>Pas de changements.</NoChanges>
-		<SpaceNeeded>Espace nécessaire: </SpaceNeeded>
-		<NotEnoughSpace1>Espace insuffisant</NotEnoughSpace1>
-		<NotEnoughSpace2>Vous avez </NotEnoughSpace2>
-		<NotEnoughSpace3> besoin de plus d'espace sur votre disque de sauvgarde.</NotEnoughSpace3>
-		<NotEnoughSpace4> Supprimer les plus anciennes sauvegardes pour libérer de l'espace ?</NotEnoughSpace4>
-		<MovingOldBackups>Déplacement des anciennes sauvegardes...</MovingOldBackups>
-		<CreatingHardLinks>Creation de liens vers les fichiers précédemment sauvegardés...</CreatingHardLinks>
 		<BackingUp>Sauvegarde </BackingUp>
-		<BackingUpSource>Répertoire de sauvegarde </BackingUpSource>
-		<CantAbort>Annulation impossible pendant la création de liens. Patientez.</CantAbort>
-		<WrongDirFormat1>Le nom du répertoire "</WrongDirFormat1>
-		<WrongDirFormat2>" n'est pas au bon format et ne peut être renommé. Déplacez ou supprimez le répertoire manuellement.</WrongDirFormat2>
 		<!--File.cs-->
 		<DeletingFile>Suppression du fichier </DeletingFile>
 		<!--frmSettings-->
-		<rbnLocalDrive>Sauvegarde sur disque externe</rbnLocalDrive>
-		<rbnLocalDriveToolTip>Vous pouvez choisir le disque à utiliser au démarrage de la sauvegarde.</rbnLocalDriveToolTip>
-		<lblSubfolder>Répertoire:</lblSubfolder>
-		<SubfolderToolTip>Le répertoire de destination où sont stockées les sauvegardes sur le disque. Il peut être vierge</SubfolderToolTip>
-		<rbnNetworkShare>Sauvegarde sur partage réseau</rbnNetworkShare>
-		<rbnNetworkShareToolTip>Celui-ci peut être un partage Windows ou Samba.</rbnNetworkShareToolTip>
-		<txtNetworkShareToolTip>Chemin du partage Windows ou Samba</txtNetworkShareToolTip>
 		<bnAboutToolTip>A propos</bnAboutToolTip>
-		<gbBackupSources>Répertoires à sauvegarder</gbBackupSources>
 		<lblSyncJobs>Tâches de synchronisation</lblSyncJobs>
 		<bnAddSourceToolTip>Ajouter un répertoire</bnAddSourceToolTip>
 		<bnEditSourceToolTip>Modifier le répertoire</bnEditSourceToolTip>
@@ -608,15 +718,9 @@
 		<bnSourceDownToolTip>Déplacer vers le bas</bnSourceDownToolTip>
 		<bnDuplicateToolTip>Dupliquer l'élement séléctionné</bnDuplicateToolTip>
 		<bnBackupToolTip>Démarrer la sauvegarde</bnBackupToolTip>
-		<bnAdvancedSettings>Paramètres Avancés</bnAdvancedSettings>
 		<ExitAnyway>Voulez-vous quitter ?</ExitAnyway>
 		<Copy>- copie</Copy>
 		<!--frmAdvancedSettings-->
-		<chkIncrementalBackup>Créer des sauvegardes incrémentales</chkIncrementalBackup>
-		<chkIncrementalBackupToolTip>Si cette option est désactivée, les fichiers seront synchronisés avec la destination cible</chkIncrementalBackupToolTip>
-		<chkIncrementalBackupWarning>Si cette option est modifiée, toutes les anciennes sauvegardes seront supprimées. Voulez-vous continuer ?</chkIncrementalBackupWarning>
-		<chkDeleteFilesBeforeCopying>Suppimer les fichiers sur la destination cible avant la copie (défaut)</chkDeleteFilesBeforeCopying>
-		<chkDeleteFilesBeforeCopyingToolTip>Ceci est nécessaire lorsque des liens physiques sont utilisés sur la destination cible pour créer des sauvegardes incrémentales</chkDeleteFilesBeforeCopyingToolTip>
 		<AdvancedSettings>Paramètres Avancés</AdvancedSettings>
 		<lblRetries>Nombre d'essais en cas d'échec:</lblRetries>
 		<lblWaitBetweenRetries>Temps entre deux essais:</lblWaitBetweenRetries>
@@ -644,7 +748,7 @@
 		<chkShadowCopy>Utiliser les clichés instantanés (pour les fichiers en cours d'utilisation, recommandé)</chkShadowCopy>
 		<bnAdvanced>Avancé</bnAdvanced>
 		<SelectDirectoryToBackup>Selectionnez le répertoire à sauvegarder</SelectDirectoryToBackup>
-		<ShadowCopiesNotPossible>Création de clichés instantanés impossible, les fichiers en cours d'utilisation ne seront pas sauvegardés. Les clichés instantanés sont uniquement utilisables sur les disques locaux formatés en NTFS.</ShadowCopiesNotPossible>
+		<ShadowCopiesNotPossible>Les clichés instantanés ne sont pas possibles pour ce dossier source ; les fichiers ouverts ou verrouillés ne peuvent donc pas être copiés. La source doit se trouver sur un lecteur local formaté en NTFS ou ReFS (la cible peut être n'importe où, y compris un partage réseau).</ShadowCopiesNotPossible>
 		<ErrorNoName>Vous devez indiquer un nom.</ErrorNoName>
 		<ErrorNameInUse>Le nom indiqué est déjà utilisé.</ErrorNameInUse>
 		<ErrorNoDirectory>Vous devez indiquer un répertoire à sauvegarder.</ErrorNoDirectory>
@@ -710,9 +814,7 @@
 		<CreateDirectoryError2>". Vérifiez, "</CreateDirectoryError2>
 		<CreateDirectoryError3>" qu'il est accessible pour RoboG.</CreateDirectoryError3>
 		<DeletingDirectory>Suppression du répertoire </DeletingDirectory>
-		<DriveTooSmall>Espace insuffisant sur le disque de sauvegarde.</DriveTooSmall>
 		<StartingRobocopy>Démarrage de Robocopy...</StartingRobocopy>
-		<RobocopyError>Erreur de Robocopy. Vérifiez que Robocopy (version minimum XP026) est installé. Si ce n'est pas le cas, téléchargez et installez "Utility Spotlight - Robocopy GUI" (incluant Robocopy) depuis http://technet.microsoft.com/en-us/magazine/2006.11.utilityspotlight.aspx.</RobocopyError>
 		<Aborted>Annulé</Aborted>
 		<ExitCode>Code de sortie </ExitCode>
 		<ExitCode16>Erreur grave. Robocopy n'a copié aucun fichier. Ceci est causé par une erreur d'utilisation ou par des privilèges insuffisants sur la source ou la destination. </ExitCode16>
@@ -721,18 +823,7 @@
 		<ExitCode2>Des fichiers ou répertoires supplémentaires ont été détectés. </ExitCode2>
 		<ExitCode1>Un ou plusieurs fichiers ont été copiés avec succès (de nouveaux fichiers sont arrivés). </ExitCode1>
 		<ExitCode-1>Erreur inconnue. Analysez le log pour plus de détails.</ExitCode-1>
-		<ErrorInRobocopy>Erreur de Robocopy: </ErrorInRobocopy>
-		<DirMoveError1>Déplacement du répertoire impossible "</DirMoveError1>
-		<DirMoveError2>". Vérifiez qu'aucun autre programme n'y accède. Voulez-vous réessayer ?</DirMoveError2>
-		<Win32ErrorCode>Code d'erreur Win32: </Win32ErrorCode>
-		<HardLinkError>Création de lien physique impossible </HardLinkError>
-		<HardLinkError2>Création de lien physique vers fichier impossible </HardLinkError2>
-		<DeleteFileError>Suppression de fichier impossible</DeleteFileError>
-		<DeleteNonTargetFolders>Suppression des réperoires n'appartenants pas au répertoire de sauvegarde...</DeleteNonTargetFolders>
 		<!--Service.cs-->
-		<StartingVSService>Démarrage de VSS...</StartingVSService>
-		<StoppingVSService>Arrêt de VSS...</StoppingVSService>
-		<VSSStartError>Impossible de démarrer le Service de Cliché Instantané. Si ce n'est pas le cas, exécutez RoboG en tant qu'Administrateur ou désactivez l'utilisation des clichés instantanés.</VSSStartError>
 		<!--Settings.cs-->
 		<SettingsSaveError>Sauvegarde des paramètres impossible.</SettingsSaveError>
 		<InvalidSource>Source invalide.</InvalidSource>
@@ -740,33 +831,160 @@
 		<LoadError1>Chargement du fichier impossible "</LoadError1>
 		<LoadError2>". Vérifiez que le fichier est accessible en lecture. Erreur: </LoadError2>
 		<!--ShadowCopy.cs-->
-		<WrongVersion64>Pour utiliser les clichés instantanés, installez la version 64 bits du programme.</WrongVersion64>
-		<WrongVersion32>Pour utiliser les clichés instantanés, installez la version 32 bits du programme.</WrongVersion32>
-		<LoadingVSSImplementation>Chargement de l'implémentation VSS...</LoadingVSSImplementation>
 		<ShadowCopyError>Création du cliché instantané impossible.</ShadowCopyError>
-		<VCRedist64>Vérifiez que le Package Redistribuable Microsoft Visual C++ 2010 (x64) est installé: http://www.microsoft.com/download/en/details.aspx?id=13523</VCRedist64>
-		<VCRedistIA64>Vérifiez que le Package Redistribuable Microsoft Visual C++ 2010 (IA64) is installed: http://www.microsoft.com/download/en/details.aspx?id=21051</VCRedistIA64>
-		<VCRedist32>Vérifiez que le Package Redistribuable Microsoft Visual C++ 2010 (x86) is installed: http://www.microsoft.com/download/en/details.aspx?id=8328</VCRedist32>
 		<CreatingBackupComponents>Creation des composants VSS...</CreatingBackupComponents>
 		<InitializingVSSBackup>Initialisation VSS...</InitializingVSSBackup>
-		<SettingVSSContext>Définition du contexte VSS...</SettingVSSContext>
 		<SettingVSSBackupState>Définition de l'état VSS...</SettingVSSBackupState>
 		<GatheringWriterMetadata>Récolte des métadonnées d'écriture...</GatheringWriterMetadata>
 		<CreatingSnapshotSet>Creation du jeu de cliché...</CreatingSnapshotSet>
 		<AddingToSnapshotSet1>Ajout "</AddingToSnapshotSet1>
 		<AddingToSnapshotSet2>" du jeu de clichés...</AddingToSnapshotSet2>
-		<SavingSnapshotSetID>Sauvegarde de l'Id du jeu de cliché...</SavingSnapshotSetID>
 		<PreparingVSSBackup>Préparation VSS...</PreparingVSSBackup>
 		<CreatingVSSSnapshots>Creation des clichés...</CreatingVSSSnapshots>
 		<ExposingSnapshots>Montage des clichés...</ExposingSnapshots>
-		<ExposingSnapshotsDirError>Création des répertoires pour le montage des clichés impossible.</ExposingSnapshotsDirError>
 		<SnapshotSuccessful>Cliché crée avec succès.</SnapshotSuccessful>
-		<LoadingSnapshotIDs>Chargement des Ids de jeu de clichés de la dernière sauvegarde...</LoadingSnapshotIDs>
-		<DeletingOldSnapshots>Suppression des anciens clichés...</DeletingOldSnapshots>
-		<QueryingSnapshots>Recherche des clichés...</QueryingSnapshots>
-		<Unexposing>Démontage </Unexposing>
-		<DeletingSnapshot>Suppression </DeletingSnapshot>
 		<DeletingSnapshotSet>Suppression des jeux de clichés...</DeletingSnapshotSet>
 		<SnapshotSetDeleted>Jeu de clichés supprimé.</SnapshotSetDeleted>
+		<WarningMIR>Au moins une tâche de ce profil utilise le mode miroir. Le mode miroir SUPPRIME de la cible les fichiers absents de la source. Continuer ?</WarningMIR>
+		<chkMIR>Mode miroir : supprimer de la cible les fichiers qui ne sont plus dans la source</chkMIR>
+		<chkLogOnly>Test uniquement (/L) : afficher ce qui changerait, ne rien copier</chkLogOnly>
+		<DeleteSourceDirectory>Supprimer la tâche sélectionnée ? Ses fichiers ne sont pas effacés.</DeleteSourceDirectory>
+		<CreateNewProfile>Voulez-vous abandonner les paramètres du profil actuel et en créer un nouveau ?</CreateNewProfile>
+		<ErrorNoTargetDirectory>Veuillez choisir un dossier cible.</ErrorNoTargetDirectory>
+		<SelectTargetDirectory>Sélectionnez le dossier cible</SelectTargetDirectory>
+		<!--RoboG 1.0: sync jobs window, progress window, parallel jobs, network outages, switches-->
+		<OK>OK</OK>
+		<Browse>Parcourir...</Browse>
+		<bnAdd>+  Ajouter</bnAdd>
+		<bnRemove>Supprimer</bnRemove>
+		<Bytes>octets</Bytes>
+		<DaysCount>{0} jours</DaysCount>
+		<SyncJobsSubtitle>Chaque tâche copie un dossier source vers un dossier cible avec robocopy. Double-cliquez sur une tâche pour la modifier.</SyncJobsSubtitle>
+		<NoJobsYet1>Aucune tâche de synchronisation.</NoJobsYet1>
+		<NoJobsYet2>Cliquez sur « Ajouter une tâche » pour choisir un dossier source et un dossier cible.</NoJobsYet2>
+		<bnAddJob>+  Ajouter une tâche</bnAddJob>
+		<bnEditJob>Modifier</bnEditJob>
+		<bnDuplicateJob>Dupliquer</bnDuplicateJob>
+		<bnMoveUp>Monter</bnMoveUp>
+		<bnMoveDown>Descendre</bnMoveDown>
+		<bnStartSync>Synchroniser</bnStartSync>
+		<JobCountOne>1 tâche</JobCountOne>
+		<JobCountMany>{0} tâches</JobCountMany>
+		<ColJobName>Tâche</ColJobName>
+		<ColSourceDirectory>Dossier source</ColSourceDirectory>
+		<ColTargetDirectory>Dossier cible</ColTargetDirectory>
+		<ColMirror>Miroir</ColMirror>
+		<ColLogOnly>Test seul</ColLogOnly>
+		<ColDisabled>Désactivée</ColDisabled>
+		<FlagColumnToolTip>Cliquez sur une case pour activer ou désactiver cette option pour la tâche</FlagColumnToolTip>
+		<MenuFile>&amp;Fichier</MenuFile>
+		<MenuNewProfile>&amp;Nouveau profil</MenuNewProfile>
+		<MenuLoadProfile>&amp;Charger un profil</MenuLoadProfile>
+		<MenuSaveProfile>&amp;Enregistrer le profil</MenuSaveProfile>
+		<MenuExit>&amp;Quitter</MenuExit>
+		<MenuEdit>&amp;Édition</MenuEdit>
+		<MenuProfileOptions>&amp;Options du profil</MenuProfileOptions>
+		<MenuGenerateScript>&amp;Générer un fichier de script</MenuGenerateScript>
+		<MenuHelp>&amp;Aide</MenuHelp>
+		<MenuAbout>À &amp;propos de RoboG</MenuAbout>
+		<SettingsSaved>Les paramètres ont été enregistrés.</SettingsSaved>
+		<ScriptFileFilter>Fichiers de script (*.script)|*.script|Tous les fichiers (*.*)|*.*</ScriptFileFilter>
+		<XmlFileFilter>Fichiers XML (*.xml)|*.xml|Tous les fichiers (*.*)|*.*</XmlFileFilter>
+		<InvalidSettingsFile>Veuillez sélectionner un fichier de paramètres XML valide.</InvalidSettingsFile>
+		<lblTargetDirectory>Dossier cible</lblTargetDirectory>
+		<chkDisableJob>Désactiver cette tâche (ignorée lors de l'exécution du profil)</chkDisableJob>
+		<InvalidJobPath>Le dossier source ou cible n'est pas un chemin valide.</InvalidJobPath>
+		<InvalidJobTarget>Le dossier cible ne doit pas être la racine d'un lecteur, le dossier source lui-même, un dossier dans la source, ni un dossier qui contient la source.</InvalidJobTarget>
+		<chkScan>Analyser d'abord pour la progression globale (un passage de plus ; à désactiver pour les très grosses tâches)</chkScan>
+		<chkLogFiles>Afficher la progression en direct et chaque fichier dans le journal (désactiver pour la vitesse maximale)</chkLogFiles>
+		<lblThreads>Threads :</lblThreads>
+		<lblParallelJobs>En parallèle :</lblParallelJobs>
+		<ThreadsToolTip1>Nombre de fichiers copiés en même temps (robocopy /MT) pour toute la synchronisation. Les tâches simultanées se les partagent :</ThreadsToolTip1>
+		<ThreadsToolTip2>16 threads donnent 16 à 1 tâche, 8 chacune à 2 tâches, 4 chacune à 4 tâches.</ThreadsToolTip2>
+		<ThreadsToolTip3>16 convient à la plupart des cibles ; un SSD rapide ou un serveur en accepte plus, un NAS à disques durs fonctionne souvent mieux avec 8 à 16.</ThreadsToolTip3>
+		<ThreadsToolTip4>Choisir 1 pour copier les fichiers chiffrés EFS en mode brut (/EFSRAW n'est pas compatible avec /MT).</ThreadsToolTip4>
+		<ParallelJobsToolTip1>Nombre de tâches synchronisées en même temps, chacune avec son propre robocopy et son propre onglet dans la fenêtre de progression. Les autres attendent et démarrent dès qu'une tâche se termine. Les threads de copie sont partagés entre les tâches simultanées.</ParallelJobsToolTip1>
+		<ParallelJobsToolTip2>2 à 4 convient aux tâches sur des disques ou serveurs différents. Choisissez 1 si les tâches partagent un même disque dur, pour qu'elles s'exécutent l'une après l'autre.</ParallelJobsToolTip2>
+		<ProgressStarting>Démarrage...</ProgressStarting>
+		<TileFiles>Fichiers</TileFiles>
+		<TileSpeed>Vitesse</TileSpeed>
+		<TileFileRate>Fichiers/s</TileFileRate>
+		<TileElapsed>Écoulé</TileElapsed>
+		<TileRemaining>Temps restant</TileRemaining>
+		<TileErrors>Erreurs</TileErrors>
+		<TileJobsDone>Tâches terminées</TileJobsDone>
+		<bnOpenLogFolder>Ouvrir les journaux</bnOpenLogFolder>
+		<bnViewCommand>Voir la commande...</bnViewCommand>
+		<TabOverview>Vue d'ensemble</TabOverview>
+		<ColJob>Tâche</ColJob>
+		<ColStatus>État</ColStatus>
+		<ColProgress>Progression</ColProgress>
+		<ColCopied>Copié</ColCopied>
+		<RunLogCaption>Journal d'exécution</RunLogCaption>
+		<JobsSummary>Tâches : {0}</JobsSummary>
+		<JobsRunning>{0} en cours</JobsRunning>
+		<JobsReconnecting>{0} en attente de connexion</JobsReconnecting>
+		<JobsWaiting>{0} en attente</JobsWaiting>
+		<JobsFinished>{0} terminées</JobsFinished>
+		<JobsAtATime> (jusqu'à {0} à la fois)</JobsAtATime>
+		<LiveProgressOff>La progression en direct est désactivée (mode le plus rapide).</LiveProgressOff>
+		<TotalsAtEnd>Les totaux s'affichent à la fin de la tâche.</TotalsAtEnd>
+		<CopiedOf>{0} sur {1} copiés ({2} %)</CopiedOf>
+		<CopiedSoFar>{0} copiés</CopiedSoFar>
+		<StatusLogFile>Journal : {0}   (un journal par tâche dans le dossier Jobs)</StatusLogFile>
+		<AllJobsDisabled>Toutes les tâches de ce profil sont désactivées.</AllJobsDisabled>
+		<JobsNotCompleted>Ces tâches n'ont pas pu être terminées :</JobsNotCompleted>
+		<ShadowCopyDiscarded1>Windows a supprimé le cliché instantané pendant la synchronisation, probablement parce que l'espace des clichés sur le lecteur source était plein. Les fichiers lus après ce moment n'ont pas été copiés.</ShadowCopyDiscarded1>
+		<ShadowCopyDiscarded2>Augmentez l'espace des clichés (vssadmin resize shadowstorage) ou synchronisez quand le lecteur est moins sollicité, puis relancez la tâche.</ShadowCopyDiscarded2>
+		<lblTargetCaption>Cible :</lblTargetCaption>
+		<StateWaiting>En attente</StateWaiting>
+		<StateScanning>Recherche des modifications</StateScanning>
+		<StateCopying>Copie en cours</StateCopying>
+		<StateReconnecting>En attente de connexion</StateReconnecting>
+		<StateNoChanges>Aucune modification</StateNoChanges>
+		<StateFailed>Échec</StateFailed>
+		<StateStopped>Arrêtée</StateStopped>
+		<StateDone>Terminée</StateDone>
+		<StateDoneErrors>Terminée, {0} erreur(s)</StateDoneErrors>
+		<TabWaiting>en attente</TabWaiting>
+		<TabScanning>analyse</TabScanning>
+		<TabCopying>copie</TabCopying>
+		<TabReconnecting>reconnexion</TabReconnecting>
+		<TabNoChanges>inchangée</TabNoChanges>
+		<TabFailed>échec</TabFailed>
+		<TabStopped>arrêtée</TabStopped>
+		<TabDone>terminée</TabDone>
+		<TabDoneErrors>terminée, erreurs</TabDoneErrors>
+		<ProgressWaiting>Démarre dès qu'une tâche en cours se termine.</ProgressWaiting>
+		<ProgressScanning>Recherche des fichiers à copier...</ProgressScanning>
+		<ProgressResumes>Reprendra là où elle s'est arrêtée.</ProgressResumes>
+		<NotStarted>Non démarrée</NotStarted>
+		<ErrorCountText>{0} erreur(s)</ErrorCountText>
+		<ConnectionLost>Connexion à {0} perdue. Vérification toutes les {1} secondes.</ConnectionLost>
+		<ConnectionNotBack>Connexion à {0} perdue ; elle n'est pas revenue dans les {1} minutes.</ConnectionNotBack>
+		<DriveNotAvailable>Le lecteur {0} n'est pas disponible pour RoboG, donc {1} ne peut pas servir de cible.</DriveNotAvailable>
+		<DriveNotAvailableAdmin>RoboG s'exécute en tant qu'administrateur, et Windows sépare les lecteurs réseau connectés pour les programmes administrateur. Utilisez le chemin réseau (\\serveur\partage) au lieu de la lettre de lecteur.</DriveNotAvailableAdmin>
+		<CreateTargetFailed>Impossible de créer le dossier cible {0} :</CreateTargetFailed>
+		<gbShadowCopies>Clichés instantanés</gbShadowCopies>
+		<VssNeedsVista>Les clichés instantanés nécessitent Windows Vista ou plus récent.</VssNeedsVista>
+		<VssServiceDisabled>Le service Cliché instantané des volumes (VSS) est désactivé. Réglez-le sur Manuel dans services.msc pour utiliser les clichés instantanés.</VssServiceDisabled>
+		<VssAccessDenied>Accès refusé. Les clichés instantanés nécessitent que RoboG s'exécute en tant qu'administrateur.</VssAccessDenied>
+		<VssNotSupported>Ce volume ne prend pas en charge les clichés instantanés. Seuls les volumes locaux NTFS ou ReFS sont possibles.</VssNotSupported>
+		<VssNoSpace>Espace libre insuffisant pour le cliché instantané. Libérez de l'espace ou augmentez l'espace des clichés (vssadmin resize shadowstorage).</VssNoSpace>
+		<VssMaxShadows>Le volume a déjà le nombre maximal de clichés instantanés. Supprimez les anciens (vssadmin delete shadows) et réessayez.</VssMaxShadows>
+		<VssBusy>Un autre programme crée un cliché instantané en ce moment. Réessayez dans quelques minutes.</VssBusy>
+		<VssFlushTimeout>Windows n'a pas pu suspendre les écritures assez longtemps pour prendre le cliché (le disque est très sollicité). Réessayez quand il sera moins occupé.</VssFlushTimeout>
+		<VssProviderError>Le fournisseur de clichés instantanés a refusé ou échoué. Consultez le journal Application de Windows (source VSS ou volsnap).</VssProviderError>
+		<ErrorsShownOf> ({0} sur {1}, voir {2})</ErrorsShownOf>
+		<SwitchesTitle>Options robocopy - {0}</SwitchesTitle>
+		<SwitchesCaption>Rôle de chaque élément</SwitchesCaption>
+		<SwitchesColSwitch>Option</SwitchesColSwitch>
+		<SwitchesColMeaning>Effet</SwitchesColMeaning>
+		<bnCopyCommand>Copier la commande</bnCopyCommand>
+		<SwitchesProgram>Le programme robocopy.</SwitchesProgram>
+		<SwitchesSource>Dossier source.</SwitchesSource>
+		<SwitchesTarget>Dossier cible.</SwitchesTarget>
+		<SwitchesFiles>Nom ou modèle de fichier à copier (par défaut *.*).</SwitchesFiles>
+		<SwitchesUnknown>Aucune description disponible. Voir « robocopy /? ».</SwitchesUnknown>
 	</fr-FR>
 </Translations>

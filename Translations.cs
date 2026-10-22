@@ -26,6 +26,33 @@ namespace RoboG
             return "";
         }
 
+        /// <summary>A translated text with values filled in: Format("JobsRunning", 3) with "{0} running" gives "3 running".</summary>
+        public static String Format(String Name, params object[] Args)
+        {
+            String Text = Get(Name);
+            try
+            {
+                return String.Format(Text, Args);
+            }
+            catch (FormatException)
+            {
+                return Text;
+            }
+        }
+
+        /// <summary>Sets a control's text from the translations; leaves it as designed if the key is missing everywhere.</summary>
+        public static void Set(System.Windows.Forms.Control Control, String Name)
+        {
+            String Text = Get(Name);
+            if (Text != "") Control.Text = Text;
+        }
+
+        public static void Set(System.Windows.Forms.ToolStripItem Item, String Name)
+        {
+            String Text = Get(Name);
+            if (Text != "") Item.Text = Text;
+        }
+
         public static String Get(String Language, String Name)
         {
             try

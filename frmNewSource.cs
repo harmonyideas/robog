@@ -60,6 +60,11 @@ namespace RoboG
 				chkLogOnly.Text = Translations.Get("chkLogOnly");
 				bnAdvanced.Text = Translations.Get("bnAdvanced");
 				bnCancel.Text = Translations.Get("Cancel");
+				Translations.Set(bnOK, "OK");
+				Translations.Set(lblTargetDirectory, "lblTargetDirectory");
+				Translations.Set(bnSelectDirectory, "Browse");
+				Translations.Set(btnTargetdir, "Browse");
+				Translations.Set(chkDisableJob, "chkDisableJob");
 
 			}
 			catch (Exception ex)
@@ -145,12 +150,12 @@ namespace RoboG
 			}
 			catch (Exception)
 			{
-				MessageBox.Show(this, "The source or target directory is not a valid path.");
+				MessageBox.Show(this, Translations.Get("InvalidJobPath"), "RoboG");
 				return;
 			}
 			if (TargetFull.EndsWith(":") || String.Equals(SourceFull, TargetFull, StringComparison.OrdinalIgnoreCase) || TargetFull.StartsWith(SourceFull + "\\", StringComparison.OrdinalIgnoreCase) || SourceFull.StartsWith(TargetFull + "\\", StringComparison.OrdinalIgnoreCase))
 			{
-				MessageBox.Show(this, "The target directory must not be a drive root, the same as the source directory, inside the source directory, or a directory that contains the source directory.");
+				MessageBox.Show(this, Translations.Get("InvalidJobTarget"), "RoboG");
 				return;
 			}
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;

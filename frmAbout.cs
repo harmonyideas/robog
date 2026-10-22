@@ -40,6 +40,8 @@ namespace RoboG
 			try
 			{
 				this.Text = Translations.Get("frmAbout");
+				Translations.Set(bnOK, "OK");
+				Translations.Set(groupBox2, "gbShadowCopies");
 				this.LabelProductName.Text = AssemblyProduct + " v" + AssemblyVersion;
 				// "Author:" followed by the HarmonyIdeas logo (the wordmark, with the lightbulb as the "i").
 				this.LabelCopyright.Text = Translations.Get("Author").TrimEnd();

@@ -137,6 +137,32 @@ namespace RoboG {
       Control.Font = new Font("Segoe UI", Font.SizeInPoints, Font.Style, GraphicsUnit.Point);
     }
 
+    // Width a button needs for its text (translations are often longer than the English).
+    private static int NeededWidth(Button Button) {
+      return TextRenderer.MeasureText(Button.Text.Replace("&&", "&"), Button.Font).Width + 28;
+    }
+
+    /// <summary>Sizes a row of buttons to their text and lays them out left to right from the first one's position.</summary>
+    public static void FitButtonsLeft(int Gap, params Button[] Row) {
+      int X = Row[0].Left;
+      foreach (Button Button in Row) {
+        Button.Width = Math.Max(Button.Width, NeededWidth(Button));
+        Button.Left = X;
+        X = Button.Right + Gap;
+      }
+    }
+
+    /// <summary>Sizes a row of buttons (given left to right) to their text, keeping the row's right edge.</summary>
+    public static void FitButtonsRight(int Gap, params Button[] Row) {
+      int Right = Row[Row.Length - 1].Right;
+      for (int i = Row.Length - 1; i >= 0; i--) {
+        Button Button = Row[i];
+        Button.Width = Math.Max(Button.Width, NeededWidth(Button));
+        Button.Left = Right - Button.Width;
+        Right = Button.Left - Gap;
+      }
+    }
+
     public static void StyleButton(Button Button, bool Primary) {
       Button.FlatStyle = FlatStyle.Flat;
       Button.UseVisualStyleBackColor = false;

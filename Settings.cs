@@ -280,7 +280,7 @@ namespace RoboG {
 				if (saveFileName)
 				{
 					SaveFileDialog saveFileMenuDlg = new SaveFileDialog();
-					saveFileMenuDlg.Filter = "xml files(*.xml)|*.xml|All files(*.*)|*.*";
+					saveFileMenuDlg.Filter = Translations.Get("XmlFileFilter");
 					saveFileMenuDlg.FilterIndex = 1;
 					saveFileMenuDlg.DefaultExt = "xml";
 					saveFileMenuDlg.RestoreDirectory = true;
@@ -493,7 +493,7 @@ namespace RoboG {
 
 					OpenFileDialog FB = new OpenFileDialog();
 					FB.Title = Translations.Get("SelectDirectoryToBackup");
-					FB.Filter = "XML Files(*.xml)|*.xml";
+					FB.Filter = Translations.Get("XmlFileFilter");
 					FB.FilterIndex = 0;
 					FB.DefaultExt = "xml";
 					if (FB.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -682,7 +682,7 @@ namespace RoboG {
 				}
 				catch (Exception ex)
 				{
-					HelperFunctions.ShowError("Please select a valid XML settings file." + ex.Message);
+					HelperFunctions.ShowError(Translations.Get("InvalidSettingsFile") + "\n\n" + ex.Message);
 				}
 				if (BackupSource.SourcePath != "")
 				{
@@ -1057,7 +1057,7 @@ public String GetDateDaysString(int DateDays) {
     return "";
   }
   else if (DateDays < 1900) {
-    return DateDays.ToString() + " days";
+    return Translations.Format("DaysCount", DateDays);
   }
   else {
     return DateTime.ParseExact(DateDays.ToString(), "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToShortDateString();

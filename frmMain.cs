@@ -76,6 +76,18 @@ namespace RoboG
 			{
 				bnErrors.Text = Translations.Get("bnErrors");
 				bnClose.Text = Translations.Get("Close");
+				Translations.Set(lblStatus, "ProgressStarting");
+				Translations.Set(lblFilesCaption, "TileFiles");
+				Translations.Set(lblSpeedCaption, "TileSpeed");
+				Translations.Set(lblFileRateCaption, "TileFileRate");
+				Translations.Set(lblElapsedCaption, "TileElapsed");
+				Translations.Set(lblRemainingCaption, "TileRemaining");
+				Translations.Set(lblErrorsCaption, "TileErrors");
+				Translations.Set(lblJobsCaption, "TileJobsDone");
+				Translations.Set(bnLogs, "bnOpenLogFolder");
+				Translations.Set(bnCommand, "bnViewCommand");
+				Theme.FitButtonsLeft(10, bnLogs, bnCommand);
+				Theme.FitButtonsRight(10, bnErrors, bnClose);
 			}
 			catch (Exception ex)
 			{
@@ -109,7 +121,7 @@ namespace RoboG
 
 		private void BuildOverviewTab()
 		{
-			_OverviewTab = new TabPage("Overview");
+			_OverviewTab = new TabPage(Translations.Get("TabOverview"));
 			_OverviewTab.BackColor = Theme.Surface;
 			_OverviewTab.Padding = new Padding(8);
 
@@ -121,14 +133,14 @@ namespace RoboG
 			lstJobs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
 			lstJobs.BorderStyle = BorderStyle.FixedSingle;
 			lstJobs.Font = Theme.BaseFont;
-			lstJobs.Columns.Add("Job", 165);
-			lstJobs.Columns.Add("Status", 140);
-			lstJobs.Columns.Add("Progress", 62, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Files", 82, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Copied", 78, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Speed", 78, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Files/s", 62, HorizontalAlignment.Right);
-			lstJobs.Columns.Add("Errors", 56, HorizontalAlignment.Right);
+			lstJobs.Columns.Add(Translations.Get("ColJob"), 165);
+			lstJobs.Columns.Add(Translations.Get("ColStatus"), 140);
+			lstJobs.Columns.Add(Translations.Get("ColProgress"), 62, HorizontalAlignment.Right);
+			lstJobs.Columns.Add(Translations.Get("TileFiles"), 82, HorizontalAlignment.Right);
+			lstJobs.Columns.Add(Translations.Get("ColCopied"), 78, HorizontalAlignment.Right);
+			lstJobs.Columns.Add(Translations.Get("TileSpeed"), 78, HorizontalAlignment.Right);
+			lstJobs.Columns.Add(Translations.Get("TileFileRate"), 62, HorizontalAlignment.Right);
+			lstJobs.Columns.Add(Translations.Get("TileErrors"), 56, HorizontalAlignment.Right);
 			lstJobs.DoubleClick += new EventHandler(lstJobs_DoubleClick);
 			lstJobs.SelectedIndexChanged += delegate { UpdateCommandButton(); };
 			lstJobs.Dock = DockStyle.Top;
@@ -136,7 +148,7 @@ namespace RoboG
 
 			// Docked rather than placed, so the layout fits whatever size the tab ends up (window size, DPI).
 			Label lblLog = new Label();
-			lblLog.Text = "Run log";
+			lblLog.Text = Translations.Get("RunLogCaption");
 			lblLog.ForeColor = Theme.TextMuted;
 			lblLog.Dock = DockStyle.Top;
 			lblLog.Height = 28;
@@ -263,7 +275,7 @@ namespace RoboG
 					{
 						// Windows drops a snapshot when its shadow storage fills up; anything read after that failed.
 						Error = true;
-						HelperFunctions.ShowError("Windows discarded the shadow copy during the sync, most likely because shadow storage on the source drive filled up. Files read after that point were not copied.\n\nIncrease shadow storage (vssadmin resize shadowstorage) or sync while the drive is less busy, then run the job again.");
+						HelperFunctions.ShowError(Translations.Get("ShadowCopyDiscarded1") + "\n\n" + Translations.Get("ShadowCopyDiscarded2"));
 					}
 					HelperFunctions.UpdateStatus(Translations.Get("DeletingSnapshots") + "...");
 					_ShadowCopy.Dispose();
@@ -302,7 +314,7 @@ namespace RoboG
 					Application.Exit();
 					return;
 				}
-				if (Failed.Length > 0 && !_Aborting) HelperFunctions.ShowError("These jobs could not be completed:" + Failed.ToString());
+				if (Failed.Length > 0 && !_Aborting) HelperFunctions.ShowError(Translations.Get("JobsNotCompleted") + Failed.ToString());
 				SetVisibility(bnClose, true);
 				if (RobocopyErrors && !_Aborting)
 				{
@@ -458,15 +470,15 @@ namespace RoboG
 				if (_Panels.Count > 0)
 				{
 					List<String> Parts = new List<String>();
-					if (Running > 0) Parts.Add(Running + " running");
-					if (Reconnecting > 0) Parts.Add(Reconnecting + " waiting for connection");
-					if (Waiting > 0) Parts.Add(Waiting + " waiting");
-					if (Finished > 0) Parts.Add(Finished + " finished");
-					Progress = "Jobs: " + String.Join(", ", Parts.ToArray());
-					if (Backup.Parallel > 1 && !_BackupFinished) Progress += " (up to " + Backup.Parallel + " at a time)";
-					if (!Settings.LogFiles) Progress += ". Live progress is off (fastest mode).";
-					else if (TotalKnown && Total > 0) Progress += ". " + HelperFunctions.SizeSuffix(Copied) + " of " + HelperFunctions.SizeSuffix(Total) + " copied (" + Math.Min(100, Copied * 100 / Total) + "%)";
-					else if (Copied > 0) Progress += ". " + HelperFunctions.SizeSuffix(Copied) + " copied";
+					if (Running > 0) Parts.Add(Translations.Format("JobsRunning", Running));
+					if (Reconnecting > 0) Parts.Add(Translations.Format("JobsReconnecting", Reconnecting));
+					if (Waiting > 0) Parts.Add(Translations.Format("JobsWaiting", Waiting));
+					if (Finished > 0) Parts.Add(Translations.Format("JobsFinished", Finished));
+					Progress = Translations.Format("JobsSummary", String.Join(", ", Parts.ToArray()));
+					if (Backup.Parallel > 1 && !_BackupFinished) Progress += Translations.Format("JobsAtATime", Backup.Parallel);
+					if (!Settings.LogFiles) Progress += ". " + Translations.Get("LiveProgressOff");
+					else if (TotalKnown && Total > 0) Progress += ". " + Translations.Format("CopiedOf", HelperFunctions.SizeSuffix(Copied), HelperFunctions.SizeSuffix(Total), Math.Min(100, Copied * 100 / Total));
+					else if (Copied > 0) Progress += ". " + Translations.Format("CopiedSoFar", HelperFunctions.SizeSuffix(Copied));
 				}
 				SetText(lblProgressText, Progress);
 
@@ -643,14 +655,14 @@ namespace RoboG
 				if (GlobalData.LogPath != null)
 				{
 					String LogFile = GlobalData.LogPath + "\\RoboG-Log.txt";
-					if (RunLog.Start(LogFile)) lblStripStatus.Text = "Log: " + LogFile + "   (one log per job in the Jobs folder)";
+					if (RunLog.Start(LogFile)) lblStripStatus.Text = Translations.Format("StatusLogFile", LogFile);
 				}
 				NetworkDrives.ResolveJobs();
 
 				Backup.CreateRuns();
 				if (Backup.Runs.Count == 0)
 				{
-					HelperFunctions.ShowMessage("All jobs of this profile are turned off.", "RoboG");
+					HelperFunctions.ShowMessage(Translations.Get("AllJobsDisabled"), "RoboG");
 					_BackupFinished = true;
 					this.Close();
 					return;

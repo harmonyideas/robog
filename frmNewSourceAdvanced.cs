@@ -148,6 +148,13 @@ namespace RoboG
 				lblBInfo2.Text = Translations.Get("lblBInfo2");
 
 				bnCancel.Text = Translations.Get("Cancel");
+				Translations.Set(bnOK, "OK");
+				Translations.Set(bnExcluceFile, "bnAdd");
+				Translations.Set(bnExcludeFolder, "bnAdd");
+				Translations.Set(bnDeleteExcludedFile, "bnRemove");
+				Translations.Set(bnDeleteExcludedFolder, "bnRemove");
+				Translations.Set(label2, "Bytes");
+				Translations.Set(label4, "Bytes");
 			}
 			catch (Exception ex)
 			{

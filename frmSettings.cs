@@ -56,8 +56,30 @@ namespace RoboG
 			try
 			{
 				//this.toolTip.SetToolTip(this.bnAbout, Translations.Get("bnAboutToolTip"));
-				String Title = Translations.Get("lblSyncJobs");
-				if (Title != "") lblTitle.Text = Title;
+				Translations.Set(lblTitle, "lblSyncJobs");
+				Translations.Set(lblSubtitle, "SyncJobsSubtitle");
+				lblEmpty.Text = Translations.Get("NoJobsYet1") + "\r\n" + Translations.Get("NoJobsYet2");
+				Translations.Set(bnAddSource, "bnAddJob");
+				Translations.Set(bnEdit, "bnEditJob");
+				Translations.Set(bnDuplicate, "bnDuplicateJob");
+				Translations.Set(bnDeleteSource, "bnRemove");
+				Translations.Set(bnUp, "bnMoveUp");
+				Translations.Set(bnDown, "bnMoveDown");
+				Translations.Set(btnSettingsCancel, "Close");
+				Translations.Set(bnBackup, "bnStartSync");
+				Translations.Set(fileToolStripMenuItem, "MenuFile");
+				Translations.Set(newProfileToolStripMenuItem, "MenuNewProfile");
+				Translations.Set(loadProfileToolStripMenuItem, "MenuLoadProfile");
+				Translations.Set(saveProfileToolStripMenuItem, "MenuSaveProfile");
+				Translations.Set(exitToolStripMenuItem, "MenuExit");
+				Translations.Set(editToolStripMenuItem, "MenuEdit");
+				Translations.Set(profileOptionsToolStripMenuItem, "MenuProfileOptions");
+				Translations.Set(generateScriptFileToolStripMenuItem, "MenuGenerateScript");
+				Translations.Set(helpToolStripMenuItem, "MenuHelp");
+				Translations.Set(aboutToolStripMenuItem, "MenuAbout");
+				// Translations are often longer than the English: size the buttons to their text.
+				Theme.FitButtonsLeft(6, bnAddSource, bnEdit, bnDuplicate, bnDeleteSource, bnUp, bnDown);
+				Theme.FitButtonsRight(8, btnSettingsCancel, bnBackup);
 				this.toolTip.SetToolTip(this.bnAddSource, Translations.Get("bnAddSourceToolTip"));
 				this.toolTip.SetToolTip(this.bnEdit, Translations.Get("bnEditSourceToolTip"));
 				this.toolTip.SetToolTip(this.bnDeleteSource, Translations.Get("bnDeleteSourceToolTip"));
@@ -86,13 +108,10 @@ namespace RoboG
 						dgvSources.Columns[col].Visible = false;
 
 					}
-					dgvSources.Columns["Name"].HeaderText = "Job Name";
-					dgvSources.Columns["MIR"].HeaderText = "Mirror Mode";
-					dgvSources.Columns["TargetPath"].HeaderText = "Target Directory";
-					dgvSources.Columns["SourcePath"].HeaderText = "Source Directory";
-					dgvSources.Columns["ShadowCopy"].HeaderText = "VSS Enabled";
-					dgvSources.Columns["LogOnly"].HeaderText = "Log Only";
-					dgvSources.Columns["DisableJob"].HeaderText = "Job Disabled";
+					dgvSources.Columns["Name"].HeaderText = Translations.Get("ColJobName");
+					dgvSources.Columns["TargetPath"].HeaderText = Translations.Get("ColTargetDirectory");
+					dgvSources.Columns["SourcePath"].HeaderText = Translations.Get("ColSourceDirectory");
+					dgvSources.Columns["LogOnly"].HeaderText = Translations.Get("ColLogOnly");
 
 					dgvSources.Columns["Name"].DisplayIndex = 0;
 					dgvSources.Columns["SourcePath"].DisplayIndex = 1;
@@ -110,15 +129,15 @@ namespace RoboG
 					foreach (String Flag in FlagColumns)
 					{
 						DataGridViewColumn Column = dgvSources.Columns[Flag];
-						Column.ToolTipText = "Click a box to turn this on or off for that job";
+						Column.ToolTipText = Translations.Get("FlagColumnToolTip");
 						Column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
 						Column.Width = 84;
 						Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 						Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 					}
-					dgvSources.Columns["MIR"].HeaderText = "Mirror";
+					dgvSources.Columns["MIR"].HeaderText = Translations.Get("ColMirror");
 					dgvSources.Columns["ShadowCopy"].HeaderText = "VSS";
-					dgvSources.Columns["DisableJob"].HeaderText = "Disabled";
+					dgvSources.Columns["DisableJob"].HeaderText = Translations.Get("ColDisabled");
 					foreach (DataGridViewColumn Column in dgvSources.Columns) Column.SortMode = DataGridViewColumnSortMode.NotSortable;
 				}
 			}
@@ -200,7 +219,7 @@ namespace RoboG
 		{
 			int Count = dgvSources.Rows.Count;
 			lblEmpty.Visible = Count == 0;
-			lblJobCount.Text = Count == 1 ? "1 job" : Count.ToString() + " jobs";
+			lblJobCount.Text = Count == 1 ? Translations.Get("JobCountOne") : Translations.Format("JobCountMany", Count);
 			bnEdit.Enabled = bnDuplicate.Enabled = bnDeleteSource.Enabled = Count > 0;
 			bnUp.Enabled = bnDown.Enabled = Count > 1;
 			bnBackup.Enabled = Count > 0;
@@ -478,7 +497,7 @@ namespace RoboG
 			try
 			{
 				//Settings.SaveSettings(true);
-				if (Settings.SaveSettings(true)) HelperFunctions.ShowMessage("Settings were saved successfully.", "Save Successful");
+				if (Settings.SaveSettings(true)) HelperFunctions.ShowMessage(Translations.Get("SettingsSaved"), "RoboG");
 			}
 			catch (Exception Ex)
 			{
@@ -562,7 +581,7 @@ namespace RoboG
 
 
 				SaveFileDialog saveFileMenuDlg = new SaveFileDialog();
-				saveFileMenuDlg.Filter = "script files (*.script)|*.script|All files (*.*)|*.*";
+				saveFileMenuDlg.Filter = Translations.Get("ScriptFileFilter");
 				saveFileMenuDlg.FilterIndex = 1;
 				saveFileMenuDlg.DefaultExt = "script";
 				saveFileMenuDlg.RestoreDirectory = true;

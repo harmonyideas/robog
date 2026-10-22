@@ -250,7 +250,7 @@ namespace RoboG {
 
     /// <summary>Marks a job that never started (run aborted first).</summary>
     public void Skip() {
-      if (_State == JobState.Waiting) Finish(JobState.Aborted, "Not started");
+      if (_State == JobState.Waiting) Finish(JobState.Aborted, Translations.Get("NotStarted"));
     }
 
     private void Finish(JobState State, String Message) {
@@ -315,7 +315,7 @@ namespace RoboG {
       if (Result != Step.Ok) return Result;
 
       if ((ExitCode & 8) == 8 || ErrorCount > 0) {
-        Finish(JobState.Done, ErrorCount.ToString("N0") + " error(s)");
+        Finish(JobState.Done, Translations.Format("ErrorCountText", ErrorCount.ToString("N0")));
         return Step.Stop;
       }
       Finish(JobState.Done, "");
@@ -363,7 +363,7 @@ namespace RoboG {
       JobState Before = _State;
       _LostPath = Down;
       _State = JobState.Reconnecting;
-      _Message = "Lost connection to " + Down + ". Checking every " + ReconnectCheckSeconds + " seconds.";
+      _Message = Translations.Format("ConnectionLost", Down, ReconnectCheckSeconds);
       Log.Write(_Message);
       RunLog.Write("Job " + Number + " (" + Name + "): lost connection to " + Down + ", waiting for it to come back");
       DiscardHeldErrors();
@@ -383,7 +383,7 @@ namespace RoboG {
         }
         _LostPath = Down;
         if (Waited.Elapsed.TotalMinutes >= ReconnectTimeoutMinutes) {
-          Finish(JobState.Failed, "Lost connection to " + Down + ", and it did not come back within " + ReconnectTimeoutMinutes + " minutes.");
+          Finish(JobState.Failed, Translations.Format("ConnectionNotBack", Down, ReconnectTimeoutMinutes));
           return false;
         }
       }

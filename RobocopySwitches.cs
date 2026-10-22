@@ -144,11 +144,11 @@ namespace RoboG {
           Parts.Add(LastSwitch);
           continue;
         }
-        if (Positional == 0) Parts.Add(new Part(Token, "The robocopy program."));
-        else if (Positional == 1 && LastSwitch == null) Parts.Add(new Part(Token, "Source folder."));
-        else if (Positional == 2 && LastSwitch == null) Parts.Add(new Part(Token, "Target folder."));
+        if (Positional == 0) Parts.Add(new Part(Token, Translations.Get("SwitchesProgram")));
+        else if (Positional == 1 && LastSwitch == null) Parts.Add(new Part(Token, Translations.Get("SwitchesSource")));
+        else if (Positional == 2 && LastSwitch == null) Parts.Add(new Part(Token, Translations.Get("SwitchesTarget")));
         else if (LastSwitch != null) LastSwitch.Text += " " + Quote(Token); // Values of /XF, /XD and similar.
-        else Parts.Add(new Part(Token, "File name or pattern to copy (default *.*)."));
+        else Parts.Add(new Part(Token, Translations.Get("SwitchesFiles")));
         Positional++;
       }
       return Parts;
@@ -162,7 +162,7 @@ namespace RoboG {
         Value = Switch.Substring(Colon + 1);
       }
       String Help;
-      if (!_Help.TryGetValue(Name, out Help)) return "No description available. See \"robocopy /?\".";
+      if (!_Help.TryGetValue(Name, out Help)) return Translations.Get("SwitchesUnknown");
 
       String Upper = Name.ToUpperInvariant();
       if (Value != "" && (Upper == "/IA" || Upper == "/XA" || Upper == "/A+" || Upper == "/A-")) {
@@ -218,7 +218,7 @@ namespace RoboG {
   /// <summary>Shows a robocopy command line with an explanation of every switch.</summary>
   class frmSwitches : Form {
     public frmSwitches(String JobName, String CommandLine) {
-      Text = "robocopy switches - " + JobName;
+      Text = Translations.Format("SwitchesTitle", JobName);
       StartPosition = FormStartPosition.CenterParent;
       Size = new Size(860, 560);
       MinimumSize = new Size(560, 360);
@@ -237,7 +237,7 @@ namespace RoboG {
       txtCommand.Height = 64;
 
       Label lblList = new Label();
-      lblList.Text = "What each part does";
+      lblList.Text = Translations.Get("SwitchesCaption");
       lblList.Dock = DockStyle.Top;
       lblList.Height = 30;
       lblList.Padding = new Padding(0, 10, 0, 0);
@@ -249,8 +249,8 @@ namespace RoboG {
       lstParts.HeaderStyle = ColumnHeaderStyle.Nonclickable;
       lstParts.BorderStyle = BorderStyle.FixedSingle;
       lstParts.Dock = DockStyle.Fill;
-      lstParts.Columns.Add("Switch", 220);
-      lstParts.Columns.Add("What it does", 580);
+      lstParts.Columns.Add(Translations.Get("SwitchesColSwitch"), 220);
+      lstParts.Columns.Add(Translations.Get("SwitchesColMeaning"), 580);
       lstParts.ShowItemToolTips = true;
       foreach (RobocopySwitches.Part Part in RobocopySwitches.Explain(CommandLine)) {
         ListViewItem Item = new ListViewItem(new String[] { Part.Text, Part.Meaning });
@@ -262,14 +262,14 @@ namespace RoboG {
       pnlButtons.Dock = DockStyle.Bottom;
       pnlButtons.Height = 46;
       Button bnCopy = new Button();
-      bnCopy.Text = "Copy command";
+      bnCopy.Text = Translations.Get("bnCopyCommand");
       bnCopy.Size = new Size(130, 30);
       bnCopy.Location = new Point(0, 12);
       bnCopy.Click += (Sender, Args) => {
         try { Clipboard.SetText(CommandLine); } catch { }
       };
       Button bnClose = new Button();
-      bnClose.Text = "Close";
+      bnClose.Text = Translations.Get("Close");
       bnClose.Size = new Size(110, 30);
       bnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       bnClose.DialogResult = DialogResult.OK;
