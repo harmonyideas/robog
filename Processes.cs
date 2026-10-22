@@ -265,6 +265,7 @@ namespace RoboG
 				else RoboG.StartInfo.Arguments += " /User:" + HelperFunctions.GetUserName();
 				// The elevated copy cannot see this session's mapped drives; tell it where they point.
 				RoboG.StartInfo.Arguments += NetworkDrives.GetArguments();
+				if (GlobalData.AutoExitCmd) RoboG.StartInfo.Arguments += " /Auto"; // Stay unattended after the restart.
 				RoboG.Start();
 				Environment.Exit(0);
 				return true;

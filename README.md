@@ -103,7 +103,11 @@ To check a run afterwards, see `%AppData%\RoboG\RoboG-Log.txt` and the job logs 
 
 Only one RoboG runs at a time. Close the RoboG window before a scheduled sync is due, or the sync won't start.
 
-To run it on a schedule, create a task in Task Scheduler that runs the `.cmd` file. If any job uses shadow copies, tick **Run with highest privileges**.
+To run it on a schedule, create a task in Task Scheduler that runs the `.cmd` file:
+
+- **Run whether user is logged on or not**, as your own account with its password saved, works with nobody signed in. With `/Auto` RoboG never waits for a click: questions and errors go to the log (mirror jobs run without the confirmation), and the exit code says how it went.
+- Use network paths (`\\server\share\folder`) in jobs, not mapped drive letters: a drive like `Z:` exists only in a signed-in session. The task's account must be able to open the share.
+- If any job uses shadow copies, tick **Run with highest privileges**.
 
 ## How it behaves
 

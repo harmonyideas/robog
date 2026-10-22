@@ -58,8 +58,13 @@ namespace RoboG {
         foreach (JobRun Run in _Runs) {
           if (Run.Source.MIR) MirOptionSet = true;
         }
-        if (MirOptionSet && HelperFunctions.ShowYesNoQuestion("RoboG", Translations.Get("WarningMIR"), 2) != System.Windows.Forms.DialogResult.Yes) {
-          _Abort = true;
+        if (MirOptionSet) {
+          if (HelperFunctions.Unattended) {
+            // Scheduled or scripted: the mirror jobs were set up on purpose, and nobody is there to confirm.
+            HelperFunctions.WriteLog("Mirror mode: files in the target that are not in the source will be deleted (unattended run, not asked).");
+          } else if (HelperFunctions.ShowYesNoQuestion("RoboG", Translations.Get("WarningMIR"), 2) != System.Windows.Forms.DialogResult.Yes) {
+            _Abort = true;
+          }
         }
 
         foreach (JobRun Run in _Runs) {

@@ -46,7 +46,19 @@ namespace RoboG {
       return null;
     }
 
+    /// <summary>
+    /// True for unattended runs (/Auto: scripts, scheduled tasks). Nobody may be there to click a dialog, and when no
+    /// one is logged on, dialogs are invisible and would wait forever, so messages go to the log instead.
+    /// </summary>
+    public static bool Unattended { get { return GlobalData.AutoExitCmd; } }
+
     public static System.Windows.Forms.DialogResult ShowYesNoQuestion(String Caption, String Text, Int32 DefaultButtonNumber) {
+      if (Unattended) {
+        // The default answer, which for RoboG's questions is the safe one.
+        System.Windows.Forms.DialogResult Answer = DefaultButtonNumber == 2 ? System.Windows.Forms.DialogResult.No : System.Windows.Forms.DialogResult.Yes;
+        WriteLog(Text + " -> " + Answer + " (unattended run)");
+        return Answer;
+      }
       System.Windows.Forms.Form Window = Owner();
       if (Window != null && Window.InvokeRequired) {
         return (System.Windows.Forms.DialogResult) Window.Invoke(new YesNoQuestionDelegate(ShowYesNoQuestion), Caption, Text, DefaultButtonNumber);
@@ -56,6 +68,10 @@ namespace RoboG {
     }
 
     public static void ShowError(String Text) {
+      if (Unattended) {
+        WriteLog(Text);
+        return;
+      }
       System.Windows.Forms.Form Window = Owner();
       if (Window != null && Window.InvokeRequired) {
         try {
@@ -76,6 +92,10 @@ namespace RoboG {
     }
 
     public static void ShowMessage(String Text, String Caption) {
+      if (Unattended) {
+        WriteLog(Text);
+        return;
+      }
       System.Windows.Forms.Form Window = Owner();
       if (Window != null && Window.InvokeRequired) {
         Window.Invoke(new TwoStringParametersDelegate(ShowMessage), Text, Caption);
