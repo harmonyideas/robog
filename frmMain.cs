@@ -130,6 +130,7 @@ namespace RoboG
 			lstJobs.Columns.Add("Files/s", 62, HorizontalAlignment.Right);
 			lstJobs.Columns.Add("Errors", 56, HorizontalAlignment.Right);
 			lstJobs.DoubleClick += new EventHandler(lstJobs_DoubleClick);
+			lstJobs.SelectedIndexChanged += delegate { UpdateCommandButton(); };
 			lstJobs.Dock = DockStyle.Top;
 			lstJobs.Height = 170;
 
@@ -183,6 +184,28 @@ namespace RoboG
 			tabJobs.ResumeLayout();
 			// With a single job its own tab is the interesting one.
 			if (_JobTabs.Count == 1) tabJobs.SelectedTab = _JobTabs[0];
+		}
+
+		// The job the user is looking at: the selected job tab, or on the Overview tab the selected row.
+		private JobRun SelectedRun()
+		{
+			int Index = tabJobs.SelectedIndex - 1;
+			if (Index < 0 && lstJobs.SelectedIndices.Count > 0) Index = lstJobs.SelectedIndices[0];
+			return Index >= 0 && Index < _Panels.Count ? _Panels[Index].Run : null;
+		}
+
+		private void UpdateCommandButton()
+		{
+			JobRun Run = SelectedRun();
+			bool Enabled = Run != null && Run.CommandLine != null;
+			if (bnCommand.Enabled != Enabled) bnCommand.Enabled = Enabled;
+		}
+
+		private void bnCommand_Click(object sender, EventArgs e)
+		{
+			JobRun Run = SelectedRun();
+			if (Run == null || Run.CommandLine == null) return;
+			using (frmSwitches Dialog = new frmSwitches(Run.Name, Run.CommandLine)) Dialog.ShowDialog(this);
 		}
 
 		private void lstJobs_DoubleClick(object sender, EventArgs e)
@@ -459,6 +482,7 @@ namespace RoboG
 				SetText(lblJobsValue, Finished + " of " + _Panels.Count);
 
 				// Only the visible tab's details and log are drawn.
+				UpdateCommandButton();
 				int Selected = tabJobs.SelectedIndex - 1;
 				if (Selected >= 0 && Selected < _Panels.Count) _Panels[Selected].RefreshView(true);
 				else ShowRecentLog();

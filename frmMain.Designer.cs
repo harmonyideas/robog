@@ -75,6 +75,7 @@ namespace RoboG
 			this.pnlSeparator = new System.Windows.Forms.Panel();
 			this.tabJobs = new System.Windows.Forms.TabControl();
 			this.bnLogs = new System.Windows.Forms.Button();
+			this.bnCommand = new System.Windows.Forms.Button();
 			this.bnErrors = new System.Windows.Forms.Button();
 			this.bnClose = new System.Windows.Forms.Button();
 			this.frmMainStatusStrip = new System.Windows.Forms.StatusStrip();
@@ -303,6 +304,17 @@ namespace RoboG
 			this.bnLogs.Text = "Open log folder";
 			this.bnLogs.Click += new System.EventHandler(this.bnLogs_Click);
 			// 
+			// bnCommand
+			// 
+			this.bnCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.bnCommand.Location = new System.Drawing.Point(160, 566);
+			this.bnCommand.Name = "bnCommand";
+			this.bnCommand.Size = new System.Drawing.Size(130, 30);
+			this.bnCommand.TabIndex = 19;
+			this.bnCommand.Text = "View command...";
+			this.bnCommand.Enabled = false;
+			this.bnCommand.Click += new System.EventHandler(this.bnCommand_Click);
+			// 
 			// bnErrors
 			// 
 			this.bnErrors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -370,6 +382,7 @@ namespace RoboG
 			this.Controls.Add(this.pnlSeparator);
 			this.Controls.Add(this.tabJobs);
 			this.Controls.Add(this.bnLogs);
+			this.Controls.Add(this.bnCommand);
 			this.Controls.Add(this.bnErrors);
 			this.Controls.Add(this.bnClose);
 			this.Controls.Add(this.frmMainStatusStrip);
@@ -410,6 +423,7 @@ namespace RoboG
 		private System.Windows.Forms.Panel pnlSeparator;
 		private System.Windows.Forms.TabControl tabJobs;
 		private System.Windows.Forms.Button bnLogs;
+		private System.Windows.Forms.Button bnCommand;
 		private System.Windows.Forms.Button bnErrors;
 		private System.Windows.Forms.Button bnClose;
 		private System.Windows.Forms.Timer DotTimer;
