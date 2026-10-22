@@ -36,6 +36,8 @@ namespace RoboG {
     private readonly Label lblTarget = new Label();
     private readonly Label lblFile = new Label();
     private readonly Label lblSize = new Label();
+    private readonly TextBox txtCommand = new TextBox();
+    private readonly Button bnSwitches = new Button();
     private readonly TextBox txtLog = new TextBox();
 
     // Transfer rate, averaged over at least two seconds so it doesn't jump from file to file.
@@ -77,6 +79,7 @@ namespace RoboG {
       Caption(Translations.Get("lblDirectoryCaption"), 136);
       Caption("Target:", 156);
       Caption(Translations.Get("lblFileCaption"), 176);
+      Caption("Command:", 198);
       Place(lblSource, 80, 136, 668, 18, TLR);
       Place(lblTarget, 80, 156, 668, 18, TLR);
       Place(lblFile, 80, 176, 568, 18, TLR);
@@ -89,7 +92,21 @@ namespace RoboG {
       lblSource.Text = Run.Source.SourcePath;
       lblTarget.Text = Run.Source.TargetPath;
 
-      Place(txtLog, 12, 204, 736, 146, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
+      // The exact robocopy command line: selectable, so it can be copied and run by hand.
+      Place(txtCommand, 80, 196, 560, 22, TLR);
+      txtCommand.ReadOnly = true;
+      txtCommand.BorderStyle = BorderStyle.FixedSingle;
+      txtCommand.BackColor = Theme.SurfaceAlt;
+      txtCommand.Font = new Font("Consolas", 8.25F);
+      txtCommand.Text = "(not started)";
+      Place(bnSwitches, 648, 194, 100, 26, AnchorStyles.Top | AnchorStyles.Right);
+      bnSwitches.Text = "Switches...";
+      bnSwitches.Enabled = false;
+      bnSwitches.Click += bnSwitches_Click;
+      Theme.StyleButton(bnSwitches, false);
+      new ToolTip().SetToolTip(bnSwitches, "Explain each robocopy switch in this command");
+
+      Place(txtLog, 12, 228, 736, 122, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
       txtLog.Multiline = true;
       txtLog.ReadOnly = true;
       txtLog.WordWrap = false;
@@ -249,8 +266,19 @@ namespace RoboG {
         SetText(lblSize, "");
       }
       SetText(lblTarget, Run.Target ?? "");
+      String Command = Run.CommandLine;
+      if (Command != null && txtCommand.Text != Command) {
+        txtCommand.Text = Command;
+        bnSwitches.Enabled = true;
+      }
 
       if (IncludeLog) ShowRecentLog();
+    }
+
+    private void bnSwitches_Click(object Sender, EventArgs Args) {
+      String Command = Run.CommandLine;
+      if (Command == null) return;
+      using (frmSwitches Dialog = new frmSwitches(Run.Name, Command)) Dialog.ShowDialog(FindForm());
     }
 
     private void ShowRecentLog() {

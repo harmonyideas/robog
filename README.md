@@ -36,7 +36,7 @@ RoboG is a Windows front end for **robocopy**. You define sync jobs (a source fo
 | ![Sync jobs](screenshots/main-window.png) | ![Edit sync job](screenshots/edit-job.png) |
 | **Sync jobs**: the jobs in the profile | **Edit sync job**: source, target, shadow copies, test run |
 | ![Job tab](screenshots/sync-progress-job.png) | ![Profile options](screenshots/profile-options.png) |
-| **Job tab**: progress, current file and log of one job | **Profile options**: retries, threads, parallel jobs, logging, programs |
+| **Job tab**: progress, current file, robocopy command and log of one job | **Profile options**: retries, threads, parallel jobs, logging, programs |
 
 ![Advanced job options](screenshots/job-options.png)
 **Advanced job options**: attribute filters, excluded files and folders, age and size limits, mirror mode and NTFS security.
@@ -57,6 +57,8 @@ RoboG is a Windows front end for **robocopy**. You define sync jobs (a source fo
 | NTFS security, owner, auditing | `/COPY:S` `O` `U` | |
 | Backup mode | `/ZB` | Needs the "Back up files and directories" privilege. |
 | Disable job | — | The job is skipped when the profile runs. |
+
+Each job's tab in the progress window shows the exact robocopy command line it ran. **Switches...** next to it lists every part of the command with what it does, and copies the command for running by hand.
 
 RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tolerance (for NAS and FAT targets), allow for daylight-saving changes, skip junctions, and suppress per-file percentages.
 

@@ -89,6 +89,7 @@ namespace RoboG {
     private volatile String _CurrentFile = null;
     private volatile String _CurrentDir = null;
     private volatile String _Target = null;
+    private volatile String _CommandLine = null;
 
     // Used only by the job's thread.
     private String _RealSourceDir = null;
@@ -135,6 +136,8 @@ namespace RoboG {
     public String CurrentFile { get { return _CurrentFile; } }
     public String CurrentDirectory { get { return _CurrentDir; } }
     public String Target { get { return _Target; } }
+    /// <summary>The exact command line of the job's latest robocopy run (scan or copy), or null before the first.</summary>
+    public String CommandLine { get { return _CommandLine; } }
     public TimeSpan Elapsed { get { return _Time.Elapsed; } }
 
     #endregion
@@ -240,7 +243,10 @@ namespace RoboG {
     }
 
     private int RunRobocopy(String Source, String Target, String Switches, Action<String> LineHandler, out String Error) {
-      return IO.RunRobocopy(IO.BuildRobocopyArguments(Source, Target, Switches), LineHandler, P => _Cmd = P, () => _Abort, Log, out Error);
+      return IO.RunRobocopy(IO.BuildRobocopyArguments(Source, Target, Switches), LineHandler, P => {
+        _Cmd = P;
+        if (P != null) _CommandLine = IO.QuoteRobocopyArgument(P.StartInfo.FileName) + " " + P.StartInfo.Arguments;
+      }, () => _Abort, Log, out Error);
     }
 
     // Runs robocopy in list-only mode to find how many bytes need copying. Only robocopy's summary is
