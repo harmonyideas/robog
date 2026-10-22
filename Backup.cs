@@ -122,7 +122,17 @@ namespace RoboG {
           (Processes.Elevated() ? "\n\nRoboG is running as administrator, and Windows keeps mapped network drives separate for administrator programs. Use the network path (\\\\server\\share) instead of the drive letter." : ""));
         return false;
       }
-      if (!System.IO.Directory.Exists(Target)) Directory.Create(Target);
+      if (!System.IO.Directory.Exists(Target)) {
+        // Creates every missing level (for example after the target share was emptied or reformatted),
+        // as robocopy itself would.
+        try {
+          System.IO.Directory.CreateDirectory(Target);
+          HelperFunctions.WriteLog("Created missing target folder " + Target);
+        } catch (Exception ex) {
+          HelperFunctions.ShowError("Could not create the target folder " + Target + ":\n\n" + ex.Message);
+          return false;
+        }
+      }
       if (!Directory.IsWriteable(Target)) {
         HelperFunctions.ShowError(Translations.Get("DirectoryNotWriteable1") + Target + Translations.Get("DirectoryNotWriteable2"));
         return false;
