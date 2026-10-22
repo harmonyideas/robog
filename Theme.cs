@@ -226,9 +226,11 @@ namespace RoboG {
       Cell.Alignment = DataGridViewContentAlignment.MiddleLeft;
       Cell.Padding = new Padding(6, 0, 6, 0);
       Cell.WrapMode = DataGridViewTriState.False;
+      // Set once as the grid default only. Row-level styles would outrank each column's own style, so a column
+      // could no longer centre its cells (the checkbox columns in the jobs list).
       Grid.DefaultCellStyle = Cell;
-      Grid.RowsDefaultCellStyle = Cell;
-      Grid.AlternatingRowsDefaultCellStyle = Cell;
+      Grid.RowsDefaultCellStyle = new DataGridViewCellStyle();
+      Grid.AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle();
     }
 
     // Windows draws a single-line DataGridView border in black; put the grid in a panel that
