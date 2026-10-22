@@ -38,6 +38,7 @@ namespace RoboG {
     private readonly Label lblSize = new Label();
     private readonly TextBox txtCommand = new TextBox();
     private readonly Button bnSwitches = new Button();
+    private readonly ToolTip Tips = new ToolTip();
     private readonly TextBox txtLog = new TextBox();
 
     // Transfer rate, averaged over at least two seconds so it doesn't jump from file to file.
@@ -79,7 +80,6 @@ namespace RoboG {
       Caption(Translations.Get("lblDirectoryCaption"), 136);
       Caption("Target:", 156);
       Caption(Translations.Get("lblFileCaption"), 176);
-      Caption("Command:", 198);
       Place(lblSource, 80, 136, 668, 18, TLR);
       Place(lblTarget, 80, 156, 668, 18, TLR);
       Place(lblFile, 80, 176, 568, 18, TLR);
@@ -92,21 +92,25 @@ namespace RoboG {
       lblSource.Text = Run.Source.SourcePath;
       lblTarget.Text = Run.Source.TargetPath;
 
-      // The exact robocopy command line: selectable, so it can be copied and run by hand.
-      Place(txtCommand, 80, 196, 560, 22, TLR);
+      Place(txtLog, 12, 204, 736, 112, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
+
+      // Under the log: the exact robocopy command line as a quiet status line (selectable, so it can be
+      // copied), and a button that explains each of its switches.
+      AnchorStyles BLR = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      Place(txtCommand, 12, 331, 626, 18, BLR);
       txtCommand.ReadOnly = true;
-      txtCommand.BorderStyle = BorderStyle.FixedSingle;
-      txtCommand.BackColor = Theme.SurfaceAlt;
+      txtCommand.BorderStyle = BorderStyle.None;
+      txtCommand.BackColor = Theme.Surface;
+      txtCommand.ForeColor = Theme.TextMuted;
       txtCommand.Font = new Font("Consolas", 8.25F);
-      txtCommand.Text = "(not started)";
-      Place(bnSwitches, 648, 194, 100, 26, AnchorStyles.Top | AnchorStyles.Right);
+      txtCommand.Text = "robocopy command appears here when the job starts";
+      Place(bnSwitches, 648, 325, 100, 28, AnchorStyles.Bottom | AnchorStyles.Right);
       bnSwitches.Text = "Switches...";
       bnSwitches.Enabled = false;
       bnSwitches.Click += bnSwitches_Click;
       Theme.StyleButton(bnSwitches, false);
-      new ToolTip().SetToolTip(bnSwitches, "Explain each robocopy switch in this command");
+      Tips.SetToolTip(bnSwitches, "Explain each part of this robocopy command");
 
-      Place(txtLog, 12, 228, 736, 122, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
       txtLog.Multiline = true;
       txtLog.ReadOnly = true;
       txtLog.WordWrap = false;
@@ -269,6 +273,7 @@ namespace RoboG {
       String Command = Run.CommandLine;
       if (Command != null && txtCommand.Text != Command) {
         txtCommand.Text = Command;
+        Tips.SetToolTip(txtCommand, Command);
         bnSwitches.Enabled = true;
       }
 
