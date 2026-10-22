@@ -105,6 +105,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="JobRun.cs" />
+    <Compile Include="LogFolders.cs" />
     <Compile Include="frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>

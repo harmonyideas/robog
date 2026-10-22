@@ -177,6 +177,13 @@ namespace RoboG {
 		private static int _ParallelJobs = 4;
 		public static int ParallelJobs { get { return _ParallelJobs; } set { _ParallelJobs = Math.Max(1, Math.Min(MaxParallelJobs, value)); } }
 
+		// Where this profile's logs go ("" = %AppData%\RoboG), and how many runs' logs to keep (0 = all). See LogFolders.
+		private static String _LogFolder = "";
+		public static String LogFolder { get { return _LogFolder; } set { _LogFolder = (value ?? "").Trim(); } }
+		public const int MaxKeepRuns = 9999;
+		private static int _KeepRuns = 30;
+		public static int KeepRuns { get { return _KeepRuns; } set { _KeepRuns = Math.Max(0, Math.Min(MaxKeepRuns, value)); } }
+
 		// When false, robocopy is run with /NFL /NDL: only errors and the summary are reported (fastest for huge file sets).
 		private static bool _LogFiles = true;
 		public static bool LogFiles { get { return _LogFiles; } set { _LogFiles = value; } }
@@ -430,6 +437,14 @@ namespace RoboG {
 					tw.WriteString(_ParallelJobs.ToString());
 					tw.WriteEndElement();
 
+					tw.WriteStartElement("logfolder");
+					tw.WriteString(_LogFolder);
+					tw.WriteEndElement();
+
+					tw.WriteStartElement("keepruns");
+					tw.WriteString(_KeepRuns.ToString());
+					tw.WriteEndElement();
+
 					tw.WriteStartElement("logfiles");
 					tw.WriteString(_LogFiles.ToString());
 					tw.WriteEndElement();
@@ -669,6 +684,12 @@ namespace RoboG {
 											break;
 										case "paralleljobs":
 											if (int.TryParse(Rd.ReadString().Trim(), out TempInt)) ParallelJobs = TempInt;
+											break;
+										case "logfolder":
+											LogFolder = Rd.ReadString();
+											break;
+										case "keepruns":
+											if (int.TryParse(Rd.ReadString().Trim(), out TempInt)) KeepRuns = TempInt;
 											break;
 										case "logfiles":
 											Temp = Rd.ReadString().Trim().ToLower();

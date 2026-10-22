@@ -52,7 +52,6 @@ namespace RoboG {
       try {
         _Abort = false;
         IO.ResetErrors();
-        DeleteOldJobLogs();
 
         bool MirOptionSet = false;
         foreach (JobRun Run in _Runs) {
@@ -159,18 +158,6 @@ namespace RoboG {
         }
       }
       return false;
-    }
-
-    private static void DeleteOldJobLogs() {
-      try {
-        String Folder = GlobalData.LogPath + "\\Jobs";
-        if (!System.IO.Directory.Exists(Folder)) return;
-        foreach (String File in System.IO.Directory.GetFiles(Folder, "Job-*.txt")) {
-          try {
-            System.IO.File.Delete(File);
-          } catch {}
-        }
-      } catch {}
     }
 
     /// <summary>Stops all jobs. Jobs still waiting are not started.</summary>

@@ -86,9 +86,18 @@ namespace RoboG
 			this.numThreads = new System.Windows.Forms.NumericUpDown();
 			this.lblThreadsHint = new System.Windows.Forms.Label();
 			this.lblParallelJobs = new System.Windows.Forms.Label();
+			this.gbLogs = new System.Windows.Forms.GroupBox();
+			this.lblLogFolder = new System.Windows.Forms.Label();
+			this.txtLogFolder = new System.Windows.Forms.TextBox();
+			this.bnSelectLogFolder = new System.Windows.Forms.Button();
+			this.lblKeepRuns = new System.Windows.Forms.Label();
+			this.numKeepRuns = new System.Windows.Forms.NumericUpDown();
+			this.lblKeepRunsUnit = new System.Windows.Forms.Label();
 			this.numParallelJobs = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.numThreads)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numParallelJobs)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numKeepRuns)).BeginInit();
+			this.gbLogs.SuspendLayout();
 			this.txtProgramOnError = new RoboG.PathTextBox();
 			this.txtProgramAfterBackup = new RoboG.PathTextBox();
 			this.txtProgramBeforeBackup = new RoboG.PathTextBox();
@@ -162,7 +171,7 @@ namespace RoboG
 			this.gbProgramBeforeBackup.Controls.Add(this.lblProgram1);
 			this.gbProgramBeforeBackup.Controls.Add(this.bnSelectProgramBeforeBackup);
 			this.gbProgramBeforeBackup.Controls.Add(this.txtProgramBeforeBackup);
-			this.gbProgramBeforeBackup.Location = new System.Drawing.Point(18, 187);
+			this.gbProgramBeforeBackup.Location = new System.Drawing.Point(18, 267);
 			this.gbProgramBeforeBackup.Name = "gbProgramBeforeBackup";
 			this.gbProgramBeforeBackup.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramBeforeBackup.TabIndex = 3;
@@ -217,7 +226,7 @@ namespace RoboG
 			this.gbProgramAfterBackup.Controls.Add(this.lblProgram2);
 			this.gbProgramAfterBackup.Controls.Add(this.bnSelectProgramAfterBackup);
 			this.gbProgramAfterBackup.Controls.Add(this.txtProgramAfterBackup);
-			this.gbProgramAfterBackup.Location = new System.Drawing.Point(18, 280);
+			this.gbProgramAfterBackup.Location = new System.Drawing.Point(18, 360);
 			this.gbProgramAfterBackup.Name = "gbProgramAfterBackup";
 			this.gbProgramAfterBackup.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramAfterBackup.TabIndex = 4;
@@ -267,7 +276,7 @@ namespace RoboG
 			// 
 			this.bnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.bnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bnCancel.Location = new System.Drawing.Point(408, 480);
+			this.bnCancel.Location = new System.Drawing.Point(408, 560);
 			this.bnCancel.Name = "bnCancel";
 			this.bnCancel.Size = new System.Drawing.Size(76, 28);
 			this.bnCancel.TabIndex = 6;
@@ -277,7 +286,7 @@ namespace RoboG
 			// bnOK
 			// 
 			this.bnOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.bnOK.Location = new System.Drawing.Point(326, 480);
+			this.bnOK.Location = new System.Drawing.Point(326, 560);
 			this.bnOK.Name = "bnOK";
 			this.bnOK.Size = new System.Drawing.Size(76, 28);
 			this.bnOK.TabIndex = 5;
@@ -326,7 +335,7 @@ namespace RoboG
 			this.gbProgramOnError.Controls.Add(this.lblProgram3);
 			this.gbProgramOnError.Controls.Add(this.bnSelectProgramOnError);
 			this.gbProgramOnError.Controls.Add(this.txtProgramOnError);
-			this.gbProgramOnError.Location = new System.Drawing.Point(18, 380);
+			this.gbProgramOnError.Location = new System.Drawing.Point(18, 460);
 			this.gbProgramOnError.Name = "gbProgramOnError";
 			this.gbProgramOnError.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramOnError.TabIndex = 12;
@@ -436,6 +445,82 @@ namespace RoboG
 			this.lblThreadsHint.Text = "16-32 suits most jobs.";
 			this.lblThreadsHint.Visible = false;
 			// 
+			// gbLogs
+			// 
+			this.gbLogs.Controls.Add(this.lblLogFolder);
+			this.gbLogs.Controls.Add(this.txtLogFolder);
+			this.gbLogs.Controls.Add(this.bnSelectLogFolder);
+			this.gbLogs.Controls.Add(this.lblKeepRuns);
+			this.gbLogs.Controls.Add(this.numKeepRuns);
+			this.gbLogs.Controls.Add(this.lblKeepRunsUnit);
+			this.gbLogs.Location = new System.Drawing.Point(18, 187);
+			this.gbLogs.Name = "gbLogs";
+			this.gbLogs.Size = new System.Drawing.Size(464, 74);
+			this.gbLogs.TabIndex = 20;
+			this.gbLogs.TabStop = false;
+			this.gbLogs.Text = "Logs";
+			// 
+			// lblLogFolder
+			// 
+			this.lblLogFolder.AutoSize = true;
+			this.lblLogFolder.Location = new System.Drawing.Point(6, 22);
+			this.lblLogFolder.Name = "lblLogFolder";
+			this.lblLogFolder.Size = new System.Drawing.Size(39, 13);
+			this.lblLogFolder.TabIndex = 0;
+			this.lblLogFolder.Text = "Folder:";
+			// 
+			// txtLogFolder
+			// 
+			this.txtLogFolder.Location = new System.Drawing.Point(105, 18);
+			this.txtLogFolder.Name = "txtLogFolder";
+			this.txtLogFolder.Size = new System.Drawing.Size(296, 20);
+			this.txtLogFolder.TabIndex = 1;
+			// 
+			// bnSelectLogFolder
+			// 
+			this.bnSelectLogFolder.Location = new System.Drawing.Point(407, 17);
+			this.bnSelectLogFolder.Name = "bnSelectLogFolder";
+			this.bnSelectLogFolder.Size = new System.Drawing.Size(28, 21);
+			this.bnSelectLogFolder.TabIndex = 2;
+			this.bnSelectLogFolder.Text = "...";
+			this.bnSelectLogFolder.UseVisualStyleBackColor = true;
+			this.bnSelectLogFolder.Click += new System.EventHandler(this.bnSelectLogFolder_Click);
+			// 
+			// lblKeepRuns
+			// 
+			this.lblKeepRuns.AutoSize = true;
+			this.lblKeepRuns.Location = new System.Drawing.Point(6, 48);
+			this.lblKeepRuns.Name = "lblKeepRuns";
+			this.lblKeepRuns.Size = new System.Drawing.Size(120, 13);
+			this.lblKeepRuns.TabIndex = 3;
+			this.lblKeepRuns.Text = "Keep the logs of the last";
+			// 
+			// numKeepRuns
+			// 
+			this.numKeepRuns.Location = new System.Drawing.Point(150, 45);
+			this.numKeepRuns.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+			this.numKeepRuns.Name = "numKeepRuns";
+			this.numKeepRuns.Size = new System.Drawing.Size(56, 20);
+			this.numKeepRuns.TabIndex = 4;
+			this.numKeepRuns.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+			// 
+			// lblKeepRunsUnit
+			// 
+			this.lblKeepRunsUnit.AutoSize = true;
+			this.lblKeepRunsUnit.Location = new System.Drawing.Point(212, 48);
+			this.lblKeepRunsUnit.Name = "lblKeepRunsUnit";
+			this.lblKeepRunsUnit.Size = new System.Drawing.Size(80, 13);
+			this.lblKeepRunsUnit.TabIndex = 5;
+			this.lblKeepRunsUnit.Text = "runs (0 = keep all)";
+			// 
 			// lblParallelJobs
 			// 
 			this.lblParallelJobs.AutoSize = true;
@@ -525,10 +610,11 @@ namespace RoboG
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.bnCancel;
-			this.ClientSize = new System.Drawing.Size(500, 549);
+			this.ClientSize = new System.Drawing.Size(500, 629);
 			this.Controls.Add(this.lblThreadsHint);
 			this.Controls.Add(this.numParallelJobs);
 			this.Controls.Add(this.lblParallelJobs);
+			this.Controls.Add(this.gbLogs);
 			this.Controls.Add(this.numThreads);
 			this.Controls.Add(this.lblThreads);
 			this.Controls.Add(this.chkLogFiles);
@@ -562,6 +648,9 @@ namespace RoboG
 			this.gbProgramOnError.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numThreads)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numParallelJobs)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numKeepRuns)).EndInit();
+			this.gbLogs.ResumeLayout(false);
+			this.gbLogs.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -608,5 +697,12 @@ namespace RoboG
 		private System.Windows.Forms.Label lblThreadsHint;
 		private System.Windows.Forms.Label lblParallelJobs;
 		private System.Windows.Forms.NumericUpDown numParallelJobs;
+		private System.Windows.Forms.GroupBox gbLogs;
+		private System.Windows.Forms.Label lblLogFolder;
+		private System.Windows.Forms.TextBox txtLogFolder;
+		private System.Windows.Forms.Button bnSelectLogFolder;
+		private System.Windows.Forms.Label lblKeepRuns;
+		private System.Windows.Forms.NumericUpDown numKeepRuns;
+		private System.Windows.Forms.Label lblKeepRunsUnit;
     }
 }

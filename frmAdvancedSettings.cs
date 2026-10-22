@@ -29,11 +29,12 @@ namespace RoboG
 {
 	public partial class frmAdvancedSettings : System.Windows.Forms.Form
 	{
+		private readonly ToolTip ThreadsTip = new ToolTip();
+
 		public frmAdvancedSettings()
 		{
 			InitializeComponent();
 			Theme.Apply(this);
-			ToolTip ThreadsTip = new ToolTip();
 			ThreadsTip.SetToolTip(numThreads, String.Join("\r\n", new String[] { Translations.Get("ThreadsToolTip1"), Translations.Get("ThreadsToolTip2"), Translations.Get("ThreadsToolTip3"), Translations.Get("ThreadsToolTip4") }));
 			ThreadsTip.SetToolTip(lblThreadsHint, ThreadsTip.GetToolTip(numThreads));
 			ThreadsTip.SetToolTip(lblThreads, ThreadsTip.GetToolTip(numThreads));
@@ -63,6 +64,15 @@ namespace RoboG
 				Translations.Set(chkLogFiles, "chkLogFiles");
 				Translations.Set(lblThreads, "lblThreads");
 				Translations.Set(lblParallelJobs, "lblParallelJobs");
+				Translations.Set(gbLogs, "gbLogs");
+				Translations.Set(lblLogFolder, "lblLogFolder");
+				Translations.Set(lblKeepRuns, "lblKeepRuns");
+				Translations.Set(lblKeepRunsUnit, "lblKeepRunsUnit");
+				// "Keep the logs of the last [30] runs": the number box follows its (translated) label.
+				numKeepRuns.Left = lblKeepRuns.Right + 6;
+				lblKeepRunsUnit.Left = numKeepRuns.Right + 6;
+				ThreadsTip.SetToolTip(txtLogFolder, Translations.Get("LogFolderToolTip"));
+				ThreadsTip.SetToolTip(lblLogFolder, Translations.Get("LogFolderToolTip"));
 				Translations.Set(bnOK, "OK");
 				Translations.Set(bnCancel, "Cancel");
 				// A longer translated label pushes both number boxes right, keeping them aligned.
@@ -133,6 +143,9 @@ namespace RoboG
 				chkLogFiles.Checked = Settings.LogFiles;
 				numThreads.Value = Settings.Threads;
 				numParallelJobs.Value = Settings.ParallelJobs;
+				// The folder actually used is shown; the default is stored as "" so it follows the user's AppData.
+				txtLogFolder.Text = Settings.LogFolder == "" ? LogFolders.DefaultFolder : Settings.LogFolder;
+				numKeepRuns.Value = Math.Min(Settings.MaxKeepRuns, Settings.KeepRuns);
 				
 
 				txtProgramBeforeBackup.Text = Settings.ProgramBeforeBackup;
@@ -169,6 +182,9 @@ namespace RoboG
 				Settings.LogFiles = chkLogFiles.Checked;
 				Settings.Threads = (int)numThreads.Value;
 				Settings.ParallelJobs = (int)numParallelJobs.Value;
+				String LogFolder = txtLogFolder.Text.Trim().TrimEnd('\\');
+				Settings.LogFolder = String.Equals(LogFolder, LogFolders.DefaultFolder, StringComparison.OrdinalIgnoreCase) ? "" : LogFolder;
+				Settings.KeepRuns = (int)numKeepRuns.Value;
 				Settings.ProgramBeforeBackup = txtProgramBeforeBackup.Text;
 				Settings.ArgumentsProgramBeforeBackup = txtArgumentsProgramBeforeBackup.Text;
 				Settings.ProgramBeforeBackupAdmin = chkProgramBeforeBackupAdmin.Checked;
@@ -187,9 +203,39 @@ namespace RoboG
 
 		private void bnOK_Click(object sender, EventArgs e)
 		{
+			if (!LogFolderUsable()) return;
 			Save();
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.Close();
+		}
+
+		// The log folder must exist or be creatable; empty means the default.
+		private bool LogFolderUsable()
+		{
+			String Folder = txtLogFolder.Text.Trim();
+			if (Folder == "") return true;
+			try
+			{
+				System.IO.Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(Folder));
+				return true;
+			}
+			catch (Exception ex)
+			{
+				HelperFunctions.ShowError(Translations.Format("LogFolderUnusable", Folder) + "\n\n" + ex.Message);
+				txtLogFolder.Focus();
+				return false;
+			}
+		}
+
+		private void bnSelectLogFolder_Click(object sender, EventArgs e)
+		{
+			using (FolderBrowserDialog Dialog = new FolderBrowserDialog())
+			{
+				Dialog.Description = Translations.Get("SelectLogFolder");
+				String Current = Environment.ExpandEnvironmentVariables(txtLogFolder.Text.Trim());
+				if (System.IO.Directory.Exists(Current)) Dialog.SelectedPath = Current;
+				if (Dialog.ShowDialog(this) == DialogResult.OK) txtLogFolder.Text = Dialog.SelectedPath;
+			}
 		}
 
 		private void bnSelectProgramBeforeBackup_Click(object sender, EventArgs e)

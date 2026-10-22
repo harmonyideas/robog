@@ -671,11 +671,19 @@ namespace RoboG
 					return;
 				}
 
-				if (GlobalData.LogPath != null)
+				// Each run logs into a folder of its own under the profile's log folder (see LogFolders).
+				String LogProblem = null;
+				try
 				{
-					String LogFile = GlobalData.LogPath + "\\RoboG-Log.txt";
-					if (RunLog.Start(LogFile)) lblStripStatus.Text = Translations.Format("StatusLogFile", LogFile);
+					LogProblem = LogFolders.StartRun();
 				}
+				catch (Exception ex)
+				{
+					LogProblem = "Could not create a log folder for this run: " + ex.Message;
+				}
+				String LogFile = GlobalData.LogPath + "\\RoboG-Log.txt";
+				if (RunLog.Start(LogFile)) lblStripStatus.Text = Translations.Format("StatusLogFile", LogFile);
+				if (LogProblem != null) HelperFunctions.WriteLog(LogProblem);
 				NetworkDrives.ResolveJobs();
 
 				Backup.CreateRuns();

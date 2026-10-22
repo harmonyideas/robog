@@ -75,6 +75,7 @@ RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tole
 | Show live progress | on | Lists every file. Off (`/NFL /NDL`) is fastest. Totals still appear when each job finishes. |
 | Close automatically | off | Close when the run succeeds, or always. |
 | Silent mode | off | Errors are logged instead of shown in a dialog. |
+| Logs | `%AppData%\RoboG`, keep 30 runs | Where this profile's logs go, and how many runs to keep (0 = all). See [Logs](#logs). |
 | Programs | — | Run a program or script before the sync, after it, and after errors. RoboG waits for each to finish. **Before** runs first (before shadow copies); **after** runs when all jobs are done; **on errors** runs after that, only if a job failed or files could not be copied (not when you stop the run). `.exe`, `.cmd`/`.bat` and `.ps1` (run with PowerShell) all work; each runs in its own folder. Both logs are complete and readable when the after and error programs run, for example to mail them. Each program's exit code is written to the run log. "Start as administrator" needs RoboG to run elevated in unattended runs. |
 
 ## Command line and scheduling
@@ -92,14 +93,14 @@ RoboG.exe /s /Settings:"C:\path\profile.xml" /Auto
 
 **Edit > Generate Script File** saves a `.cmd` file that runs the current profile this way. Double-click it to run, or use it as a scheduled task's program. RoboG's progress window opens while it runs, and with `/Auto` it closes when the sync is done.
 
-To check a run afterwards, see `%AppData%\RoboG\RoboG-Log.txt` and the job logs in `%AppData%\RoboG\Jobs`, or the exit code (Task Scheduler shows it as **Last Run Result**):
+To check a run afterwards, see its log folder (see [Logs](#logs)), or the exit code (Task Scheduler shows it as **Last Run Result**):
 
 | Exit code | Meaning |
 |---|---|
 | 0 | Everything was copied |
 | 1 | Finished with errors, or a job failed (see the error log) |
 | 2 | Stopped by the user |
-| 4 | Not started: another RoboG was already open (also noted in `RoboG-Log.txt`) |
+| 4 | Not started: another RoboG was already open (also noted in `RoboG-NotStarted.txt` in the log folder) |
 
 Only one RoboG runs at a time. Close the RoboG window before a scheduled sync is due, or the sync won't start.
 
@@ -121,13 +122,20 @@ To run it on a schedule, create a task in Task Scheduler that runs the `.cmd` fi
 
 ## Logs
 
-All logs are in `%AppData%\RoboG`. The progress window has an **Open log folder** button.
+Each run writes its logs to a folder of its own, so a run never overwrites an earlier one (last night's scheduled sync is still there in the morning):
+
+```
+<log folder>\Logs\2026-10-22 02-00-03\
+```
+
+The log folder is set per profile in **Profile options > Logs** (default `%AppData%\RoboG`; a network share works too). RoboG keeps the newest 30 runs by default and deletes older run folders; set it to 0 to keep all. If the log folder can't be reached when a run starts, that run logs to `%AppData%\RoboG` instead and says so in its run log. **Open log folder** in the progress window opens the current run's folder.
 
 | File | Contents |
 |---|---|
 | `RoboG-Log.txt` | The run as a whole: shadow copies, and when each job starts and ends. |
 | `Jobs\Job-NN-<name>.txt` | Everything robocopy reported for one job. |
 | `RoboG-Errors.txt` | Every file that could not be copied, from all jobs, tagged with the job name. |
+| `RoboG-NotStarted.txt` | In the log folder itself: scheduled or scripted syncs that didn't start because another RoboG was open. |
 
 Logs are written to disk as the run goes; only the last 500 lines of each are kept in memory. **Show errors** in the progress window lists up to 10,000 errors; the error log file has all of them.
 

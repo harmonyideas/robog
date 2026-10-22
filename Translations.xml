@@ -329,6 +329,13 @@
 		<SwitchesFiles>File name or pattern to copy (default *.*).</SwitchesFiles>
 		<SwitchesUnknown>No description available. See "robocopy /?".</SwitchesUnknown>
 		<AlreadyRunning>RoboG is already running, so this sync was not started. Close the other RoboG window and run it again.</AlreadyRunning>
+		<gbLogs>Logs</gbLogs>
+		<lblLogFolder>Folder:</lblLogFolder>
+		<lblKeepRuns>Keep the logs of the last</lblKeepRuns>
+		<lblKeepRunsUnit>runs (0 = keep all)</lblKeepRunsUnit>
+		<LogFolderToolTip>Each run writes its logs to a folder of its own here, under Logs, named after the date and time it started. A network share works too: if it can't be reached, that run logs to %AppData%\RoboG instead.</LogFolderToolTip>
+		<LogFolderUnusable>The log folder {0} can't be used.</LogFolderUnusable>
+		<SelectLogFolder>Select the folder for RoboG's logs</SelectLogFolder>
 	</en-US>
 	<de-DE name="Deutsch">
 		<!--Multiple files-->
@@ -659,6 +666,13 @@
 		<SwitchesFiles>Zu kopierender Dateiname oder Muster (Standard *.*).</SwitchesFiles>
 		<SwitchesUnknown>Keine Beschreibung verfügbar. Siehe „robocopy /?“.</SwitchesUnknown>
 		<AlreadyRunning>RoboG läuft bereits, daher wurde diese Synchronisierung nicht gestartet. Schließen Sie das andere RoboG-Fenster und starten Sie sie erneut.</AlreadyRunning>
+		<gbLogs>Protokolle</gbLogs>
+		<lblLogFolder>Ordner:</lblLogFolder>
+		<lblKeepRuns>Protokolle der letzten</lblKeepRuns>
+		<lblKeepRunsUnit>Läufe behalten (0 = alle)</lblKeepRunsUnit>
+		<LogFolderToolTip>Jeder Lauf schreibt seine Protokolle hier in einen eigenen Ordner unter Logs, benannt nach Datum und Uhrzeit des Starts. Eine Netzwerkfreigabe geht auch: Ist sie nicht erreichbar, protokolliert der Lauf stattdessen nach %AppData%\RoboG.</LogFolderToolTip>
+		<LogFolderUnusable>Der Protokollordner {0} kann nicht verwendet werden.</LogFolderUnusable>
+		<SelectLogFolder>Ordner für die RoboG-Protokolle auswählen</SelectLogFolder>
 	</de-DE>
 	<fr-FR name="Français">
 		<!--Multiple files-->
@@ -989,5 +1003,12 @@
 		<SwitchesFiles>Nom ou modèle de fichier à copier (par défaut *.*).</SwitchesFiles>
 		<SwitchesUnknown>Aucune description disponible. Voir « robocopy /? ».</SwitchesUnknown>
 		<AlreadyRunning>RoboG est déjà ouvert, cette synchronisation n'a donc pas démarré. Fermez l'autre fenêtre RoboG et relancez-la.</AlreadyRunning>
+		<gbLogs>Journaux</gbLogs>
+		<lblLogFolder>Dossier :</lblLogFolder>
+		<lblKeepRuns>Conserver les journaux des</lblKeepRuns>
+		<lblKeepRunsUnit>dernières exécutions (0 = toutes)</lblKeepRunsUnit>
+		<LogFolderToolTip>Chaque exécution écrit ses journaux ici dans son propre dossier, sous Logs, nommé d'après la date et l'heure de son début. Un partage réseau convient aussi : s'il est inaccessible, l'exécution écrit ses journaux dans %AppData%\RoboG.</LogFolderToolTip>
+		<LogFolderUnusable>Le dossier des journaux {0} ne peut pas être utilisé.</LogFolderUnusable>
+		<SelectLogFolder>Sélectionnez le dossier des journaux de RoboG</SelectLogFolder>
 	</fr-FR>
 </Translations>

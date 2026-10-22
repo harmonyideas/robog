@@ -99,8 +99,13 @@ namespace RoboG {
     private static void AlreadyRunning(bool SyncRequested) {
       if (SyncRequested) {
         try {
-          System.IO.Directory.CreateDirectory(GlobalData.LogPath);
-          System.IO.File.AppendAllText(GlobalData.LogPath + "\\RoboG-Log.txt",
+          // Into the profile's log folder (no run folder: this is not a run). One line per skipped sync.
+          try {
+            Settings.LoadSettings(true, false);
+          } catch {}
+          String Folder = LogFolders.BaseFolder;
+          System.IO.Directory.CreateDirectory(Folder);
+          System.IO.File.AppendAllText(System.IO.Path.Combine(Folder, "RoboG-NotStarted.txt"),
             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  Sync not started: another RoboG is already running (exit code " + ExitAlreadyRunning + ")." + Environment.NewLine);
         } catch {}
         if (!GlobalData.AutoExitCmd) MessageBox.Show(Translations.Get("AlreadyRunning"), "RoboG", MessageBoxButtons.OK, MessageBoxIcon.Information);
