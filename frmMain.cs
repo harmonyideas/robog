@@ -241,10 +241,15 @@ namespace RoboG
 		{
 			try
 			{
-				RunProgram(Settings.ProgramBeforeBackup, Settings.ArgumentsProgramBeforeBackup, Settings.ProgramBeforeBackupAdmin);
-
 				bool Error = false;
-				if (Settings.ShadowCopy)
+				if (!RunProgram(Settings.ProgramBeforeBackup, Settings.ArgumentsProgramBeforeBackup, Settings.ProgramBeforeBackupAdmin) && Settings.StopIfBeforeProgramFails)
+				{
+					// A mount or a service the sync depends on wasn't set up: copying now would copy the wrong thing.
+					Error = true;
+					HelperFunctions.WriteLog("The program before the sync failed; no job was started.");
+					HelperFunctions.ShowError(Translations.Get("BeforeProgramFailed"));
+				}
+				else if (Settings.ShadowCopy)
 				{
 					HelperFunctions.UpdateStatus(Translations.Get("StartingVSS") + "...");
 					IO.CheckSourceDrives();
@@ -338,9 +343,10 @@ namespace RoboG
 			}
 		}
 
-		private void RunProgram(String Program, String Arguments, bool Admin)
+		// True when there is no program, or it ran and exited with code 0.
+		private bool RunProgram(String Program, String Arguments, bool Admin)
 		{
-			if (String.IsNullOrEmpty(Program)) return;
+			if (String.IsNullOrEmpty(Program)) return true;
 			try
 			{
 				HelperFunctions.UpdateStatus(Translations.Get("StartingProgram") + Program + "...");
@@ -364,11 +370,13 @@ namespace RoboG
 					Process.Start();
 					Process.WaitForExit();
 					HelperFunctions.WriteLog("Program finished with exit code " + Process.ExitCode + ": " + Program);
+					return Process.ExitCode == 0;
 				}
 			}
 			catch (Exception ex)
 			{
 				HelperFunctions.ShowError(Translations.Get("StartingProgram") + Program + "\n\n" + ex.Message);
+				return false;
 			}
 		}
 

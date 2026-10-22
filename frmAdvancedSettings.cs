@@ -85,6 +85,8 @@ namespace RoboG
 				lblArguments1.Text = Translations.Get("lblArguments");
 				this.toolTip.SetToolTip(this.txtArgumentsProgramBeforeBackup, Translations.Get("ArgumentsToolTip"));
 				chkProgramBeforeBackupAdmin.Text = Translations.Get("chkAdmin");
+				Translations.Set(chkStopIfBeforeFails, "chkStopIfBeforeFails");
+				this.toolTip.SetToolTip(this.chkStopIfBeforeFails, Translations.Get("StopIfBeforeFailsToolTip"));
 
 				gbProgramAfterBackup.Text = Translations.Get("gbProgramAfterBackup");
 				lblProgram2.Text = Translations.Get("lblProgram");
@@ -151,6 +153,7 @@ namespace RoboG
 				txtProgramBeforeBackup.Text = Settings.ProgramBeforeBackup;
 				txtArgumentsProgramBeforeBackup.Text = Settings.ArgumentsProgramBeforeBackup;
 				chkProgramBeforeBackupAdmin.Checked = Settings.ProgramBeforeBackupAdmin;
+				chkStopIfBeforeFails.Checked = Settings.StopIfBeforeProgramFails;
 
 				txtProgramAfterBackup.Text = Settings.ProgramAfterBackup;
 				txtArgumentsProgramAfterBackup.Text = Settings.ArgumentsProgramAfterBackup;
@@ -188,6 +191,7 @@ namespace RoboG
 				Settings.ProgramBeforeBackup = txtProgramBeforeBackup.Text;
 				Settings.ArgumentsProgramBeforeBackup = txtArgumentsProgramBeforeBackup.Text;
 				Settings.ProgramBeforeBackupAdmin = chkProgramBeforeBackupAdmin.Checked;
+				Settings.StopIfBeforeProgramFails = chkStopIfBeforeFails.Checked;
 				Settings.ProgramAfterBackup = txtProgramAfterBackup.Text;
 				Settings.ArgumentsProgramAfterBackup = txtArgumentsProgramAfterBackup.Text;
 				Settings.ProgramAfterBackupAdmin = chkProgramAfterBackupAdmin.Checked;

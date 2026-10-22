@@ -62,6 +62,7 @@ namespace RoboG
 			this.lblSecond = new System.Windows.Forms.Label();
 			this.gbProgramBeforeBackup = new System.Windows.Forms.GroupBox();
 			this.chkProgramBeforeBackupAdmin = new System.Windows.Forms.CheckBox();
+			this.chkStopIfBeforeFails = new System.Windows.Forms.CheckBox();
 			this.lblArguments1 = new System.Windows.Forms.Label();
 			this.lblProgram1 = new System.Windows.Forms.Label();
 			this.bnSelectProgramBeforeBackup = new System.Windows.Forms.Button();
@@ -166,6 +167,7 @@ namespace RoboG
 			// 
 			this.gbProgramBeforeBackup.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.gbProgramBeforeBackup.Controls.Add(this.chkProgramBeforeBackupAdmin);
+			this.gbProgramBeforeBackup.Controls.Add(this.chkStopIfBeforeFails);
 			this.gbProgramBeforeBackup.Controls.Add(this.txtArgumentsProgramBeforeBackup);
 			this.gbProgramBeforeBackup.Controls.Add(this.lblArguments1);
 			this.gbProgramBeforeBackup.Controls.Add(this.lblProgram1);
@@ -188,6 +190,16 @@ namespace RoboG
 			this.chkProgramBeforeBackupAdmin.TabIndex = 2;
 			this.chkProgramBeforeBackupAdmin.Text = "Start as administrator";
 			this.chkProgramBeforeBackupAdmin.UseVisualStyleBackColor = true;
+			// 
+			// chkStopIfBeforeFails
+			// 
+			this.chkStopIfBeforeFails.AutoSize = true;
+			this.chkStopIfBeforeFails.Location = new System.Drawing.Point(9, 70);
+			this.chkStopIfBeforeFails.Name = "chkStopIfBeforeFails";
+			this.chkStopIfBeforeFails.Size = new System.Drawing.Size(150, 17);
+			this.chkStopIfBeforeFails.TabIndex = 4;
+			this.chkStopIfBeforeFails.Text = "Don't sync if it fails";
+			this.chkStopIfBeforeFails.UseVisualStyleBackColor = true;
 			// 
 			// lblArguments1
 			// 
@@ -679,6 +691,7 @@ namespace RoboG
         private System.Windows.Forms.Button bnCancel;
         private System.Windows.Forms.Button bnOK;
         private System.Windows.Forms.CheckBox chkProgramBeforeBackupAdmin;
+        private System.Windows.Forms.CheckBox chkStopIfBeforeFails;
         private System.Windows.Forms.CheckBox chkProgramAfterBackupAdmin;
         private System.Windows.Forms.CheckBox chkAutoExit;
         private System.Windows.Forms.CheckBox chkAutoExit2;

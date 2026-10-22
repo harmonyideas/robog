@@ -76,7 +76,7 @@ RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tole
 | Close automatically | off | Close when the run succeeds, or always. |
 | Silent mode | off | Errors are logged instead of shown in a dialog. |
 | Logs | `%AppData%\RoboG`, keep 30 runs | Where this profile's logs go, and how many runs to keep (0 = all). See [Logs](#logs). |
-| Programs | — | Run a program or script before the sync, after it, and after errors. RoboG waits for each to finish. **Before** runs first (before shadow copies); **after** runs when all jobs are done; **on errors** runs after that, only if a job failed or files could not be copied (not when you stop the run). `.exe`, `.cmd`/`.bat` and `.ps1` (run with PowerShell) all work; each runs in its own folder. Both logs are complete and readable when the after and error programs run, for example to mail them. Each program's exit code is written to the run log. "Start as administrator" needs RoboG to run elevated in unattended runs. |
+| Programs | — | Run a program or script before the sync, after it, and after errors. RoboG waits for each to finish. **Before** runs first (before shadow copies); **after** runs when all jobs are done; **on errors** runs after that, only if a job failed or files could not be copied (not when you stop the run). `.exe`, `.cmd`/`.bat` and `.ps1` (run with PowerShell) all work; each runs in its own folder. Both logs are complete and readable when the after and error programs run, for example to mail them. Each program's exit code is written to the run log. Tick **Don't sync if it fails** under the before program to skip the sync when it can't start or exits with a code other than 0 (a drive it mounts isn't there, say); the run then counts as failed. "Start as administrator" needs RoboG to run elevated in unattended runs. |
 
 ## Command line and scheduling
 
@@ -116,7 +116,11 @@ To run it on a schedule, create a task in Task Scheduler that runs the `.cmd` fi
 
 **Network outages.** When a job gets a network error, RoboG checks whether its source and target are still reachable. If one isn't, it stops that job's robocopy and shows **Waiting for connection**. It checks every 30 seconds and resumes when the share is back; robocopy skips files already copied. Jobs that start during an outage wait instead of failing. File errors caused by the outage aren't counted. If the connection doesn't return within 60 minutes, the job fails with the reason.
 
-**Shadow copies.** All source volumes are snapshotted at the same instant. The snapshots are temporary and are deleted when the run ends, even if RoboG crashes. RoboG declares a *copy* backup, so applications such as SQL Server or Exchange don't treat the sync as their own backup. If Windows discards a snapshot mid-run (shadow storage full), RoboG reports it.
+**Shadow copies.** All source volumes are snapshotted at the same instant. Job logs and the error log show your own paths (`C:\Users\...`), not the snapshot's. The snapshots are temporary and are deleted when the run ends, even if RoboG crashes. RoboG declares a *copy* backup, so applications such as SQL Server or Exchange don't treat the sync as their own backup. If Windows discards a snapshot mid-run (shadow storage full), RoboG reports it.
+
+A shadow copy gets past *locked* files, not *permissions*. Some folders can't be read even by administrators, such as `C:\Windows\CSC` (Offline Files). robocopy retries those, waiting each time, which shows as pauses at 0 B/s. Turn on **Backup mode** (`/ZB`) in the job's Advanced options to read them anyway, or exclude them. RoboG writes a hint to the log the first time a job gets access denied.
+
+**Stopping a run.** Files robocopy was still retrying when you stopped the run are listed in the error log, marked as such.
 
 **Missing targets.** Target folders that don't exist are created, including every missing parent folder.
 
@@ -127,6 +131,8 @@ Each run writes its logs to a folder of its own, so a run never overwrites an ea
 ```
 <log folder>\Logs\2026-10-22 02-00-03\
 ```
+
+If the log folder you choose is itself named `Logs`, the run folders go directly in it.
 
 The log folder is set per profile in **Profile options > Logs** (default `%AppData%\RoboG`; a network share works too). RoboG keeps the newest 30 runs by default and deletes older run folders; set it to 0 to keep all. If the log folder can't be reached when a run starts, that run logs to `%AppData%\RoboG` instead and says so in its run log. **Open log folder** in the progress window opens the current run's folder.
 
@@ -144,7 +150,7 @@ Logs are written to disk as the run goes; only the last 500 lines of each are ke
 For large files, speed is limited by the disks and the network. For small files, the limit is how many files the target can create per second: each file costs several round trips to the target (create, write, set times, close), whatever its size. Watch **Files/s** rather than MB/s when copying many small files.
 
 **Settings**
-- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on, every copied file adds a line of about 100 bytes to the job's log in `%AppData%\RoboG\Jobs` (about 100 MB per million files, 100 GB for a billion). With it off, the job log stays small. robocopy's own progress reaches RoboG through a pipe in memory, so it uses no disk space either way.
+- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on, every copied file adds a line of about 100 bytes to the job's log (about 100 MB per million files, 100 GB for a billion). With it off, the job log stays small. robocopy's own progress reaches RoboG through a pipe in memory, so it uses no disk space either way.
 - Several jobs writing to one NAS with hard disks: total copy threads around 8–16, and fewer parallel jobs.
 - Jobs on different disks or servers: more parallel jobs.
 
@@ -175,4 +181,4 @@ If this project helps you be more productive, you can buy me a cup of coffee :)
 
 ## License
 
-Released under the GNU General Public License. See [LICENSE](LICENSE).
+Released under the GNU General Public License, version 3 or later. See [LICENSE](LICENSE).

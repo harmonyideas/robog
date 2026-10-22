@@ -136,6 +136,8 @@ namespace RoboG {
 		public static String ProgramBeforeBackup { get { return _ProgramBeforeBackup; } set { _ProgramBeforeBackup = value; } }
 		public static String ArgumentsProgramBeforeBackup { get; set; }
 		public static bool ProgramBeforeBackupAdmin { get; set; }
+		/// <summary>Don't sync when the program before the sync fails (can't start, or exits with a code other than 0).</summary>
+		public static bool StopIfBeforeProgramFails { get; set; }
 
 		private static String _ProgramAfterBackup = "";
 		public static String ProgramAfterBackup { get { return _ProgramAfterBackup; } set { _ProgramAfterBackup = value; } }
@@ -389,6 +391,10 @@ namespace RoboG {
 					tw.WriteString(ProgramBeforeBackupAdmin.ToString());
 					tw.WriteEndElement();
 
+					tw.WriteStartElement("stopifbeforeprogramfails");
+					tw.WriteString(StopIfBeforeProgramFails.ToString());
+					tw.WriteEndElement();
+
 					tw.WriteStartElement("programafterbackup");
 					tw.WriteString(ProgramAfterBackup);
 					tw.WriteEndElement();
@@ -639,6 +645,10 @@ namespace RoboG {
 										case "programbeforebackupadmin":
 											Temp = Rd.ReadString().Trim().ToLower();
 											if (Temp == "1" || Temp == "true") ProgramBeforeBackupAdmin = true; else ProgramBeforeBackupAdmin = false;
+											break;
+										case "stopifbeforeprogramfails":
+											Temp = Rd.ReadString().Trim().ToLower();
+											StopIfBeforeProgramFails = Temp == "1" || Temp == "true";
 											break;
 										case "programafterbackup":
 											ProgramAfterBackup = Rd.ReadString().Trim();

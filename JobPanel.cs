@@ -31,7 +31,7 @@ namespace RoboG {
     private readonly Label lblState = new Label();
     private readonly ProgressBar Bar = new ProgressBar();
     private readonly Label lblProgress = new Label();
-    private readonly Label lblFiles, lblSpeed, lblFileRate, lblElapsed, lblRemaining, lblErrors;
+    private Label lblFiles, lblSpeed, lblFileRate, lblElapsed, lblRemaining, lblErrors;
     private readonly Label lblSource = new Label();
     private readonly Label lblTarget = new Label();
     private readonly Label lblFile = new Label();
@@ -45,18 +45,30 @@ namespace RoboG {
     private TimeSpan _RateTime = TimeSpan.Zero;
     private double _Rate = 0;
     private long _ShownLogVersion = -1;
+    private bool _Built = false;
 
+    // Shared by all panels: a font per panel would use up the process's GDI handles with many jobs.
+    private static readonly Font StateFont = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold);
+    private static readonly Font ValueFont = new Font("Segoe UI Semibold", 11.25F, FontStyle.Bold);
+    private static readonly Font LogFont = new Font("Consolas", 9F);
+
+    // The panel's controls are only made when its tab is first shown (see Build), so a run of hundreds of jobs
+    // doesn't create thousands of window handles nobody looks at. The transfer rates are kept for every job.
     public JobPanel(JobRun Run) {
       this.Run = Run;
-      SuspendLayout();
       BackColor = Theme.Surface;
       Font = Theme.BaseFont;
       Size = new Size(760, 360);
       Padding = new Padding(0);
+    }
+
+    private void Build() {
+      _Built = true;
+      SuspendLayout();
 
       AnchorStyles TLR = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       Place(lblState, 12, 12, 736, 22, TLR);
-      lblState.Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold);
+      lblState.Font = StateFont;
       lblState.AutoEllipsis = true;
 
       Place(Bar, 14, 38, 732, 16, TLR);
@@ -101,16 +113,25 @@ namespace RoboG {
       txtLog.ReadOnly = true;
       txtLog.WordWrap = false;
       txtLog.ScrollBars = ScrollBars.Both;
-      txtLog.Font = new Font("Consolas", 9F);
+      txtLog.Font = LogFont;
       txtLog.BackColor = Theme.SurfaceAlt;
       txtLog.BorderStyle = BorderStyle.FixedSingle;
 
       ResumeLayout(false);
-      RefreshView(false);
     }
 
+    // Positions are given for the panel's design size (760 x 360). The panel may already be bigger when it is
+    // built (its tab is shown docked in a large window), so right- and bottom-anchored controls are moved out by
+    // the difference; anchoring then keeps them there as the window is resized.
     private void Place(Control Control, int X, int Y, int Width, int Height, AnchorStyles Anchor) {
-      Control.Bounds = new Rectangle(X, Y, Width, Height);
+      int Dx = ClientSize.Width - 760, Dy = ClientSize.Height - 360;
+      if ((Anchor & AnchorStyles.Right) != 0) {
+        if ((Anchor & AnchorStyles.Left) != 0) Width += Dx; else X += Dx;
+      }
+      if ((Anchor & AnchorStyles.Bottom) != 0) {
+        if ((Anchor & AnchorStyles.Top) != 0) Height += Dy; else Y += Dy;
+      }
+      Control.Bounds = new Rectangle(X, Y, Math.Max(0, Width), Math.Max(0, Height));
       Control.Anchor = Anchor;
       Controls.Add(Control);
     }
@@ -130,7 +151,7 @@ namespace RoboG {
       Place(C, X, 88, 116, 17, AnchorStyles.Top | AnchorStyles.Left);
       Label V = new Label();
       V.Text = "-";
-      V.Font = new Font("Segoe UI Semibold", 11.25F, FontStyle.Bold);
+      V.Font = ValueFont;
       V.AutoEllipsis = true;
       Place(V, X, 105, 116, 24, AnchorStyles.Top | AnchorStyles.Left);
       return V;
@@ -206,6 +227,7 @@ namespace RoboG {
 
     /// <summary>Shows the job's current progress. Called by the window's timer for the selected tab only.</summary>
     public void RefreshView(bool IncludeLog) {
+      if (!_Built) Build();
       JobState State = Run.State;
       long Copied = Run.CopiedBytes;
       long ToCopy = Run.BytesToCopy;

@@ -96,6 +96,8 @@ namespace RoboG {
     private volatile String _RealSourceDir = null;
     // Shadow-copy mount and the real source folder it stands for, without trailing backslash; null when the same.
     private volatile String _MountPrefix = null;
+    private bool _AccessHintShown = false;
+    private const String StoppedWhileRetrying = "(The run was stopped while robocopy was still retrying this file.)";
     private volatile String _RealPrefix = null;
     private long _ScanBytes = 0;
     private long _ScanChanges = 0;
@@ -501,7 +503,7 @@ namespace RoboG {
     }
 
     private void ProcessScanLine(String Line) {
-      Log.Write(Line);
+      Log.Write(ToRealPaths(Line));
       if (Char.IsLetterOrDigit(Line[0])) {
         NoteErrorLine(Line);
         return;
@@ -521,7 +523,7 @@ namespace RoboG {
     //   summary:    see ParseSummaryLine (no tabs)
     // Runs once per robocopy line, so up to billions of times: no splitting, trimming or other allocations.
     private void ProcessMirrorLine(String Line) {
-      Log.Write(Line);
+      Log.Write(ToRealPaths(Line));
       char First = Line[0];
       if (Char.IsLetterOrDigit(First)) {
         AddErrorText(Line);
@@ -581,6 +583,17 @@ namespace RoboG {
       return Real + Path.Substring(Mount.Length);
     }
 
+    // For the job log: robocopy reads a shadow-copy job from the snapshot, so its lines name paths like
+    // C:\ProgramData\RoboG\Snapshots\C\Windows\...; the log shows the path the user chose (C:\Windows\...) instead.
+    // Only shadow-copy jobs pay for this, and a line without the snapshot path costs one search.
+    private String ToRealPaths(String Line) {
+      String Mount = _MountPrefix;
+      if (Mount == null) return Line;
+      int At = Line.IndexOf(Mount, StringComparison.OrdinalIgnoreCase);
+      if (At < 0) return Line;
+      return Line.Substring(0, At) + _RealPrefix + Line.Substring(At + Mount.Length);
+    }
+
     private static String TrimTrailingBackslash(String Path) {
       if (Path != null && Path.Length > 3 && Path.EndsWith("\\")) return Path.Substring(0, Path.Length - 1);
       return Path;
@@ -599,6 +612,13 @@ namespace RoboG {
         _LastErrorText = Line.Substring(ErrorAt + 1).Trim();
         _LastErrorHasMessage = false;
         if (IsNetworkError(Line)) CheckConnection();
+        else if (!_AccessHintShown && !Source.BackupMode && Line.IndexOf(" ERROR 5 (", StringComparison.Ordinal) >= 0) {
+          // Access denied: retrying never helps, and robocopy waits /W seconds for each retry. Backup mode reads
+          // files whatever their permissions (RoboG runs as administrator for shadow copies anyway).
+          _AccessHintShown = true;
+          Log.Write(Translations.Get("AccessDeniedHint"));
+          RunLog.Write("Job " + Number + " (" + Name + "): " + Translations.Get("AccessDeniedHint"));
+        }
       } else if (!_LastErrorHasMessage && _LastErrorText != "" && !Line.StartsWith("Waiting ", StringComparison.Ordinal) && !Line.StartsWith("ERROR: RETRY", StringComparison.Ordinal)) {
         _LastErrorText += " " + Line.Trim();
         _LastErrorHasMessage = true;
@@ -643,10 +663,17 @@ namespace RoboG {
       _LastError = Error;
     }
 
-    // An error still waiting for robocopy's verdict when the run ends was retried successfully (or the run
-    // was aborted); it only counts when retries are off.
+    // An error still waiting for robocopy's verdict when robocopy ends was retried successfully; it only counts
+    // when retries are off. When the run was stopped, robocopy never gave its verdict: those files were not
+    // copied, so they are recorded, marked as such (except network errors, which an outage may have caused).
     private void EndOfRunErrors() {
-      if (Settings.Retries == 0 && !_Abort) {
+      if (_Abort) {
+        foreach (RoboCopyError Error in _OpenErrors.Values) {
+          if (IsNetworkError(Error.Text[0])) continue;
+          Error.Text.Add(StoppedWhileRetrying);
+          CountError(Error);
+        }
+      } else if (Settings.Retries == 0) {
         foreach (RoboCopyError Error in _OpenErrors.Values) FinalizeError(Error);
       }
       _OpenErrors.Clear();

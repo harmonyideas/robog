@@ -66,7 +66,8 @@ namespace RoboG {
     }
 
     private static String CreateRunFolder(String Base) {
-      String Runs = Path.Combine(Base, RunsFolder);
+      // A folder that is itself called Logs (C:\Temp\Logs, say) holds the runs directly, not in Logs\Logs.
+      String Runs = String.Equals(Path.GetFileName(Base), RunsFolder, StringComparison.OrdinalIgnoreCase) ? Base : Path.Combine(Base, RunsFolder);
       String Name = DateTime.Now.ToString(RunFormat, CultureInfo.InvariantCulture);
       String Folder = Path.Combine(Runs, Name);
       // Two runs in the same second (a retry, say) get their own folders.
