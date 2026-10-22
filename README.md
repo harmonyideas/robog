@@ -114,14 +114,14 @@ All logs are in `%AppData%\RoboG`. The progress window has an **Open log folder*
 | `Jobs\Job-NN-<name>.txt` | Everything robocopy reported for one job. |
 | `RoboG-Errors.txt` | Every file that could not be copied, from all jobs, tagged with the job name. |
 
-Logs are written to disk as the run goes; only the last 2,000 lines are kept in memory. **Show errors** in the progress window lists up to 10,000 errors; the error log file has all of them.
+Logs are written to disk as the run goes; only the last 500 lines of each are kept in memory. **Show errors** in the progress window lists up to 10,000 errors; the error log file has all of them.
 
 ## Performance
 
 For large files, speed is limited by the disks and the network. For small files, the limit is how many files the target can create per second: each file costs several round trips to the target (create, write, set times, close), whatever its size. Watch **Files/s** rather than MB/s when copying many small files.
 
 **Settings**
-- Turn off **Scan first** and **Show live progress** for very large runs.
+- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on, every copied file adds a line to robocopy's temporary log in `%TEMP%` (about 200 bytes, deleted when the job ends) and to the job's log (about 100 bytes, kept). That is about 300 MB per million files on drive C:, or about 300 GB for a billion. With it off, both logs stay small.
 - Several jobs writing to one NAS with hard disks: total copy threads around 8–16, and fewer parallel jobs.
 - Jobs on different disks or servers: more parallel jobs.
 

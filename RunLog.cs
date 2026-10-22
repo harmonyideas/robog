@@ -30,7 +30,7 @@ namespace RoboG {
   /// </summary>
   class LogFile {
     // Lines kept in memory for the on-screen log view.
-    public const int RecentLineCount = 2000;
+    public const int RecentLineCount = 500;
 
     private readonly object _Lock = new object();
     private readonly Queue<String> _Recent = new Queue<String>(RecentLineCount);

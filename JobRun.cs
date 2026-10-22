@@ -44,7 +44,6 @@ namespace RoboG {
   /// streams to disk with only the most recent lines kept in memory.
   /// </summary>
   class JobRun {
-    private static readonly char[] _Tab = new char[] { '\t' };
     private static readonly char[] _Whitespace = new char[] { ' ', '\t' };
 
     public readonly BackupSource Source;
@@ -86,14 +85,18 @@ namespace RoboG {
     private long _BytesToCopy = -1;
     private long _CurrentFileSize = 0;
     private int _ErrorCount = 0;
-    private volatile String _CurrentFile = null;
-    private volatile String _CurrentDir = null;
+    // The latest robocopy file line and folder line, kept as they are. The current file and folder names are
+    // only cut out of them when the screen asks (a few times a second), not for every one of billions of files.
+    private volatile String _LastFileLine = null;
+    private volatile String _LastDirLine = null;
     private volatile String _Target = null;
     private volatile String _CommandLine = null;
 
     // Used only by the job's thread.
-    private String _RealSourceDir = null;
-    private String _MountSourceDir = null;
+    private volatile String _RealSourceDir = null;
+    // Shadow-copy mount and the real source folder it stands for, without trailing backslash; null when the same.
+    private volatile String _MountPrefix = null;
+    private volatile String _RealPrefix = null;
     private long _ScanBytes = 0;
     private long _ScanChanges = 0;
     private readonly Dictionary<String, RoboCopyError> _OpenErrors = new Dictionary<String, RoboCopyError>(StringComparer.OrdinalIgnoreCase);
@@ -133,8 +136,39 @@ namespace RoboG {
     public long BytesToCopy { get { return Interlocked.Read(ref _BytesToCopy); } }
     public long CurrentFileSize { get { return Interlocked.Read(ref _CurrentFileSize); } }
     public int ErrorCount { get { return Volatile.Read(ref _ErrorCount); } }
-    public String CurrentFile { get { return _CurrentFile; } }
-    public String CurrentDirectory { get { return _CurrentDir; } }
+    /// <summary>Name of the file being copied (without folder), or null.</summary>
+    public String CurrentFile {
+      get {
+        String Name = NameFromFileLine(_LastFileLine);
+        if (Name == null) return null;
+        int Slash = Name.LastIndexOf('\\');
+        return Slash >= 0 ? Name.Substring(Slash + 1) : Name;
+      }
+    }
+
+    /// <summary>Folder of the file being copied, as the user chose it (not the shadow-copy path), or null.</summary>
+    public String CurrentDirectory {
+      get {
+        // With /MT the file line has the full path; without it the folder comes from the last folder line.
+        String Name = NameFromFileLine(_LastFileLine);
+        if (Name != null) {
+          int Slash = Name.LastIndexOf('\\');
+          if (Slash >= 0) return MapToRealSourcePath(Name.Substring(0, Slash + 1));
+        }
+        String DirLine = _LastDirLine;
+        if (DirLine == null) return null;
+        return MapToRealSourcePath(DirLine.Substring(DirLine.LastIndexOf('\t') + 1).Trim());
+      }
+    }
+
+    // The name or path at the end of a file line, without a retry notice robocopy may print on the same line.
+    private static String NameFromFileLine(String Line) {
+      if (Line == null) return null;
+      String Name = Line.Substring(Line.LastIndexOf('\t') + 1);
+      int Waiting = Name.IndexOf("Waiting ", StringComparison.Ordinal);
+      if (Waiting > 0 && Name.IndexOf(" seconds", Waiting, StringComparison.Ordinal) > 0) Name = Name.Substring(0, Waiting).TrimEnd();
+      return Name;
+    }
     public String Target { get { return _Target; } }
     /// <summary>The exact command line of the job's latest robocopy run (scan or copy), or null before the first.</summary>
     public String CommandLine { get { return _CommandLine; } }
@@ -196,7 +230,8 @@ namespace RoboG {
         Log.Write(ex.ToString());
       } finally {
         _Time.Stop();
-        _CurrentFile = null;
+        _LastFileLine = null;
+        _LastDirLine = null;
         Interlocked.Exchange(ref _CurrentFileSize, 0);
         if (!IsFinished) Finish(_Abort ? JobState.Aborted : JobState.Done, "");
         Log.Stop();
@@ -231,7 +266,10 @@ namespace RoboG {
       Source = this.Source.Mount;
       Target = this.Source.TargetPath;
       _RealSourceDir = this.Source.SourcePath;
-      _MountSourceDir = Source;
+      String Mount = TrimTrailingBackslash(Source), Real = TrimTrailingBackslash(this.Source.SourcePath);
+      bool Same = Mount == null || Real == null || String.Equals(Mount, Real, StringComparison.OrdinalIgnoreCase);
+      _MountPrefix = Same ? null : Mount;
+      _RealPrefix = Same ? null : Real;
       _Target = Target;
       if (Source.EndsWith("\\") && Source.Length > 3) Source = Source.Substring(0, Source.Length - 1); // A trailing backslash would escape the closing quote.
       if (Target.EndsWith("\\") && Target.Length > 3) Target = Target.Substring(0, Target.Length - 1);
@@ -481,52 +519,65 @@ namespace RoboG {
     //               Class is capitalised when the file is copied, lower case when skipped, *EXTRA when deleted.
     //   error:      <date> <time> ERROR <n> (0x...) <what> <path>, followed by message lines
     //   summary:    see ParseSummaryLine (no tabs)
+    // Runs once per robocopy line, so up to billions of times: no splitting, trimming or other allocations.
     private void ProcessMirrorLine(String Line) {
       Log.Write(Line);
-      if (Char.IsLetterOrDigit(Line[0])) {
+      char First = Line[0];
+      if (Char.IsLetterOrDigit(First)) {
         AddErrorText(Line);
         return;
       }
 
-      String[] Columns = Line.Split(_Tab, StringSplitOptions.RemoveEmptyEntries);
-      if (Columns.Length >= 3) {
-        String Class = Columns[0].Trim();
-        if (Class.Length == 0 || !Char.IsUpper(Class[0])) return; // Skipped file, or *EXTRA file being deleted.
-        String Name = Columns[Columns.Length - 1];
-        long Size;
-        long.TryParse(Columns[Columns.Length - 2].Trim(), out Size);
-
-        int Waiting = Name.IndexOf("Waiting ", StringComparison.Ordinal);
-        if (Waiting > 0 && Name.IndexOf(" seconds", Waiting, StringComparison.Ordinal) > 0) Name = Name.Substring(0, Waiting); // Retry notice printed on the same line.
-        int Slash = Name.LastIndexOf('\\');
-        if (Slash >= 0) {
-          _CurrentDir = MapToRealSourcePath(Name.Substring(0, Slash + 1));
-          Name = Name.Substring(Slash + 1);
-        }
-
-        _CurrentFile = Name;
-        Interlocked.Exchange(ref _CurrentFileSize, Size);
-        Interlocked.Add(ref _CopiedBytes, Size);
-        Interlocked.Increment(ref _FilesCopied);
-      } else if (Columns.Length == 2) {
-        if (Columns[0].Trim().StartsWith("*")) return; // *EXTRA Dir being deleted.
-        _CurrentDir = MapToRealSourcePath(Columns[1].Trim());
-      } else {
-        // robocopy's own totals are exact; they replace what was counted from the file lines.
+      int LastTab = Line.LastIndexOf('\t');
+      if (LastTab < 0) {
+        // No tabs: the job summary. robocopy's own totals are exact; they replace what was counted from file lines.
         String Label;
         long Copied, Extras;
         if (!ParseSummaryLine(Line, out Label, out Copied, out Extras)) return;
         if (Label == "Files") Interlocked.Exchange(ref _FilesCopied, Copied);
         else if (Label == "Bytes") Interlocked.Exchange(ref _CopiedBytes, Copied);
+        return;
       }
+
+      // The column before the name: the size on a file line, "<class> <count>" on a folder line.
+      int End = LastTab - 1;
+      while (End >= 0 && Line[End] == '\t') End--;
+      if (End < 0) return;
+      int Start = Line.LastIndexOf('\t', End) + 1;
+
+      // A file line has its class in a column of its own before that; a folder line has nothing there.
+      int Class = FirstNonBlank(Line, 0, Start);
+      if (Class >= 0) {
+        if (!Char.IsUpper(Line[Class])) return; // Skipped file (lower case), or *EXTRA file being deleted.
+        long Size = 0;
+        for (int i = Start; i <= End; i++) {
+          char C = Line[i];
+          if (C >= '0' && C <= '9') Size = Size * 10 + (C - '0');
+        }
+        _LastFileLine = Line;
+        Interlocked.Exchange(ref _CurrentFileSize, Size);
+        Interlocked.Add(ref _CopiedBytes, Size);
+        Interlocked.Increment(ref _FilesCopied);
+      } else {
+        int DirClass = FirstNonBlank(Line, Start, End + 1);
+        if (DirClass < 0 || Line[DirClass] == '*') return; // *EXTRA Dir being deleted.
+        _LastDirLine = Line;
+      }
+    }
+
+    // Index of the first character in [From, To) that is not a space or tab, or -1.
+    private static int FirstNonBlank(String Line, int From, int To) {
+      for (int i = From; i < To; i++) {
+        char C = Line[i];
+        if (C != ' ' && C != '\t') return i;
+      }
+      return -1;
     }
 
     // Maps a path under the shadow-copy mount back to the source path the user chose.
     private String MapToRealSourcePath(String Path) {
-      String Mount = TrimTrailingBackslash(_MountSourceDir);
-      String Real = TrimTrailingBackslash(_RealSourceDir);
-      if (Mount == null || Real == null || Mount == Real) return Path;
-      if (!Path.StartsWith(Mount, StringComparison.OrdinalIgnoreCase)) return Path;
+      String Mount = _MountPrefix, Real = _RealPrefix;
+      if (Mount == null || Real == null || !Path.StartsWith(Mount, StringComparison.OrdinalIgnoreCase)) return Path;
       return Real + Path.Substring(Mount.Length);
     }
 
@@ -570,7 +621,7 @@ namespace RoboG {
         if (_LastError != null && !Line.StartsWith("Waiting ", StringComparison.Ordinal)) _LastError.Text.Add(Line);
         return;
       }
-      String File = _CurrentFile, Directory = _CurrentDir ?? _RealSourceDir ?? "";
+      String File = CurrentFile, Directory = CurrentDirectory ?? _RealSourceDir ?? "";
       int PathAt = Line.IndexOf(":\\", ErrorAt, StringComparison.Ordinal);
       if (PathAt > 0) PathAt--; else PathAt = Line.IndexOf("\\\\", ErrorAt, StringComparison.Ordinal);
       if (PathAt > 0) {
