@@ -80,6 +80,7 @@
 		<ArgumentsToolTip>Arguments</ArgumentsToolTip>
 		<chkAdmin>Start as administrator</chkAdmin>
 		<chkStopIfBeforeFails>Don't sync if it fails</chkStopIfBeforeFails>
+		<JobTabsHint>With many jobs, tabs are shown only for running jobs and jobs with problems. Double-click a job in the list to open its tab.</JobTabsHint>
 		<StopIfBeforeFailsToolTip>Skip the sync when the program can't be started or exits with a code other than 0 (a drive it mounts isn't there, say). The run then counts as failed: exit code 1, and the program on errors runs.</StopIfBeforeFailsToolTip>
 		<BeforeProgramFailed>The program before the sync failed, so no job was started (Profile options: "Don't sync if it fails").</BeforeProgramFailed>
 		<AccessDeniedHint>Access denied (ERROR 5): retrying won't help. For source files that even administrators can't read (such as C:\Windows\CSC), turn on Backup mode in the job's Advanced options, or exclude those folders. If the target refused, check the share's permissions.</AccessDeniedHint>
@@ -418,6 +419,7 @@
 		<ArgumentsToolTip>Argumente</ArgumentsToolTip>
 		<chkAdmin>Als Administrator ausführen</chkAdmin>
 		<chkStopIfBeforeFails>Bei Fehler nicht synchronisieren</chkStopIfBeforeFails>
+		<JobTabsHint>Bei vielen Aufträgen werden nur laufende Aufträge und Aufträge mit Problemen als Registerkarte angezeigt. Doppelklick auf einen Auftrag in der Liste öffnet seine Registerkarte.</JobTabsHint>
 		<StopIfBeforeFailsToolTip>Die Synchronisation entfällt, wenn das Programm nicht startet oder mit einem anderen Code als 0 endet (z. B. weil ein Laufwerk nicht eingebunden wurde). Der Lauf gilt dann als fehlgeschlagen: Exitcode 1, und das Programm bei Fehlern wird ausgeführt.</StopIfBeforeFailsToolTip>
 		<BeforeProgramFailed>Das Programm vor der Synchronisation ist fehlgeschlagen, daher wurde kein Auftrag gestartet (Profiloptionen: "Bei Fehler nicht synchronisieren").</BeforeProgramFailed>
 		<AccessDeniedHint>Zugriff verweigert (ERROR 5): Wiederholen hilft nicht. Für Quelldateien, die selbst Administratoren nicht lesen dürfen (z. B. C:\Windows\CSC), den Sicherungsmodus in den erweiterten Optionen des Auftrags einschalten oder diese Ordner ausschließen. Hat das Ziel abgelehnt, die Berechtigungen der Freigabe prüfen.</AccessDeniedHint>
@@ -759,6 +761,7 @@
 		<ArgumentsToolTip>Arguments</ArgumentsToolTip>
 		<chkAdmin>Exécuter en tant qu'administrateur</chkAdmin>
 		<chkStopIfBeforeFails>Ne pas synchroniser en cas d'échec</chkStopIfBeforeFails>
+		<JobTabsHint>Avec de nombreuses tâches, seuls les onglets des tâches en cours et des tâches en erreur sont affichés. Double-cliquez sur une tâche dans la liste pour ouvrir son onglet.</JobTabsHint>
 		<StopIfBeforeFailsToolTip>La synchronisation n'a pas lieu si le programme ne démarre pas ou se termine avec un code autre que 0 (un lecteur qu'il monte est absent, par exemple). L'exécution compte alors comme échouée : code de sortie 1, et le programme en cas d'erreurs est lancé.</StopIfBeforeFailsToolTip>
 		<BeforeProgramFailed>Le programme avant la synchronisation a échoué, aucune tâche n'a donc été lancée (Options du profil : « Ne pas synchroniser en cas d'échec »).</BeforeProgramFailed>
 		<AccessDeniedHint>Accès refusé (ERROR 5) : réessayer n'y changera rien. Pour les fichiers source que même les administrateurs ne peuvent pas lire (comme C:\Windows\CSC), activez le mode sauvegarde dans les options avancées de la tâche, ou excluez ces dossiers. Si c'est la cible qui refuse, vérifiez les autorisations du partage.</AccessDeniedHint>

@@ -7,7 +7,7 @@ RoboG is a Windows front end for **robocopy**. You define sync jobs (a source fo
 ## Features
 
 - **Profiles of sync jobs.** Each job has its own source, target, filters and copy options. Profiles are saved as XML files.
-- **Parallel jobs.** Several jobs run at once, each with its own robocopy process. Progress for each job is shown on its own tab.
+- **Parallel jobs.** Several jobs run at once, each with its own robocopy process. Progress for each job is shown on its own tab. With more than 12 jobs, tabs are shown only for running jobs and jobs with problems; the Overview list has every job, and double-clicking one opens its tab.
 - **Live progress.** Files, MB/s, files per second, time left and errors, for the whole run and per job.
 - **Shadow copies (VSS).** Open and locked files are copied as they were at one instant, using the snapshot service built into Windows.
 - **Network outage handling.** A job whose share stops answering pauses, then resumes where it stopped once the share is back.
@@ -112,7 +112,7 @@ To run it on a schedule, create a task in Task Scheduler that runs the `.cmd` fi
 
 ## How it behaves
 
-**Parallel jobs.** Each job runs its own robocopy. If one job fails, the others carry on, and failures are listed together at the end. Stopping the run stops all running jobs and doesn't start the waiting ones. Shadow copies, and the programs before and after the sync, run once for the whole run.
+**Parallel jobs.** Each job runs its own robocopy. Until every job has scanned, the total to copy isn't known, so the overall progress bar and time left are based on the share of jobs done (the time left is then shown as an estimate, `~`). If one job fails, the others carry on, and failures are listed together at the end. Stopping the run stops all running jobs and doesn't start the waiting ones. Shadow copies, and the programs before and after the sync, run once for the whole run.
 
 **Network outages.** When a job gets a network error, RoboG checks whether its source and target are still reachable. If one isn't, it stops that job's robocopy and shows **Waiting for connection**. It checks every 30 seconds and resumes when the share is back; robocopy skips files already copied. Jobs that start during an outage wait instead of failing. File errors caused by the outage aren't counted. If the connection doesn't return within 60 minutes, the job fails with the reason.
 

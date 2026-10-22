@@ -51,6 +51,11 @@ namespace RoboG
 
 		private readonly List<JobPanel> _Panels = new List<JobPanel>();
 		private readonly List<TabPage> _JobTabs = new List<TabPage>();
+		// Job tabs the user opened from the Overview list; they stay until the window closes.
+		private readonly HashSet<TabPage> _PinnedTabs = new HashSet<TabPage>();
+		// Up to this many jobs every job has a tab. With more, only jobs worth looking at do (see UpdateJobTabs).
+		private const int AllTabsUpTo = 12;
+		private bool _UpdatingTabs = false;
 		private TabPage _OverviewTab;
 		private BufferedListView lstJobs;
 		private TextBox txtLog;
@@ -182,8 +187,9 @@ namespace RoboG
 				TabPage Page = new TabPage(Panel.TabTitle());
 				Page.BackColor = Theme.Surface;
 				Page.Controls.Add(Panel);
+				Page.Tag = Panel;
 				Page.ToolTipText = Run.Source.SourcePath + " -> " + Run.Source.TargetPath;
-				tabJobs.TabPages.Add(Page);
+				if (Backup.Runs.Count <= AllTabsUpTo) tabJobs.TabPages.Add(Page);
 				_Panels.Add(Panel);
 				_JobTabs.Add(Page);
 
@@ -192,6 +198,7 @@ namespace RoboG
 				lstJobs.Items.Add(Item);
 			}
 			tabJobs.ShowToolTips = true;
+			if (_JobTabs.Count > AllTabsUpTo) _OverviewTab.ToolTipText = Translations.Get("JobTabsHint");
 			lstJobs.EndUpdate();
 			tabJobs.ResumeLayout();
 			// With a single job its own tab is the interesting one.
@@ -201,9 +208,70 @@ namespace RoboG
 		// The job the user is looking at: the selected job tab, or on the Overview tab the selected row.
 		private JobRun SelectedRun()
 		{
-			int Index = tabJobs.SelectedIndex - 1;
-			if (Index < 0 && lstJobs.SelectedIndices.Count > 0) Index = lstJobs.SelectedIndices[0];
+			JobPanel Panel = SelectedPanel();
+			if (Panel != null) return Panel.Run;
+			int Index = lstJobs.SelectedIndices.Count > 0 ? lstJobs.SelectedIndices[0] : -1;
 			return Index >= 0 && Index < _Panels.Count ? _Panels[Index].Run : null;
+		}
+
+		// The job whose tab is showing, or null on the Overview tab.
+		private JobPanel SelectedPanel()
+		{
+			TabPage Page = tabJobs.SelectedTab;
+			return Page == null ? null : Page.Tag as JobPanel;
+		}
+
+		// With many jobs a tab for each would fill the strip with jobs nobody needs to look at. Tabs are shown for
+		// jobs that are running or waiting for a connection, jobs that failed or had errors, the tab being looked
+		// at, and tabs opened from the Overview list. Finished and waiting jobs are in the Overview list. Tabs stay
+		// in job order.
+		private void UpdateJobTabs()
+		{
+			if (_JobTabs.Count <= AllTabsUpTo) return;
+			TabPage Selected = tabJobs.SelectedTab;
+			_UpdatingTabs = true; // Adding and removing tabs can raise SelectedIndexChanged.
+			try
+			{
+				UpdateJobTabs(Selected);
+			}
+			finally
+			{
+				_UpdatingTabs = false;
+			}
+		}
+
+		private void UpdateJobTabs(TabPage Selected)
+		{
+			for (int i = 0; i < _JobTabs.Count; i++)
+			{
+				TabPage Page = _JobTabs[i];
+				JobRun Run = _Panels[i].Run;
+				JobState State = Run.State;
+				bool Problem = State == JobState.Failed || (Run.IsFinished && Run.ErrorCount > 0);
+				bool Show = Run.IsRunning || State == JobState.Reconnecting || Problem || Page == Selected || _PinnedTabs.Contains(Page);
+				bool Shown = Page.Parent != null;
+				if (Show && !Shown) ShowJobTab(i);
+				else if (!Show && Shown) tabJobs.TabPages.Remove(Page);
+			}
+		}
+
+		private void ShowJobTab(int Index)
+		{
+			TabPage Page = _JobTabs[Index];
+			if (Page.Parent != null) return;
+			// After the Overview tab and every shown tab of an earlier job.
+			int At = 1;
+			for (int i = 0; i < Index; i++) if (_JobTabs[i].Parent != null) At++;
+			bool Updating = _UpdatingTabs;
+			_UpdatingTabs = true;
+			try
+			{
+				tabJobs.TabPages.Insert(At, Page);
+			}
+			finally
+			{
+				_UpdatingTabs = Updating;
+			}
 		}
 
 		private void UpdateCommandButton()
@@ -224,11 +292,15 @@ namespace RoboG
 		{
 			if (lstJobs.SelectedItems.Count == 0) return;
 			TabPage Page = lstJobs.SelectedItems[0].Tag as TabPage;
-			if (Page != null) tabJobs.SelectedTab = Page;
+			if (Page == null) return;
+			_PinnedTabs.Add(Page);
+			ShowJobTab(_JobTabs.IndexOf(Page));
+			tabJobs.SelectedTab = Page;
 		}
 
 		private void tabJobs_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if (_UpdatingTabs) return;
 			_ShownLogVersion = -1;
 			if (_Panels.Count > 0) RefreshTimer_Tick(this, EventArgs.Empty);
 		}
@@ -451,6 +523,7 @@ namespace RoboG
 				bool TotalKnown = Settings.Scan && Settings.LogFiles;
 				double Rate = 0, FileRate = 0;
 				int Running = 0, Finished = 0, Waiting = 0, Reconnecting = 0;
+				double JobsDone = 0; // Finished jobs, plus how far the running ones are.
 				for (int i = 0; i < _Panels.Count; i++)
 				{
 					JobPanel Panel = _Panels[i];
@@ -465,6 +538,7 @@ namespace RoboG
 					if (Run.IsFinished)
 					{
 						Finished++;
+						JobsDone += 1;
 						Total += JobCopied; // A finished job has copied all it is going to.
 					}
 					else
@@ -474,6 +548,8 @@ namespace RoboG
 						else Waiting++;
 						long ToCopy = Run.BytesToCopy;
 						if (ToCopy < 0) TotalKnown = false; else Total += Math.Max(ToCopy, JobCopied);
+						int JobPercent = Run.State == JobState.Copying ? JobPanel.Percent(Run) : -1;
+						if (JobPercent > 0) JobsDone += JobPercent / 100.0;
 					}
 
 					SetText(_JobTabs[i], Panel.TabTitle());
@@ -491,6 +567,13 @@ namespace RoboG
 				{
 					if (OverallProgress.Style != ProgressBarStyle.Blocks) OverallProgress.Style = ProgressBarStyle.Blocks;
 					OverallProgress.Value = _Aborting ? 0 : OverallProgress.Maximum;
+				}
+				else if (_Panels.Count > 1 && JobsDone > 0)
+				{
+					// The bytes still to copy aren't known until every job has scanned (jobs waiting their turn
+					// haven't), so the bar shows the share of jobs done instead.
+					if (OverallProgress.Style != ProgressBarStyle.Blocks) OverallProgress.Style = ProgressBarStyle.Blocks;
+					OverallProgress.Value = (int)Math.Min(OverallProgress.Maximum, JobsDone * OverallProgress.Maximum / _Panels.Count);
 				}
 
 				String Progress = "";
@@ -513,7 +596,13 @@ namespace RoboG
 				SetText(lblSpeedValue, Copying && Settings.LogFiles ? HelperFunctions.SizeSuffix((long)Rate) + "/s" : "-");
 				SetText(lblFileRateValue, Copying && Settings.LogFiles ? FileRate.ToString("N0") : "-");
 				SetText(lblElapsedValue, PrintTimeSpan(Now.TotalSeconds));
+				double JobsFraction = _Panels.Count > 0 ? JobsDone / _Panels.Count : 0;
 				if (Copying && TotalKnown && Total > Copied && Rate > 0) SetText(lblRemainingValue, PrintTimeSpan((Total - Copied) / Rate));
+				else if (!_BackupFinished && _Panels.Count > 1 && Finished > 0 && JobsFraction >= 0.02 && JobsFraction < 1)
+				{
+					// Estimate from the share of jobs done so far: fair when the jobs are of similar size.
+					SetText(lblRemainingValue, "~" + PrintTimeSpan(Now.TotalSeconds * (1 - JobsFraction) / JobsFraction));
+				}
 				else SetText(lblRemainingValue, _BackupFinished ? "0s" : "-");
 				int Errors = IO.ErrorCount;
 				SetText(lblErrorsValue, Errors.ToString("N0"));
@@ -522,8 +611,9 @@ namespace RoboG
 
 				// Only the visible tab's details and log are drawn.
 				UpdateCommandButton();
-				int Selected = tabJobs.SelectedIndex - 1;
-				if (Selected >= 0 && Selected < _Panels.Count) _Panels[Selected].RefreshView(true);
+				UpdateJobTabs();
+				JobPanel SelectedJob = SelectedPanel();
+				if (SelectedJob != null) SelectedJob.RefreshView(true);
 				else ShowRecentLog();
 
 				if ((Now - _LastLogFlush).TotalMilliseconds >= LogFlushIntervalMs)
