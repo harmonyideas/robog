@@ -27,38 +27,62 @@ namespace RoboG {
     private delegate void OneExceptionParameterDelegate(Exception Parameter);
     private delegate System.Windows.Forms.DialogResult YesNoQuestionDelegate(String Caption, String Text, Int32 DefaultButtonNumber);
 
+    // The window dialogs belong to. GlobalData.MainWindow can point at a window that has since closed (for example
+    // the progress window after a sync), and a dialog owned by a closed window crashes; then any window that is
+    // still open is used instead, or none.
+    private static System.Windows.Forms.Form Owner() {
+      System.Windows.Forms.Form Main = GlobalData.MainWindow;
+      if (Main != null && !Main.IsDisposed && !Main.Disposing && Main.IsHandleCreated) return Main;
+      try {
+        System.Windows.Forms.FormCollection Open = System.Windows.Forms.Application.OpenForms;
+        for (int i = Open.Count - 1; i >= 0; i--) {
+          System.Windows.Forms.Form Form = Open[i];
+          if (Form != null && !Form.IsDisposed && !Form.Disposing && Form.IsHandleCreated && Form.Visible) {
+            GlobalData.MainWindow = Form;
+            return Form;
+          }
+        }
+      } catch {}
+      return null;
+    }
+
     public static System.Windows.Forms.DialogResult ShowYesNoQuestion(String Caption, String Text, Int32 DefaultButtonNumber) {
-      if (GlobalData.MainWindow.InvokeRequired) {
-        return (System.Windows.Forms.DialogResult) GlobalData.MainWindow.Invoke(new YesNoQuestionDelegate(ShowYesNoQuestion), Caption, Text, DefaultButtonNumber);
-      } else {
-        System.Windows.Forms.MessageBoxDefaultButton DefaultButton = System.Windows.Forms.MessageBoxDefaultButton.Button1;
-        if (DefaultButtonNumber == 2) {
-          DefaultButton = System.Windows.Forms.MessageBoxDefaultButton.Button2;
-        }
-        return System.Windows.Forms.MessageBox.Show(GlobalData.MainWindow, Text, Caption, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, DefaultButton);
+      System.Windows.Forms.Form Window = Owner();
+      if (Window != null && Window.InvokeRequired) {
+        return (System.Windows.Forms.DialogResult) Window.Invoke(new YesNoQuestionDelegate(ShowYesNoQuestion), Caption, Text, DefaultButtonNumber);
       }
+      System.Windows.Forms.MessageBoxDefaultButton DefaultButton = DefaultButtonNumber == 2 ? System.Windows.Forms.MessageBoxDefaultButton.Button2 : System.Windows.Forms.MessageBoxDefaultButton.Button1;
+      return System.Windows.Forms.MessageBox.Show(Window, Text, Caption, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, DefaultButton);
     }
+
     public static void ShowError(String Text) {
-      if (GlobalData.MainWindow != null && GlobalData.MainWindow.InvokeRequired) {
-        GlobalData.MainWindow.Invoke(new OneStringParameterDelegate(ShowError), Text);
-      } else {
-        if (GlobalData.MainWindow != null && !GlobalData.MainWindow.IsDisposed) {
-          try {
-            WriteLog(Text);
-            if (!GlobalData.MainWindow.IsDisposed && (GlobalData.MainWindow.GetType() != typeof (frmMain) || !Settings.SilentMode)) System.Windows.Forms.MessageBox.Show(GlobalData.MainWindow, Text, "RoboG", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
-          } catch {}
-        } else {
-          if (!Settings.SilentMode) System.Windows.Forms.MessageBox.Show(Text, "RoboG", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
+      System.Windows.Forms.Form Window = Owner();
+      if (Window != null && Window.InvokeRequired) {
+        try {
+          Window.Invoke(new OneStringParameterDelegate(ShowError), Text);
+        } catch (ObjectDisposedException) {
+          WriteLog(Text); // The window closed meanwhile; the error is still in the log.
+        } catch (InvalidOperationException) {
+          WriteLog(Text);
         }
+        return;
       }
+      WriteLog(Text);
+      // In silent mode errors during a sync are only logged.
+      if (Settings.SilentMode && (Window == null || Window is frmMain)) return;
+      try {
+        System.Windows.Forms.MessageBox.Show(Window, Text, "RoboG", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
+      } catch {}
     }
+
     public static void ShowMessage(String Text, String Caption) {
-      if (GlobalData.MainWindow.InvokeRequired) {
-        GlobalData.MainWindow.Invoke(new TwoStringParametersDelegate(ShowMessage), Text, Caption);
-      } else {
-        if (!Settings.SilentMode) System.Windows.Forms.MessageBox.Show(Text, Caption, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-        else WriteLog(Text);
+      System.Windows.Forms.Form Window = Owner();
+      if (Window != null && Window.InvokeRequired) {
+        Window.Invoke(new TwoStringParametersDelegate(ShowMessage), Text, Caption);
+        return;
       }
+      if (Settings.SilentMode) WriteLog(Text);
+      else System.Windows.Forms.MessageBox.Show(Window, Text, Caption, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
     }
 
     public static void ShowError(Exception e) {
