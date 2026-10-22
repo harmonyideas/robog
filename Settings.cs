@@ -98,20 +98,13 @@ namespace RoboG {
         return _Sources;
       }
     }
-    private static int _ShadowCopy = -1;
+    /// <summary>True if any enabled job uses shadow copies. Worked out each time, so changes made in the jobs list count at once.</summary>
     public static bool ShadowCopy {
       get {
-        if (_ShadowCopy == -1) {
-          _ShadowCopy = 0;
-          for (int i = 0; i < _Sources.Count; i++) {
-            if (_Sources[i].ShadowCopy) _ShadowCopy = 1;
-          }
+        for (int i = 0; i < _Sources.Count; i++) {
+          if (_Sources[i].ShadowCopy && !_Sources[i].DisableJob) return true;
         }
-        return _ShadowCopy == 1;
-      }
-      set {
-        if (value == true) _ShadowCopy = 1;
-        else _ShadowCopy = 0;
+        return false;
       }
     }
 
@@ -237,6 +230,7 @@ namespace RoboG {
 				if (ShadowCopy) return true;
 				foreach (BackupSource Source in _Sources)
 				{
+					if (Source.DisableJob) continue;
 					if ((int)Source.CopyFlags > 0 || Source.BackupMode) return true;
 				}
 			}
@@ -343,7 +337,6 @@ namespace RoboG {
 				}
 
 
-				_ShadowCopy = -1;
 				using (System.Xml.XmlTextWriter tw = new XmlTextWriter(_Path, System.Text.Encoding.Unicode))
 				{
 					tw.WriteStartDocument();

@@ -33,6 +33,10 @@ namespace RoboG
 			InitializeComponent();
 			Theme.Apply(this);
 			dgvSources.DataBindingComplete += (Sender, Args) => UpdateJobState();
+			dgvSources.CellMouseClick += dgvSources_CellMouseClick;
+			dgvSources.CellMouseEnter += dgvSources_CellMouseEnter;
+			dgvSources.MouseLeave += (Sender, Args) => dgvSources.Cursor = Cursors.Default;
+			dgvSources.KeyDown += dgvSources_KeyDown;
 			dgvSources.RowsRemoved += (Sender, Args) => UpdateJobState();
 			exitToolStripMenuItem.Click += (Sender, Args) => this.Close();
 
@@ -103,9 +107,10 @@ namespace RoboG
 					dgvSources.Columns["Name"].FillWeight = 22;
 					dgvSources.Columns["SourcePath"].FillWeight = 39;
 					dgvSources.Columns["TargetPath"].FillWeight = 39;
-					foreach (String Flag in new String[] { "MIR", "ShadowCopy", "LogOnly", "DisableJob" })
+					foreach (String Flag in FlagColumns)
 					{
 						DataGridViewColumn Column = dgvSources.Columns[Flag];
+						Column.ToolTipText = "Click a box to turn this on or off for that job";
 						Column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
 						Column.Width = 84;
 						Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -124,6 +129,71 @@ namespace RoboG
 
 		}
 
+
+		// The yes/no columns that can be switched on and off right in the list.
+		private static readonly String[] FlagColumns = new String[] { "MIR", "ShadowCopy", "LogOnly", "DisableJob" };
+
+		private bool IsFlagColumn(int ColumnIndex)
+		{
+			return ColumnIndex >= 0 && Array.IndexOf(FlagColumns, dgvSources.Columns[ColumnIndex].Name) >= 0;
+		}
+
+		// Turns one yes/no option of a job on or off, with the same checks as the job dialog.
+		private void ToggleFlag(int RowIndex, int ColumnIndex)
+		{
+			if (RowIndex < 0 || RowIndex >= Settings.Sources.Count || !IsFlagColumn(ColumnIndex)) return;
+			BackupSource Source = Settings.Sources[RowIndex];
+			switch (dgvSources.Columns[ColumnIndex].Name)
+			{
+				case "MIR":
+					Source.MIR = !Source.MIR;
+					break;
+				case "LogOnly":
+					Source.LogOnly = !Source.LogOnly;
+					break;
+				case "DisableJob":
+					Source.DisableJob = !Source.DisableJob;
+					break;
+				case "ShadowCopy":
+					if (!Source.ShadowCopy)
+					{
+						// A snapshot is read-only (so /M can't reset the archive bit) and needs a local NTFS or ReFS source.
+						String Path = Source.SourcePath ?? "";
+						if (Source.M)
+						{
+							HelperFunctions.ShowMessage(Translations.Get("ErrorResetArchive"), "RoboG");
+							return;
+						}
+						if (Path.Length < 3 || !IO.CheckSourceDrive(Path.Substring(0, 3)))
+						{
+							HelperFunctions.ShowMessage(Translations.Get("ShadowCopiesNotPossible"), "RoboG");
+							return;
+						}
+					}
+					Source.ShadowCopy = !Source.ShadowCopy;
+					break;
+			}
+			_Saved = false; // Saved when the window closes or a sync starts, like edits in the job dialog.
+			dgvSources.InvalidateRow(RowIndex);
+		}
+
+		private void dgvSources_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left && e.RowIndex >= 0) ToggleFlag(e.RowIndex, e.ColumnIndex);
+		}
+
+		// Space toggles the box under the keyboard focus.
+		private void dgvSources_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode != Keys.Space || dgvSources.CurrentCell == null) return;
+			ToggleFlag(dgvSources.CurrentCell.RowIndex, dgvSources.CurrentCell.ColumnIndex);
+			e.Handled = true;
+		}
+
+		private void dgvSources_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+		{
+			dgvSources.Cursor = e.RowIndex >= 0 && IsFlagColumn(e.ColumnIndex) ? Cursors.Hand : Cursors.Default;
+		}
 
 		// Empty-state message, job count, and buttons that need a selected job.
 		private void UpdateJobState()
@@ -454,6 +524,7 @@ namespace RoboG
 			try
 			{
 				if (e.RowIndex < 0) return; // Header double-click.
+				if (IsFlagColumn(e.ColumnIndex)) return; // Double-clicking a box just toggles it twice.
 				Edit();
 			}
 			catch (Exception ex)

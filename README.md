@@ -58,6 +58,8 @@ RoboG is a Windows front end for **robocopy**. You define sync jobs (a source fo
 | Backup mode | `/ZB` | Needs the "Back up files and directories" privilege. |
 | Disable job | — | The job is skipped when the profile runs. |
 
+**Mirror**, **VSS**, **Log only** (test run) and **Disabled** can also be switched on and off directly in the jobs list: click the box, or press Space on it. Turning on VSS checks the source drive the same way the job dialog does.
+
 **View command...** at the bottom of the progress window shows the exact robocopy command line of the selected job (its tab, or its row on the Overview tab), lists every part of the command with what it does, and copies the command for running by hand.
 
 RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tolerance (for NAS and FAT targets), allow for daylight-saving changes, skip junctions, and suppress per-file percentages.
