@@ -79,9 +79,14 @@ namespace RoboG {
       Caption(Translations.Get("lblFileCaption"), 176);
       Place(lblSource, 80, 136, 668, 18, TLR);
       Place(lblTarget, 80, 156, 668, 18, TLR);
-      Place(lblFile, 80, 176, 568, 18, TLR);
-      Place(lblSize, 652, 176, 96, 18, AnchorStyles.Top | AnchorStyles.Right);
-      lblSize.TextAlign = ContentAlignment.TopRight;
+      Place(lblFile, 80, 176, 520, 18, TLR);
+      // Size of the file being copied, labelled like the rows on the left.
+      Label lblSizeCaption = new Label();
+      lblSizeCaption.Text = Translations.Get("lblSizeCaption");
+      lblSizeCaption.ForeColor = Theme.TextMuted;
+      lblSizeCaption.TextAlign = ContentAlignment.TopRight;
+      Place(lblSizeCaption, 606, 176, 50, 18, AnchorStyles.Top | AnchorStyles.Right);
+      Place(lblSize, 660, 176, 88, 18, AnchorStyles.Top | AnchorStyles.Right);
       foreach (Label L in new Label[] { lblSource, lblTarget, lblFile }) {
         L.AutoEllipsis = true;
         L.UseMnemonic = false;
