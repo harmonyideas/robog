@@ -52,7 +52,7 @@ RoboG is a Windows front end for **robocopy**. You define sync jobs (a source fo
 | Exclude files / folders | `/XF` `/XD` | Wildcards allowed. |
 | Attribute filters | `/IA` `/XA` `/A+` `/A-` | Include, exclude, add or remove attributes. |
 | Archive bit | `/M` | Copy only files with the archive attribute, and reset it. |
-| Comparison | `/XC` `/XN` `/XL` `/IT` | Exclude changed, newer, or extra-to-source files; include files with changed attributes. |
+| Comparison | `/XC` `/XN` `/XL` `/IT` | Skip files of different size, newer files, or files not yet in the target; include files whose attributes changed. |
 | Age and size limits | `/MAXAGE` `/MINAGE` `/MAXLAD` `/MINLAD` `/MAX` `/MIN` | |
 | NTFS security, owner, auditing | `/COPY:S` `O` `U` | |
 | Backup mode | `/ZB` | Needs the "Back up files and directories" privilege. |
