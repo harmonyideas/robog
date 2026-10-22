@@ -230,7 +230,7 @@
 		<MenuHelp>&amp;Help</MenuHelp>
 		<MenuAbout>&amp;About RoboG</MenuAbout>
 		<SettingsSaved>Settings were saved successfully.</SettingsSaved>
-		<ScriptFileFilter>Script files (*.script)|*.script|All files (*.*)|*.*</ScriptFileFilter>
+		<ScriptFileFilter>Batch files (*.cmd)|*.cmd|All files (*.*)|*.*</ScriptFileFilter>
 		<XmlFileFilter>XML files (*.xml)|*.xml|All files (*.*)|*.*</XmlFileFilter>
 		<InvalidSettingsFile>Please select a valid XML settings file.</InvalidSettingsFile>
 		<lblTargetDirectory>Target folder</lblTargetDirectory>
@@ -328,6 +328,7 @@
 		<SwitchesTarget>Target folder.</SwitchesTarget>
 		<SwitchesFiles>File name or pattern to copy (default *.*).</SwitchesFiles>
 		<SwitchesUnknown>No description available. See "robocopy /?".</SwitchesUnknown>
+		<AlreadyRunning>RoboG is already running, so this sync was not started. Close the other RoboG window and run it again.</AlreadyRunning>
 	</en-US>
 	<de-DE name="Deutsch">
 		<!--Multiple files-->
@@ -559,7 +560,7 @@
 		<MenuHelp>&amp;Hilfe</MenuHelp>
 		<MenuAbout>&amp;Über RoboG</MenuAbout>
 		<SettingsSaved>Die Einstellungen wurden gespeichert.</SettingsSaved>
-		<ScriptFileFilter>Skriptdateien (*.script)|*.script|Alle Dateien (*.*)|*.*</ScriptFileFilter>
+		<ScriptFileFilter>Batchdateien (*.cmd)|*.cmd|Alle Dateien (*.*)|*.*</ScriptFileFilter>
 		<XmlFileFilter>XML-Dateien (*.xml)|*.xml|Alle Dateien (*.*)|*.*</XmlFileFilter>
 		<InvalidSettingsFile>Bitte wählen Sie eine gültige XML-Einstellungsdatei.</InvalidSettingsFile>
 		<lblTargetDirectory>Zielordner</lblTargetDirectory>
@@ -657,6 +658,7 @@
 		<SwitchesTarget>Zielordner.</SwitchesTarget>
 		<SwitchesFiles>Zu kopierender Dateiname oder Muster (Standard *.*).</SwitchesFiles>
 		<SwitchesUnknown>Keine Beschreibung verfügbar. Siehe „robocopy /?“.</SwitchesUnknown>
+		<AlreadyRunning>RoboG läuft bereits, daher wurde diese Synchronisierung nicht gestartet. Schließen Sie das andere RoboG-Fenster und starten Sie sie erneut.</AlreadyRunning>
 	</de-DE>
 	<fr-FR name="Français">
 		<!--Multiple files-->
@@ -888,7 +890,7 @@
 		<MenuHelp>&amp;Aide</MenuHelp>
 		<MenuAbout>À &amp;propos de RoboG</MenuAbout>
 		<SettingsSaved>Les paramètres ont été enregistrés.</SettingsSaved>
-		<ScriptFileFilter>Fichiers de script (*.script)|*.script|Tous les fichiers (*.*)|*.*</ScriptFileFilter>
+		<ScriptFileFilter>Fichiers de commandes (*.cmd)|*.cmd|Tous les fichiers (*.*)|*.*</ScriptFileFilter>
 		<XmlFileFilter>Fichiers XML (*.xml)|*.xml|Tous les fichiers (*.*)|*.*</XmlFileFilter>
 		<InvalidSettingsFile>Veuillez sélectionner un fichier de paramètres XML valide.</InvalidSettingsFile>
 		<lblTargetDirectory>Dossier cible</lblTargetDirectory>
@@ -986,5 +988,6 @@
 		<SwitchesTarget>Dossier cible.</SwitchesTarget>
 		<SwitchesFiles>Nom ou modèle de fichier à copier (par défaut *.*).</SwitchesFiles>
 		<SwitchesUnknown>Aucune description disponible. Voir « robocopy /? ».</SwitchesUnknown>
+		<AlreadyRunning>RoboG est déjà ouvert, cette synchronisation n'a donc pas démarré. Fermez l'autre fenêtre RoboG et relancez-la.</AlreadyRunning>
 	</fr-FR>
 </Translations>

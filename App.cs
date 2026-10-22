@@ -30,17 +30,6 @@ namespace RoboG {
     public App() {
       try {
         bool Start = false;
-        if (Processes.ProcessPathCount(Application.ExecutablePath) > 1) {
-          System.Threading.Thread.Sleep(200);
-
-          if (Processes.ProcessPathCount(Application.ExecutablePath) > 1) {
-            System.Threading.Thread.Sleep(2000);
-
-            if (Processes.ProcessPathCount(Application.ExecutablePath) > 1) {
-              Environment.Exit(0);
-            }
-          }
-        }
         String[] Args = Environment.GetCommandLineArgs();
         for (int i = 1; i < Args.Length; i++) {
           String[] SplittedArgs = Args[i].Split(':');
@@ -70,6 +59,15 @@ namespace RoboG {
 
         if (!Translations.LoadTranslations()) Environment.Exit(2);
 
+        // Only one RoboG at a time. The waits let a copy that is restarting as administrator hand over.
+        if (Processes.ProcessPathCount(Application.ExecutablePath) > 1) {
+          System.Threading.Thread.Sleep(200);
+          if (Processes.ProcessPathCount(Application.ExecutablePath) > 1) {
+            System.Threading.Thread.Sleep(2000);
+            if (Processes.ProcessPathCount(Application.ExecutablePath) > 1) AlreadyRunning(Start);
+          }
+        }
+
         if (Start && Settings.LoadSettings(true, false)) {
           if (!GlobalData.Admin && Environment.OSVersion.Version.Major >= 6 && !Processes.Elevated() && Settings.NeedsAdmin()) {
             if (!Processes.RestartAsAdmin()) Environment.Exit(3);
@@ -91,6 +89,23 @@ namespace RoboG {
         HelperFunctions.ShowError(ex);
         Environment.Exit(1);
       }
+    }
+
+    /// <summary>Exit code when RoboG did not start because another RoboG is open.</summary>
+    public const int ExitAlreadyRunning = 4;
+
+    // Another RoboG is open. A sync that was asked for (/s) is noted in the run log, and shown unless the run is
+    // unattended (/Auto), so a script or scheduled task can't fail without a trace.
+    private static void AlreadyRunning(bool SyncRequested) {
+      if (SyncRequested) {
+        try {
+          System.IO.Directory.CreateDirectory(GlobalData.LogPath);
+          System.IO.File.AppendAllText(GlobalData.LogPath + "\\RoboG-Log.txt",
+            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  Sync not started: another RoboG is already running (exit code " + ExitAlreadyRunning + ")." + Environment.NewLine);
+        } catch {}
+        if (!GlobalData.AutoExitCmd) MessageBox.Show(Translations.Get("AlreadyRunning"), "RoboG", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
+      Environment.Exit(ExitAlreadyRunning);
     }
 
     private void ShowForm(object Sender, BackupForm Form) {

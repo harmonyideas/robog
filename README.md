@@ -90,9 +90,20 @@ RoboG.exe /s /Settings:"C:\path\profile.xml" /Auto
 | `/Auto` | Exit when the run is finished. |
 | `/User:<name>` | User name used by generated scripts. |
 
-**Edit > Generate Script File** writes this command line for the current profile.
+**Edit > Generate Script File** saves a `.cmd` file that runs the current profile this way. Double-click it to run, or use it as a scheduled task's program. RoboG's progress window opens while it runs, and with `/Auto` it closes when the sync is done.
 
-To run it on a schedule, create a task in Task Scheduler with this command. If any job uses shadow copies, tick **Run with highest privileges**.
+To check a run afterwards, see `%AppData%\RoboG\RoboG-Log.txt` and the job logs in `%AppData%\RoboG\Jobs`, or the exit code (Task Scheduler shows it as **Last Run Result**):
+
+| Exit code | Meaning |
+|---|---|
+| 0 | Everything was copied |
+| 1 | Finished with errors, or a job failed (see the error log) |
+| 2 | Stopped by the user |
+| 4 | Not started: another RoboG was already open (also noted in `RoboG-Log.txt`) |
+
+Only one RoboG runs at a time. Close the RoboG window before a scheduled sync is due, or the sync won't start.
+
+To run it on a schedule, create a task in Task Scheduler that runs the `.cmd` file. If any job uses shadow copies, tick **Run with highest privileges**.
 
 ## How it behaves
 

@@ -301,6 +301,8 @@ namespace RoboG
 				else HelperFunctions.UpdateStatus(Translations.Get("BackupCompleted"));
 
 				bool RobocopyErrors = IO.ErrorCount > 0;
+				// For scripts and scheduled tasks: 0 = everything copied, 1 = errors or failed jobs, 2 = stopped.
+				Environment.ExitCode = _Aborting ? 2 : (Error || RobocopyErrors) ? 1 : 0;
 				if ((Error || RobocopyErrors) && !_Aborting)
 				{
 					RunProgram(Settings.ProgramOnError, Settings.ArgumentsProgramOnError, Settings.ProgramOnErrorAdmin);

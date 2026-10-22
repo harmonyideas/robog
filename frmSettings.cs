@@ -583,7 +583,7 @@ namespace RoboG
 				SaveFileDialog saveFileMenuDlg = new SaveFileDialog();
 				saveFileMenuDlg.Filter = Translations.Get("ScriptFileFilter");
 				saveFileMenuDlg.FilterIndex = 1;
-				saveFileMenuDlg.DefaultExt = "script";
+				saveFileMenuDlg.DefaultExt = "cmd";
 				saveFileMenuDlg.RestoreDirectory = true;
 				if (saveFileMenuDlg.ShowDialog() == DialogResult.OK)
 				{
@@ -599,7 +599,10 @@ namespace RoboG
 						_ActiveXMLFile = GlobalData.SystemXMLFile;
 					}
 
-					System.IO.File.WriteAllText(_ScriptFile, System.Windows.Forms.Application.StartupPath + "\\RoboG.EXE /s /Settings:\"" + _ActiveXMLFile + "\" /User " + HelperFunctions.GetUserName());
+					// A batch file Windows can run (double-click, or a scheduled task). /Auto closes RoboG when the sync is
+					// done; start /wait + exit /b pass RoboG's exit code on (0 = OK, 1 = errors, 2 = stopped, 4 = already running).
+					String Command = "start \"\" /wait \"" + Application.ExecutablePath + "\" /s /Settings:\"" + _ActiveXMLFile + "\" /User:\"" + HelperFunctions.GetUserName() + "\" /Auto";
+					System.IO.File.WriteAllText(_ScriptFile, "@echo off\r\nrem RoboG sync, generated " + DateTime.Now.ToString("yyyy-MM-dd") + ". Log: %AppData%\\RoboG\\RoboG-Log.txt\r\n" + Command + "\r\nexit /b %errorlevel%\r\n");
 
 				}
 
