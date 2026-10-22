@@ -292,7 +292,10 @@ namespace RoboG
 				}
 
 				HelperFunctions.WriteLog(Translations.Get("Done"));
-				FinishLog();
+				// The error log is complete now, and the run log is flushed, so the programs below can read both
+				// (to mail them, for example). The run log stays open until they finish, so their results are in it.
+				IO.WriteErrorLog();
+				RunLog.Flush();
 
 				RunProgram(Settings.ProgramAfterBackup, Settings.ArgumentsProgramAfterBackup, Settings.ProgramAfterBackupAdmin);
 
@@ -307,6 +310,7 @@ namespace RoboG
 				{
 					RunProgram(Settings.ProgramOnError, Settings.ArgumentsProgramOnError, Settings.ProgramOnErrorAdmin);
 				}
+				FinishLog();
 
 				_BackupFinished = true; //Don't delete or move. Necessary for this.Close() to work
 				RunOnUIThread(delegate { RefreshTimer_Tick(this, EventArgs.Empty); });
@@ -342,16 +346,29 @@ namespace RoboG
 				HelperFunctions.UpdateStatus(Translations.Get("StartingProgram") + Program + "...");
 				using (Process Process = new Process())
 				{
-					Process.StartInfo.FileName = Program;
-					Process.StartInfo.Arguments = Arguments;
+					String File = Program.Trim().Trim('"');
+					String Args = Arguments ?? "";
+					// Opening a .ps1 file shows it in Notepad; run it with PowerShell instead.
+					if (File.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
+					{
+						Args = "-NoProfile -ExecutionPolicy Bypass -File \"" + File + "\" " + Args;
+						File = "powershell.exe";
+					}
+					Process.StartInfo.FileName = File;
+					Process.StartInfo.Arguments = Args;
+					// Scripts often use paths relative to their own folder.
+					String Folder = System.IO.Path.GetDirectoryName(Program.Trim().Trim('"'));
+					if (!String.IsNullOrEmpty(Folder) && System.IO.Directory.Exists(Folder)) Process.StartInfo.WorkingDirectory = Folder;
 					if (Admin) Process.StartInfo.Verb = "runas";
+					HelperFunctions.WriteLog("Running program: " + File + " " + Args);
 					Process.Start();
 					Process.WaitForExit();
+					HelperFunctions.WriteLog("Program finished with exit code " + Process.ExitCode + ": " + Program);
 				}
 			}
 			catch (Exception ex)
 			{
-				HelperFunctions.ShowError(ex);
+				HelperFunctions.ShowError(Translations.Get("StartingProgram") + Program + "\n\n" + ex.Message);
 			}
 		}
 

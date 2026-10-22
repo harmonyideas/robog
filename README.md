@@ -75,7 +75,7 @@ RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tole
 | Show live progress | on | Lists every file. Off (`/NFL /NDL`) is fastest. Totals still appear when each job finishes. |
 | Close automatically | off | Close when the run succeeds, or always. |
 | Silent mode | off | Errors are logged instead of shown in a dialog. |
-| Programs | — | Run a program before the sync, after it, or after errors. Each can run as administrator. |
+| Programs | — | Run a program or script before the sync, after it, and after errors. RoboG waits for each to finish. **Before** runs first (before shadow copies); **after** runs when all jobs are done; **on errors** runs after that, only if a job failed or files could not be copied (not when you stop the run). `.exe`, `.cmd`/`.bat` and `.ps1` (run with PowerShell) all work; each runs in its own folder. Both logs are complete and readable when the after and error programs run, for example to mail them. Each program's exit code is written to the run log. "Start as administrator" needs RoboG to run elevated in unattended runs. |
 
 ## Command line and scheduling
 

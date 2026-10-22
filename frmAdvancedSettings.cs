@@ -103,11 +103,21 @@ namespace RoboG
 				txtRetries.Left = lblRetries.Right + 4;
 				txtWaitBetweenRetries.Left = txtRetries.Left;
 				lblSecond.Left = txtWaitBetweenRetries.Right + 4;
+				// Each Arguments box lines up with the Program box above it and ends with its "..." button.
+				AlignArguments(txtProgramBeforeBackup, bnSelectProgramBeforeBackup, txtArgumentsProgramBeforeBackup);
+				AlignArguments(txtProgramAfterBackup, bnSelectProgramAfterBackup, txtArgumentsProgramAfterBackup);
+				AlignArguments(txtProgramOnError, bnSelectProgramOnError, txtArgumentsProgramOnError);
 			}
 			catch (Exception ex)
 			{
 				HelperFunctions.ShowError(ex);
 			}
+		}
+
+		private static void AlignArguments(Control Program, Control Browse, Control Arguments)
+		{
+			Arguments.Left = Program.Left;
+			Arguments.Width = Browse.Right - Program.Left;
 		}
 
 		private void InitializeControls()
