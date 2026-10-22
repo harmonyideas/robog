@@ -76,6 +76,7 @@ RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tole
 | Close automatically | off | Close when the run succeeds, or always. |
 | Silent mode | off | Errors are logged instead of shown in a dialog. |
 | Logs | `%AppData%\RoboG`, keep 30 runs | Where this profile's logs go, and how many runs to keep (0 = all). See [Logs](#logs). |
+| List every copied file | on | Off: job logs keep only errors, files deleted by mirror mode, outage notes and totals, while the window still shows live progress. Saves about 100 MB of log per million files. |
 | Programs | — | Run a program or script before the sync, after it, and after errors. RoboG waits for each to finish. **Before** runs first (before shadow copies); **after** runs when all jobs are done; **on errors** runs after that, only if a job failed or files could not be copied (not when you stop the run). `.exe`, `.cmd`/`.bat` and `.ps1` (run with PowerShell) all work; each runs in its own folder. Both logs are complete and readable when the after and error programs run, for example to mail them. Each program's exit code is written to the run log. Tick **Don't sync if it fails** under the before program to skip the sync when it can't start or exits with a code other than 0 (a drive it mounts isn't there, say); the run then counts as failed. "Start as administrator" needs RoboG to run elevated in unattended runs. |
 
 ## Command line and scheduling
@@ -150,7 +151,7 @@ Logs are written to disk as the run goes; only the last 500 lines of each are ke
 For large files, speed is limited by the disks and the network. For small files, the limit is how many files the target can create per second: each file costs several round trips to the target (create, write, set times, close), whatever its size. Watch **Files/s** rather than MB/s when copying many small files.
 
 **Settings**
-- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on, every copied file adds a line of about 100 bytes to the job's log (about 100 MB per million files, 100 GB for a billion). With it off, the job log stays small. robocopy's own progress reaches RoboG through a pipe in memory, so it uses no disk space either way.
+- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on and **List every copied file** on, every copied file adds a line of about 100 bytes to the job's log (about 100 MB per million files, 100 GB for a billion). Turn off **List every copied file** to keep live progress with small logs. Writing the log is rarely what limits speed; the target usually is. robocopy's own progress reaches RoboG through a pipe in memory, so it uses no disk space either way.
 - Several jobs writing to one NAS with hard disks: total copy threads around 8–16, and fewer parallel jobs.
 - Jobs on different disks or servers: more parallel jobs.
 

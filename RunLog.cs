@@ -81,6 +81,16 @@ namespace RoboG {
       }
     }
 
+    /// <summary>Adds a line to the recent lines shown in the window, without writing it to the log file.</summary>
+    public void Show(String Line) {
+      if (Line == null) return;
+      lock (_Lock) {
+        if (_Recent.Count >= RecentLineCount) _Recent.Dequeue();
+        _Recent.Enqueue(Line);
+        _Version++;
+      }
+    }
+
     /// <summary>Pushes buffered lines to disk. Called periodically so the log file is readable during a long run.</summary>
     public void Flush() {
       lock (_Lock) {

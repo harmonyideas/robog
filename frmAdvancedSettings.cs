@@ -62,6 +62,8 @@ namespace RoboG
 				chkSilentMode.Text = Translations.Get("chkSilentMode");
 				Translations.Set(chkScan, "chkScan");
 				Translations.Set(chkLogFiles, "chkLogFiles");
+				Translations.Set(chkLogCopiedFiles, "chkLogCopiedFiles");
+				ThreadsTip.SetToolTip(chkLogCopiedFiles, Translations.Get("LogCopiedFilesToolTip"));
 				Translations.Set(lblThreads, "lblThreads");
 				Translations.Set(lblParallelJobs, "lblParallelJobs");
 				Translations.Set(gbLogs, "gbLogs");
@@ -143,6 +145,10 @@ namespace RoboG
 				chkSilentMode.Checked = Settings.SilentMode;
 				chkScan.Checked = Settings.Scan;
 				chkLogFiles.Checked = Settings.LogFiles;
+				chkLogCopiedFiles.Checked = Settings.LogCopiedFiles;
+				// Without live progress robocopy doesn't report copied files, so there is nothing to list.
+				chkLogCopiedFiles.Enabled = chkLogFiles.Checked;
+				chkLogFiles.CheckedChanged += delegate { chkLogCopiedFiles.Enabled = chkLogFiles.Checked; };
 				numThreads.Value = Settings.Threads;
 				numParallelJobs.Value = Settings.ParallelJobs;
 				// The folder actually used is shown; the default is stored as "" so it follows the user's AppData.
@@ -183,6 +189,7 @@ namespace RoboG
 				Settings.SilentMode = chkSilentMode.Checked;
 				Settings.Scan = chkScan.Checked;
 				Settings.LogFiles = chkLogFiles.Checked;
+				Settings.LogCopiedFiles = chkLogCopiedFiles.Checked;
 				Settings.Threads = (int)numThreads.Value;
 				Settings.ParallelJobs = (int)numParallelJobs.Value;
 				String LogFolder = txtLogFolder.Text.Trim().TrimEnd('\\');

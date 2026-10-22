@@ -243,7 +243,9 @@
 		<InvalidJobPath>The source or target folder is not a valid path.</InvalidJobPath>
 		<InvalidJobTarget>The target folder must not be a drive root, the source folder itself, a folder inside the source, or a folder that contains the source.</InvalidJobTarget>
 		<chkScan>Scan first to show overall progress (adds a full pass; turn off for very large jobs)</chkScan>
-		<chkLogFiles>Show live progress and list every file in the log (turn off for fastest speed)</chkLogFiles>
+		<chkLogFiles>Show live progress (turn off for fastest speed)</chkLogFiles>
+		<chkLogCopiedFiles>List every copied file (off: errors, deletions and totals only)</chkLogCopiedFiles>
+		<LogCopiedFilesToolTip>Off: the job logs keep only errors, files deleted by mirror mode, outage notes and each job's totals, instead of one line per copied file (about 100 MB per million files). The window still shows live progress.</LogCopiedFilesToolTip>
 		<lblThreads>Copy threads:</lblThreads>
 		<lblParallelJobs>Parallel jobs:</lblParallelJobs>
 		<ThreadsToolTip1>Number of files copied at once (robocopy /MT) for the whole sync. Jobs running at the same time share them:</ThreadsToolTip1>
@@ -585,7 +587,9 @@
 		<InvalidJobPath>Der Quell- oder Zielordner ist kein gültiger Pfad.</InvalidJobPath>
 		<InvalidJobTarget>Der Zielordner darf kein Laufwerksstamm sein, nicht der Quellordner selbst, nicht in der Quelle liegen und die Quelle nicht enthalten.</InvalidJobTarget>
 		<chkScan>Zuerst scannen für den Gesamtfortschritt (ein zusätzlicher Durchlauf; bei sehr großen Aufträgen ausschalten)</chkScan>
-		<chkLogFiles>Live-Fortschritt anzeigen und jede Datei protokollieren (für höchste Geschwindigkeit ausschalten)</chkLogFiles>
+		<chkLogFiles>Live-Fortschritt anzeigen (für höchste Geschwindigkeit ausschalten)</chkLogFiles>
+		<chkLogCopiedFiles>Jede kopierte Datei auflisten (aus: nur Fehler, Löschungen und Summen)</chkLogCopiedFiles>
+		<LogCopiedFilesToolTip>Aus: Die Auftragsprotokolle enthalten nur Fehler, im Spiegelmodus gelöschte Dateien, Hinweise zu Verbindungsausfällen und die Summen jedes Auftrags statt einer Zeile pro kopierter Datei (etwa 100 MB pro Million Dateien). Das Fenster zeigt den Fortschritt weiterhin live an.</LogCopiedFilesToolTip>
 		<lblThreads>Threads:</lblThreads>
 		<lblParallelJobs>Gleichzeitig:</lblParallelJobs>
 		<ThreadsToolTip1>Anzahl der gleichzeitig kopierten Dateien (robocopy /MT) für die ganze Synchronisierung. Gleichzeitig laufende Aufträge teilen sie sich:</ThreadsToolTip1>
@@ -927,7 +931,9 @@
 		<InvalidJobPath>Le dossier source ou cible n'est pas un chemin valide.</InvalidJobPath>
 		<InvalidJobTarget>Le dossier cible ne doit pas être la racine d'un lecteur, le dossier source lui-même, un dossier dans la source, ni un dossier qui contient la source.</InvalidJobTarget>
 		<chkScan>Analyser d'abord pour la progression globale (un passage de plus ; à désactiver pour les très grosses tâches)</chkScan>
-		<chkLogFiles>Afficher la progression en direct et chaque fichier dans le journal (désactiver pour la vitesse maximale)</chkLogFiles>
+		<chkLogFiles>Afficher la progression en direct (désactiver pour la vitesse maximale)</chkLogFiles>
+		<chkLogCopiedFiles>Lister chaque fichier copié (sinon : erreurs, suppressions, totaux)</chkLogCopiedFiles>
+		<LogCopiedFilesToolTip>Désactivé : les journaux des tâches ne gardent que les erreurs, les fichiers supprimés par le mode miroir, les coupures de connexion et les totaux de chaque tâche, au lieu d'une ligne par fichier copié (environ 100 Mo par million de fichiers). La fenêtre affiche toujours la progression en direct.</LogCopiedFilesToolTip>
 		<lblThreads>Threads :</lblThreads>
 		<lblParallelJobs>En parallèle :</lblParallelJobs>
 		<ThreadsToolTip1>Nombre de fichiers copiés en même temps (robocopy /MT) pour toute la synchronisation. Les tâches simultanées se les partagent :</ThreadsToolTip1>

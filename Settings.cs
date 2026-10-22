@@ -189,6 +189,8 @@ namespace RoboG {
 		// When false, robocopy is run with /NFL /NDL: only errors and the summary are reported (fastest for huge file sets).
 		private static bool _LogFiles = true;
 		public static bool LogFiles { get { return _LogFiles; } set { _LogFiles = value; } }
+		/// <summary>Write every copied file to the job logs. Off: errors, deletions (mirror) and totals only; the window still shows live progress.</summary>
+		public static bool LogCopiedFiles { get; set; } = true;
 		public static bool SilentMode { get { return _SilentMode; } set { _SilentMode = value; } }
 		#endregion
 		//public static string _MountPointPrefix = "mnt";
@@ -455,6 +457,10 @@ namespace RoboG {
 					tw.WriteString(_LogFiles.ToString());
 					tw.WriteEndElement();
 
+					tw.WriteStartElement("logcopiedfiles");
+					tw.WriteString(LogCopiedFiles.ToString());
+					tw.WriteEndElement();
+
 					for (int i = 0; i < _Sources.Count; i++)
 					{
 						tw.WriteStartElement("source");
@@ -704,6 +710,10 @@ namespace RoboG {
 										case "logfiles":
 											Temp = Rd.ReadString().Trim().ToLower();
 											_LogFiles = Temp == "1" || Temp == "true";
+											break;
+										case "logcopiedfiles":
+											Temp = Rd.ReadString().Trim().ToLower();
+											LogCopiedFiles = Temp == "1" || Temp == "true";
 											break;
 									}
 								}

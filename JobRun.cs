@@ -97,6 +97,7 @@ namespace RoboG {
     // Shadow-copy mount and the real source folder it stands for, without trailing backslash; null when the same.
     private volatile String _MountPrefix = null;
     private bool _AccessHintShown = false;
+    private readonly bool _LogCopiedFiles = Settings.LogCopiedFiles;
     private const String StoppedWhileRetrying = "(The run was stopped while robocopy was still retrying this file.)";
     private volatile String _RealPrefix = null;
     private long _ScanBytes = 0;
@@ -523,14 +524,18 @@ namespace RoboG {
     //   summary:    see ParseSummaryLine (no tabs)
     // Runs once per robocopy line, so up to billions of times: no splitting, trimming or other allocations.
     private void ProcessMirrorLine(String Line) {
-      Log.Write(ToRealPaths(Line));
       char First = Line[0];
       if (Char.IsLetterOrDigit(First)) {
+        Log.Write(ToRealPaths(Line));
         AddErrorText(Line);
         return;
       }
 
       int LastTab = Line.LastIndexOf('\t');
+      // File and folder lines go to the log file only when the profile lists copied files; deletions by mirror
+      // mode always do. The window's log shows them either way.
+      if (LastTab < 0 || _LogCopiedFiles || Line.IndexOf("*EXTRA", StringComparison.Ordinal) >= 0) Log.Write(ToRealPaths(Line));
+      else Log.Show(ToRealPaths(Line));
       if (LastTab < 0) {
         // No tabs: the job summary. robocopy's own totals are exact; they replace what was counted from file lines.
         String Label;

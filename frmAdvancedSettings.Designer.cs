@@ -88,6 +88,7 @@ namespace RoboG
 			this.lblThreadsHint = new System.Windows.Forms.Label();
 			this.lblParallelJobs = new System.Windows.Forms.Label();
 			this.gbLogs = new System.Windows.Forms.GroupBox();
+			this.chkLogCopiedFiles = new System.Windows.Forms.CheckBox();
 			this.lblLogFolder = new System.Windows.Forms.Label();
 			this.txtLogFolder = new System.Windows.Forms.TextBox();
 			this.bnSelectLogFolder = new System.Windows.Forms.Button();
@@ -173,7 +174,7 @@ namespace RoboG
 			this.gbProgramBeforeBackup.Controls.Add(this.lblProgram1);
 			this.gbProgramBeforeBackup.Controls.Add(this.bnSelectProgramBeforeBackup);
 			this.gbProgramBeforeBackup.Controls.Add(this.txtProgramBeforeBackup);
-			this.gbProgramBeforeBackup.Location = new System.Drawing.Point(18, 267);
+			this.gbProgramBeforeBackup.Location = new System.Drawing.Point(18, 291);
 			this.gbProgramBeforeBackup.Name = "gbProgramBeforeBackup";
 			this.gbProgramBeforeBackup.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramBeforeBackup.TabIndex = 3;
@@ -238,7 +239,7 @@ namespace RoboG
 			this.gbProgramAfterBackup.Controls.Add(this.lblProgram2);
 			this.gbProgramAfterBackup.Controls.Add(this.bnSelectProgramAfterBackup);
 			this.gbProgramAfterBackup.Controls.Add(this.txtProgramAfterBackup);
-			this.gbProgramAfterBackup.Location = new System.Drawing.Point(18, 360);
+			this.gbProgramAfterBackup.Location = new System.Drawing.Point(18, 384);
 			this.gbProgramAfterBackup.Name = "gbProgramAfterBackup";
 			this.gbProgramAfterBackup.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramAfterBackup.TabIndex = 4;
@@ -288,7 +289,7 @@ namespace RoboG
 			// 
 			this.bnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.bnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bnCancel.Location = new System.Drawing.Point(408, 560);
+			this.bnCancel.Location = new System.Drawing.Point(408, 584);
 			this.bnCancel.Name = "bnCancel";
 			this.bnCancel.Size = new System.Drawing.Size(76, 28);
 			this.bnCancel.TabIndex = 6;
@@ -298,7 +299,7 @@ namespace RoboG
 			// bnOK
 			// 
 			this.bnOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.bnOK.Location = new System.Drawing.Point(326, 560);
+			this.bnOK.Location = new System.Drawing.Point(326, 584);
 			this.bnOK.Name = "bnOK";
 			this.bnOK.Size = new System.Drawing.Size(76, 28);
 			this.bnOK.TabIndex = 5;
@@ -347,7 +348,7 @@ namespace RoboG
 			this.gbProgramOnError.Controls.Add(this.lblProgram3);
 			this.gbProgramOnError.Controls.Add(this.bnSelectProgramOnError);
 			this.gbProgramOnError.Controls.Add(this.txtProgramOnError);
-			this.gbProgramOnError.Location = new System.Drawing.Point(18, 460);
+			this.gbProgramOnError.Location = new System.Drawing.Point(18, 484);
 			this.gbProgramOnError.Name = "gbProgramOnError";
 			this.gbProgramOnError.Size = new System.Drawing.Size(464, 94);
 			this.gbProgramOnError.TabIndex = 12;
@@ -413,7 +414,7 @@ namespace RoboG
 			this.chkLogFiles.Name = "chkLogFiles";
 			this.chkLogFiles.Size = new System.Drawing.Size(351, 17);
 			this.chkLogFiles.TabIndex = 14;
-			this.chkLogFiles.Text = "Show live progress and list every file in the log (turn off for fastest speed)";
+			this.chkLogFiles.Text = "Show live progress (turn off for fastest speed)";
 			this.chkLogFiles.UseVisualStyleBackColor = true;
 			// 
 			// lblThreads
@@ -465,9 +466,10 @@ namespace RoboG
 			this.gbLogs.Controls.Add(this.lblKeepRuns);
 			this.gbLogs.Controls.Add(this.numKeepRuns);
 			this.gbLogs.Controls.Add(this.lblKeepRunsUnit);
+			this.gbLogs.Controls.Add(this.chkLogCopiedFiles);
 			this.gbLogs.Location = new System.Drawing.Point(18, 187);
 			this.gbLogs.Name = "gbLogs";
-			this.gbLogs.Size = new System.Drawing.Size(464, 74);
+			this.gbLogs.Size = new System.Drawing.Size(464, 98);
 			this.gbLogs.TabIndex = 20;
 			this.gbLogs.TabStop = false;
 			this.gbLogs.Text = "Logs";
@@ -497,6 +499,18 @@ namespace RoboG
 			this.bnSelectLogFolder.Text = "...";
 			this.bnSelectLogFolder.UseVisualStyleBackColor = true;
 			this.bnSelectLogFolder.Click += new System.EventHandler(this.bnSelectLogFolder_Click);
+			// 
+			// chkLogCopiedFiles
+			// 
+			this.chkLogCopiedFiles.AutoSize = true;
+			this.chkLogCopiedFiles.Checked = true;
+			this.chkLogCopiedFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogCopiedFiles.Location = new System.Drawing.Point(9, 72);
+			this.chkLogCopiedFiles.Name = "chkLogCopiedFiles";
+			this.chkLogCopiedFiles.Size = new System.Drawing.Size(300, 17);
+			this.chkLogCopiedFiles.TabIndex = 6;
+			this.chkLogCopiedFiles.Text = "List every copied file (off: errors, deletions and totals only)";
+			this.chkLogCopiedFiles.UseVisualStyleBackColor = true;
 			// 
 			// lblKeepRuns
 			// 
@@ -622,7 +636,7 @@ namespace RoboG
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.bnCancel;
-			this.ClientSize = new System.Drawing.Size(500, 629);
+			this.ClientSize = new System.Drawing.Size(500, 653);
 			this.Controls.Add(this.lblThreadsHint);
 			this.Controls.Add(this.numParallelJobs);
 			this.Controls.Add(this.lblParallelJobs);
@@ -711,6 +725,7 @@ namespace RoboG
 		private System.Windows.Forms.Label lblParallelJobs;
 		private System.Windows.Forms.NumericUpDown numParallelJobs;
 		private System.Windows.Forms.GroupBox gbLogs;
+		private System.Windows.Forms.CheckBox chkLogCopiedFiles;
 		private System.Windows.Forms.Label lblLogFolder;
 		private System.Windows.Forms.TextBox txtLogFolder;
 		private System.Windows.Forms.Button bnSelectLogFolder;
