@@ -22,6 +22,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.IO.Pipes;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace RoboG {
   /// <summary>
@@ -196,18 +199,31 @@ namespace RoboG {
     /// <paramref name="Started"/> receives the process once it runs, and null when it has finished, so the
     /// caller can kill it on abort. Returns robocopy's exit code, or -1 if <paramref name="Aborted"/> became true.
     ///
-    /// robocopy writes its report to a Unicode log file (/UNILOG) that is read while it grows. Reading the
-    /// console pipe instead would turn every file name outside the console code page (accents, CJK, ...)
-    /// into '?', because a program without a console window cannot give robocopy a UTF-8 console.
+    /// robocopy writes its report as a Unicode log (/UNILOG) into a named pipe that RoboG reads as the lines
+    /// arrive, so nothing is written to disk however many files a job has (a log file would grow by about
+    /// 200 bytes per copied file). If no pipe can be created, a temporary log file is used and read while it grows.
+    /// Reading robocopy's console output instead would turn every file name outside the console code page
+    /// (accents, CJK, ...) into '?', because a program without a console window cannot give robocopy a UTF-8 console.
     /// </summary>
     public static int RunRobocopy(String Arguments, Action<String> LineHandler, Action<Process> Started, Func<bool> Aborted, LogFile Log, out String Error) {
       Error = "";
       if (Aborted()) return -1;
 
-      String UniLog = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RoboG-" + Guid.NewGuid().ToString("N") + ".log");
+      String UniLog = null;
+      String LogTarget;
+      NamedPipeServerStream Pipe = null;
+      try {
+        String PipeName = "RoboG-" + Guid.NewGuid().ToString("N");
+        Pipe = CreateLogPipe(PipeName);
+        LogTarget = @"\\.\pipe\" + PipeName;
+      } catch (Exception ex) {
+        Log.Write("Could not create a pipe for robocopy's log (" + ex.Message + "); using a temporary file.");
+        UniLog = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "RoboG-" + Guid.NewGuid().ToString("N") + ".log");
+        LogTarget = UniLog;
+      }
       Process Cmd = new Process();
       Cmd.StartInfo.FileName = GlobalData.RobocopyPath;
-      Cmd.StartInfo.Arguments = Arguments + " /UNILOG:" + QuoteRobocopyArgument(UniLog);
+      Cmd.StartInfo.Arguments = Arguments + " /UNILOG:" + QuoteRobocopyArgument(LogTarget);
       if (System.Windows.Forms.Application.StartupPath.StartsWith(@"\\")) Cmd.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
       Cmd.StartInfo.CreateNoWindow = true;
       Cmd.StartInfo.UseShellExecute = false;
@@ -234,7 +250,7 @@ namespace RoboG {
       try {
         Cmd.BeginOutputReadLine();
         Cmd.BeginErrorReadLine();
-        TailLog(UniLog, Cmd, Line => {
+        Action<String> Handle = Line => {
           if (Line.Length == 0 || Aborted()) return;
           try {
             LineHandler(Line);
@@ -242,7 +258,8 @@ namespace RoboG {
             // An unexpected line must never stop the sync; note it and carry on.
             Log.Write("RoboG could not parse robocopy output (" + ex.Message + "): " + Line);
           }
-        });
+        };
+        if (Pipe != null) ReadPipe(Pipe, Cmd, Handle); else TailLog(UniLog, Cmd, Handle);
         Cmd.WaitForExit();
         int ExitCode = Aborted() ? -1 : Cmd.ExitCode;
         if (ExitCode >= 0 && (ExitCode & 16) == 16) {
@@ -253,14 +270,37 @@ namespace RoboG {
       } finally {
         Started(null);
         Cmd.Dispose();
-        try {
-          System.IO.File.Delete(UniLog);
-        } catch {}
+        if (Pipe != null) Pipe.Dispose();
+        if (UniLog != null) {
+          try {
+            System.IO.File.Delete(UniLog);
+          } catch {}
+        }
+      }
+    }
+
+    // A pipe only the current user can open (robocopy runs as the same user), with a large buffer so robocopy
+    // rarely has to wait for RoboG.
+    private static NamedPipeServerStream CreateLogPipe(String Name) {
+      PipeSecurity Security = new PipeSecurity();
+      Security.AddAccessRule(new PipeAccessRule(WindowsIdentity.GetCurrent().User, PipeAccessRights.FullControl, AccessControlType.Allow));
+      return new NamedPipeServerStream(Name, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1 << 20, 0, Security);
+    }
+
+    // Reads robocopy's log from the pipe as it is written, until robocopy closes it (when it exits or is killed).
+    private static void ReadPipe(NamedPipeServerStream Pipe, Process Writer, Action<String> LineHandler) {
+      IAsyncResult Connect = Pipe.BeginWaitForConnection(null, null);
+      while (!Connect.AsyncWaitHandle.WaitOne(100)) {
+        if (Writer.HasExited && !Connect.IsCompleted) return; // robocopy ended before opening its log (usage error).
+      }
+      Pipe.EndWaitForConnection(Connect);
+      using (System.IO.StreamReader Reader = new System.IO.StreamReader(Pipe, Encoding.Unicode, true, 1 << 16, true)) {
+        ReadLines(Reader, () => false, LineHandler); // End of the pipe = robocopy is done.
       }
     }
 
     // Reads lines from a log file that another process is still writing, until that process has exited
-    // and everything it wrote has been read. Memory use is constant however long the log gets.
+    // and everything it wrote has been read. Used only if no pipe could be created.
     private static void TailLog(String Path, Process Writer, Action<String> LineHandler) {
       System.IO.FileStream Stream = null;
       while (Stream == null) {
@@ -276,36 +316,45 @@ namespace RoboG {
       }
       using (Stream)
       using (System.IO.StreamReader Reader = new System.IO.StreamReader(Stream, Encoding.Unicode, true, 1 << 16)) {
-        char[] Buffer = new char[1 << 15];
-        StringBuilder Partial = new StringBuilder();
         bool WriterDone = false;
-        while (true) {
-          int Count = Reader.Read(Buffer, 0, Buffer.Length);
-          if (Count == 0) {
-            if (WriterDone) break; // Process has exited and the file has been read to the end.
-            WriterDone = Writer.HasExited; // Check before the last read, so nothing written just before exit is missed.
-            if (!WriterDone) Thread.Sleep(50);
-            continue;
-          }
-          int Start = 0;
-          for (int i = 0; i < Count; i++) {
-            if (Buffer[i] != '\n') continue;
-            int End = i;
-            if (End > Start && Buffer[End - 1] == '\r') End--;
-            if (Partial.Length > 0) {
-              Partial.Append(Buffer, Start, End - Start);
-              if (Partial.Length > 0 && Partial[Partial.Length - 1] == '\r') Partial.Length--;
-              LineHandler(Partial.ToString());
-              Partial.Length = 0;
-            } else {
-              LineHandler(new String(Buffer, Start, End - Start));
-            }
-            Start = i + 1;
-          }
-          if (Start < Count) Partial.Append(Buffer, Start, Count - Start);
-        }
-        if (Partial.Length > 0) LineHandler(Partial.ToString().TrimEnd('\r'));
+        ReadLines(Reader, () => {
+          if (WriterDone) return false; // Process has exited and the file has been read to the end.
+          WriterDone = Writer.HasExited; // Checked before the last read, so nothing written just before exit is missed.
+          if (!WriterDone) Thread.Sleep(50);
+          return true;
+        }, LineHandler);
       }
+    }
+
+    // Splits text into lines with constant memory however long it gets. When the reader has no more text for now,
+    // MoreComing decides whether to try again (a file still being written) or stop (end of a pipe).
+    private static void ReadLines(System.IO.TextReader Reader, Func<bool> MoreComing, Action<String> LineHandler) {
+      char[] Buffer = new char[1 << 15];
+      StringBuilder Partial = new StringBuilder();
+      while (true) {
+        int Count = Reader.Read(Buffer, 0, Buffer.Length);
+        if (Count == 0) {
+          if (MoreComing()) continue;
+          break;
+        }
+        int Start = 0;
+        for (int i = 0; i < Count; i++) {
+          if (Buffer[i] != '\n') continue;
+          int End = i;
+          if (End > Start && Buffer[End - 1] == '\r') End--;
+          if (Partial.Length > 0) {
+            Partial.Append(Buffer, Start, End - Start);
+            if (Partial.Length > 0 && Partial[Partial.Length - 1] == '\r') Partial.Length--;
+            LineHandler(Partial.ToString());
+            Partial.Length = 0;
+          } else {
+            LineHandler(new String(Buffer, Start, End - Start));
+          }
+          Start = i + 1;
+        }
+        if (Start < Count) Partial.Append(Buffer, Start, Count - Start);
+      }
+      if (Partial.Length > 0) LineHandler(Partial.ToString().TrimEnd('\r'));
     }
 
     // Quotes one command line argument for CreateProcess (Arguments string, .NET Framework has no ArgumentList).

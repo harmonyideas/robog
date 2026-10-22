@@ -121,7 +121,7 @@ Logs are written to disk as the run goes; only the last 500 lines of each are ke
 For large files, speed is limited by the disks and the network. For small files, the limit is how many files the target can create per second: each file costs several round trips to the target (create, write, set times, close), whatever its size. Watch **Files/s** rather than MB/s when copying many small files.
 
 **Settings**
-- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on, every copied file adds a line to robocopy's temporary log in `%TEMP%` (about 200 bytes, deleted when the job ends) and to the job's log (about 100 bytes, kept). That is about 300 MB per million files on drive C:, or about 300 GB for a billion. With it off, both logs stay small.
+- Turn off **Scan first** and **Show live progress** for very large runs. With live progress on, every copied file adds a line of about 100 bytes to the job's log in `%AppData%\RoboG\Jobs` (about 100 MB per million files, 100 GB for a billion). With it off, the job log stays small. robocopy's own progress reaches RoboG through a pipe in memory, so it uses no disk space either way.
 - Several jobs writing to one NAS with hard disks: total copy threads around 8–16, and fewer parallel jobs.
 - Jobs on different disks or servers: more parallel jobs.
 

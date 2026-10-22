@@ -107,7 +107,7 @@ namespace RoboG {
       { "/ETA", "Show the estimated arrival time of copied files." },
       { "/LOG", "Write the log to a file (overwrite)." },
       { "/LOG+", "Write the log to a file (append)." },
-      { "/UNILOG", "Write the log to a Unicode file (overwrite). RoboG reads robocopy's progress from this temporary file, so names in any language are shown correctly." },
+      { "/UNILOG", "Write the log in Unicode (overwrite). RoboG points this at a pipe (\\\\.\\pipe\\...) and reads robocopy's progress from it as it is written, in memory and not on disk, so names in any language are shown correctly." },
       { "/UNILOG+", "Write the log to a Unicode file (append)." },
       { "/TEE", "Write the log to the console as well as the log file." },
       { "/NJH", "No job header: don't log the header with the options at the start." },
