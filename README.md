@@ -148,9 +148,7 @@ Keep the platform on **Any CPU**, because a 32-bit process cannot create shadow 
 
 If this project helps you be more productive, you can buy me a cup of coffee :)
 
-[$10](https://buy.stripe.com/9B66oz39Y2Hqeu02eX2Fa00) / [$25](https://buy.stripe.com/9B66oz39Y2Hqeu02eX2Fa00) / [$50](https://buy.stripe.com/9B66oz39Y2Hqeu02eX2Fa00) / [$100](https://buy.stripe.com/9B66oz39Y2Hqeu02eX2Fa00)
-
-You choose the amount on the secure Stripe page.
+**[☕ Buy me a coffee](https://buy.stripe.com/9B66oz39Y2Hqeu02eX2Fa00)**: choose any amount on the secure Stripe page.
 
 ## License
 
