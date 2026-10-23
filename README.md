@@ -125,6 +125,8 @@ A shadow copy gets past *locked* files, not *permissions*. Some folders can't be
 
 **Missing targets.** Target folders that don't exist are created, including every missing parent folder.
 
+**Targets without file attributes.** Some shares don't keep file attributes (archive, hidden, read-only), for example Samba without `store dos attributes = yes`. RoboG notes this in the run log and copies anyway; only jobs that add or remove attributes on the copied files (`/A+` `/A-`) refuse to run on such a target.
+
 ## Logs
 
 Each run writes its logs to a folder of its own, so a run never overwrites an earlier one (last night's scheduled sync is still there in the morning):

@@ -46,7 +46,8 @@
 		<NoSources>No backup sources defined. Please check the settings file.</NoSources>
 		<!--Backup.cs-->
 		<DirectoryNoAttributes1>The directory </DirectoryNoAttributes1>
-		<DirectoryNoAttributes2> doesn't support file attributes. If this directory is on a linux file share, please make sure, it is possible to set Dos file attributes. For more information visit: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
+		<DirectoryNoAttributes2> doesn't keep file attributes (archive, hidden, read-only), and this job sets attributes on the copied files (Advanced options: add or remove attributes). On a Samba share, add "store dos attributes = yes" to the share's section of smb.conf, or clear those options.</DirectoryNoAttributes2>
+		<TargetNoAttributesNote>Note: {0} doesn't keep file attributes (archive, hidden, read-only); files are copied without them. On a Samba share, "store dos attributes = yes" in smb.conf keeps them.</TargetNoAttributesNote>
 		<LookingForChanges>Looking for changes...</LookingForChanges>
 		<NoChanges>No changes.</NoChanges>
 		<BackingUp>Backing up </BackingUp>
@@ -388,7 +389,8 @@
 		<NoSources>Keine Sicherungs-Quellen definiert. Bitte überprüfen Sie die Einstellungen.</NoSources>
 		<!--Backup.cs-->
 		<DirectoryNoAttributes1>Das Verzeichnis </DirectoryNoAttributes1>
-		<DirectoryNoAttributes2> unterstützt keine Dateiattribute. Fall sich das Verzeichnis auf einem Linux-Server befindet, stellen Sie bitte sicher, dass Dos-Dateiattribute unterstützt werden. Weitere Informationen finden Sie hier: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
+		<DirectoryNoAttributes2> speichert keine Dateiattribute (Archiv, versteckt, schreibgeschützt), und dieser Auftrag setzt Attribute auf den kopierten Dateien (Erweiterte Optionen: Attribute hinzufügen oder entfernen). Bei einer Samba-Freigabe "store dos attributes = yes" im Abschnitt der Freigabe in smb.conf ergänzen oder diese Optionen leeren.</DirectoryNoAttributes2>
+		<TargetNoAttributesNote>Hinweis: {0} speichert keine Dateiattribute (Archiv, versteckt, schreibgeschützt); Dateien werden ohne sie kopiert. Bei einer Samba-Freigabe bewahrt "store dos attributes = yes" in smb.conf sie.</TargetNoAttributesNote>
 		<LookingForChanges>Suche nach Änderungen...</LookingForChanges>
 		<NoChanges>Keine Änderungen.</NoChanges>
 		<BackingUp>Sichere </BackingUp>
@@ -732,7 +734,8 @@
 		<NoSources>Aucune source définie. Vérifiez le fichier settings.</NoSources>
 		<!--Backup.cs-->
 		<DirectoryNoAttributes1>Le répertoire </DirectoryNoAttributes1>
-		<DirectoryNoAttributes2> ne supporte pas les attributs de fichiers. Si le répertoire est un partage linux, vérifiez qu'il supporte les attributs de fichiers Dos. Pour plus d'informations visitez: http://sourceforge.net/p/sabackup2/wiki/RoboG%20and%20Samba</DirectoryNoAttributes2>
+		<DirectoryNoAttributes2> ne conserve pas les attributs de fichiers (archive, caché, lecture seule), et cette tâche définit des attributs sur les fichiers copiés (options avancées : ajouter ou retirer des attributs). Sur un partage Samba, ajoutez "store dos attributes = yes" dans la section du partage de smb.conf, ou videz ces options.</DirectoryNoAttributes2>
+		<TargetNoAttributesNote>Remarque : {0} ne conserve pas les attributs de fichiers (archive, caché, lecture seule) ; les fichiers sont copiés sans eux. Sur un partage Samba, "store dos attributes = yes" dans smb.conf les conserve.</TargetNoAttributesNote>
 		<LookingForChanges>Recherche de changements...</LookingForChanges>
 		<NoChanges>Pas de changements.</NoChanges>
 		<BackingUp>Sauvegarde </BackingUp>

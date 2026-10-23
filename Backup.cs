@@ -66,9 +66,10 @@ namespace RoboG {
           }
         }
 
+        Dictionary<String, bool> AttributesTested = new Dictionary<String, bool>(StringComparer.OrdinalIgnoreCase);
         foreach (JobRun Run in _Runs) {
           if (_Abort) return Stop();
-          if (!CheckTarget(Run.Source.TargetPath.TrimEnd('\\') + "\\" + Settings.Subfolder)) return Stop();
+          if (!CheckTarget(Run.Source.TargetPath.TrimEnd('\\') + "\\" + Settings.Subfolder, Run.Source, AttributesTested)) return Stop();
         }
         if (_Abort) return Stop();
 
@@ -119,7 +120,7 @@ namespace RoboG {
       return false;
     }
 
-    private static bool CheckTarget(String Target) {
+    private static bool CheckTarget(String Target, BackupSource Source, Dictionary<String, bool> AttributesTested) {
       if (Target == null) return false;
       if (Target.Length >= 2 && Target[1] == ':' && !System.IO.Directory.Exists(Target.Substring(0, 2) + "\\")) {
         HelperFunctions.ShowError(Translations.Format("DriveNotAvailable", Target.Substring(0, 2), Target) +
@@ -141,7 +142,17 @@ namespace RoboG {
         HelperFunctions.ShowError(Translations.Get("DirectoryNotWriteable1") + Target + Translations.Get("DirectoryNotWriteable2"));
         return false;
       }
-      if (!Directory.TestAttributes(Target)) {
+      // Whether the target keeps file attributes (archive, hidden, read-only). Some shares don't: Samba
+      // without "store dos attributes", or a NAS that maps them away. A plain copy works fine without them;
+      // only jobs that set attributes on the copied files (/A+ /A-) need them. Tested once per share or drive.
+      String Root = System.IO.Path.GetPathRoot(Target) ?? Target;
+      bool Keeps;
+      if (!AttributesTested.TryGetValue(Root, out Keeps)) {
+        Keeps = Directory.TestAttributes(Target);
+        AttributesTested[Root] = Keeps;
+        if (!Keeps) HelperFunctions.WriteLog(Translations.Format("TargetNoAttributesNote", Root));
+      }
+      if (!Keeps && (Source.AP != BackupSource.Attribute.None || Source.AM != BackupSource.Attribute.None)) {
         HelperFunctions.ShowError(Translations.Get("DirectoryNoAttributes1") + Target + Translations.Get("DirectoryNoAttributes2"));
         return false;
       }
