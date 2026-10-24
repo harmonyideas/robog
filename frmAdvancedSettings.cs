@@ -63,6 +63,8 @@ namespace RoboG
 				Translations.Set(chkScan, "chkScan");
 				Translations.Set(chkLogFiles, "chkLogFiles");
 				Translations.Set(chkLogCopiedFiles, "chkLogCopiedFiles");
+				Translations.Set(chkStopIfWriterFails, "chkStopIfWriterFails");
+				ThreadsTip.SetToolTip(chkStopIfWriterFails, Translations.Get("StopIfWriterFailsToolTip"));
 				ThreadsTip.SetToolTip(chkLogCopiedFiles, Translations.Get("LogCopiedFilesToolTip"));
 				Translations.Set(lblThreads, "lblThreads");
 				Translations.Set(lblParallelJobs, "lblParallelJobs");
@@ -146,6 +148,7 @@ namespace RoboG
 				chkScan.Checked = Settings.Scan;
 				chkLogFiles.Checked = Settings.LogFiles;
 				chkLogCopiedFiles.Checked = Settings.LogCopiedFiles;
+				chkStopIfWriterFails.Checked = Settings.StopIfWriterFails;
 				// Without live progress robocopy doesn't report copied files, so there is nothing to list.
 				chkLogCopiedFiles.Enabled = chkLogFiles.Checked;
 				chkLogFiles.CheckedChanged += delegate { chkLogCopiedFiles.Enabled = chkLogFiles.Checked; };
@@ -190,6 +193,7 @@ namespace RoboG
 				Settings.Scan = chkScan.Checked;
 				Settings.LogFiles = chkLogFiles.Checked;
 				Settings.LogCopiedFiles = chkLogCopiedFiles.Checked;
+				Settings.StopIfWriterFails = chkStopIfWriterFails.Checked;
 				Settings.Threads = (int)numThreads.Value;
 				Settings.ParallelJobs = (int)numParallelJobs.Value;
 				String LogFolder = txtLogFolder.Text.Trim().TrimEnd('\\');

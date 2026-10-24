@@ -59,6 +59,42 @@ namespace RoboG {
     public const int VSS_E_MAXIMUM_NUMBER_OF_SNAPSHOTS_REACHED = unchecked((int)0x80042317);
     public const int VSS_E_INSUFFICIENT_STORAGE = unchecked((int)0x8004231F);
 
+    // VSS_WRITER_STATE: a writer's state after a VSS event. 6 and up mean the writer failed.
+    public enum WriterState {
+      Unknown = 0,
+      Stable = 1,
+      WaitingForFreeze = 2,
+      WaitingForThaw = 3,
+      WaitingForPostSnapshot = 4,
+      WaitingForBackupComplete = 5,
+      FailedAtIdentify = 6,
+      FailedAtPrepareBackup = 7,
+      FailedAtPrepareSnapshot = 8,
+      FailedAtFreeze = 9,
+      FailedAtThaw = 10,
+      FailedAtPostSnapshot = 11,
+      FailedAtBackupComplete = 12,
+      FailedAtPreRestore = 13,
+      FailedAtPostRestore = 14,
+      FailedAtBackupShutdown = 15
+    }
+
+    // Writer failure codes (the writer's own HRESULT).
+    public const int VSS_E_WRITERERROR_INCONSISTENTSNAPSHOT = unchecked((int)0x800423F0);
+    public const int VSS_E_WRITERERROR_OUTOFRESOURCES = unchecked((int)0x800423F1);
+    public const int VSS_E_WRITERERROR_TIMEOUT = unchecked((int)0x800423F2);
+    public const int VSS_E_WRITERERROR_RETRYABLE = unchecked((int)0x800423F3);
+    public const int VSS_E_WRITERERROR_NONRETRYABLE = unchecked((int)0x800423F4);
+    public const int VSS_E_WRITERERROR_RECOVERY_FAILED = unchecked((int)0x800423F5);
+
+    /// <summary>One application writer (SQL Server, Exchange, Registry, ...) and how it handled the snapshot.</summary>
+    public class WriterStatus {
+      public String Name;
+      public WriterState State;
+      public int Failure;
+      public bool Failed { get { return State >= WriterState.FailedAtIdentify || Failure < 0; } }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct SnapshotProp {
       public Guid SnapshotId;
@@ -101,7 +137,7 @@ namespace RoboG {
       void GatherWriterStatus(out IVssAsync Async);
       void GetWriterStatusCount(out uint Count);
       void FreeWriterStatus();
-      void GetWriterStatus(); // placeholder
+      void GetWriterStatus(uint Writer, out Guid InstanceId, out Guid WriterId, [MarshalAs(UnmanagedType.BStr)] out String Name, out WriterState State, out int Failure);
       void SetBackupSucceeded(); // placeholder
       void SetBackupOptions(); // placeholder
       void SetSelectedForRestore(); // placeholder
@@ -139,6 +175,46 @@ namespace RoboG {
       int Result = CreateVssBackupComponentsInternal(out BackupComponents);
       if (Result < 0) Marshal.ThrowExceptionForHR(Result);
       return BackupComponents;
+    }
+
+    /// <summary>
+    /// How each application writer handled the last VSS event (call after DoSnapshotSet). A writer that failed
+    /// still leaves a snapshot, but that application's files in it are only crash-consistent: as if the power
+    /// had been cut, not flushed and paused.
+    /// </summary>
+    public static System.Collections.Generic.List<WriterStatus> GetWriterStatuses(IVssBackupComponents BackupComponents) {
+      System.Collections.Generic.List<WriterStatus> Writers = new System.Collections.Generic.List<WriterStatus>();
+      IVssAsync Async;
+      BackupComponents.GatherWriterStatus(out Async);
+      WaitFor(Async);
+      try {
+        uint Count;
+        BackupComponents.GetWriterStatusCount(out Count);
+        for (uint i = 0; i < Count; i++) {
+          Guid Instance, Writer;
+          WriterStatus Status = new WriterStatus();
+          BackupComponents.GetWriterStatus(i, out Instance, out Writer, out Status.Name, out Status.State, out Status.Failure);
+          Writers.Add(Status);
+        }
+      } finally {
+        BackupComponents.FreeWriterStatus();
+      }
+      return Writers;
+    }
+
+    /// <summary>Why a writer failed, in words (English, for the run log).</summary>
+    public static String DescribeWriterFailure(WriterStatus Writer) {
+      String Why;
+      switch (Writer.Failure) {
+      case VSS_E_WRITERERROR_INCONSISTENTSNAPSHOT: Why = "its data in the snapshot is inconsistent"; break;
+      case VSS_E_WRITERERROR_OUTOFRESOURCES: Why = "it ran out of memory or other resources"; break;
+      case VSS_E_WRITERERROR_TIMEOUT: Why = "it took too long to flush and pause writes"; break;
+      case VSS_E_WRITERERROR_RETRYABLE: Why = "a temporary error (retrying later may work)"; break;
+      case VSS_E_WRITERERROR_NONRETRYABLE: Why = "an error that needs attention (check the application's event log)"; break;
+      case VSS_E_WRITERERROR_RECOVERY_FAILED: Why = "it could not recover its data in the snapshot"; break;
+      default: Why = Writer.Failure < 0 ? "error 0x" + Writer.Failure.ToString("X8") : "no error code"; break;
+      }
+      return Writer.Name + ": failed (" + Writer.State + ", " + Why + ")";
     }
 
     /// <summary>Waits for an asynchronous VSS operation and throws if it failed.</summary>

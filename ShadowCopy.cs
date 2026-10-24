@@ -114,6 +114,12 @@ namespace RoboG
 				Vss.WaitFor(Async);
 				_SnapshotsCreated = true;
 
+				if (!CheckWriters())
+				{
+					Dispose();
+					return false;
+				}
+
 				HelperFunctions.WriteLog(Translations.Get("ExposingSnapshots"));
 				System.IO.Directory.CreateDirectory(MountRoot);
 				foreach (String Volume in Volumes)
@@ -139,6 +145,41 @@ namespace RoboG
 				Dispose();
 				return false;
 			}
+		}
+
+		// Logs how each application writer handled the snapshot. False when a writer failed and the profile says
+		// to stop then (after reporting it); a failure to read the statuses is only logged.
+		private bool CheckWriters()
+		{
+			System.Collections.Generic.List<Vss.WriterStatus> Writers;
+			try
+			{
+				Writers = Vss.GetWriterStatuses(_BackupComponents);
+			}
+			catch (Exception ex)
+			{
+				HelperFunctions.WriteLog("Could not read the application writers' status: " + ex.Message);
+				return true;
+			}
+			System.Collections.Generic.List<String> Ok = new System.Collections.Generic.List<String>();
+			System.Collections.Generic.List<String> Failed = new System.Collections.Generic.List<String>();
+			foreach (Vss.WriterStatus Writer in Writers)
+			{
+				if (Writer.Failed) Failed.Add(Vss.DescribeWriterFailure(Writer));
+				else Ok.Add(Writer.Name);
+			}
+			Ok.Sort(StringComparer.OrdinalIgnoreCase);
+			if (Ok.Count > 0) HelperFunctions.WriteLog("Application writers OK (" + Ok.Count + "): " + String.Join(", ", Ok.ToArray()));
+			foreach (String Line in Failed) HelperFunctions.WriteLog("Application writer " + Line);
+			if (Failed.Count == 0) return true;
+
+			if (Settings.StopIfWriterFails)
+			{
+				HelperFunctions.ShowError(Translations.Get("WriterFailedStop") + "\n\n" + String.Join("\n", Failed.ToArray()));
+				return false;
+			}
+			HelperFunctions.WriteLog(Translations.Get("WriterFailedContinue"));
+			return true;
 		}
 
 		/// <summary>

@@ -81,6 +81,10 @@
 		<ArgumentsToolTip>Arguments</ArgumentsToolTip>
 		<chkAdmin>Start as administrator</chkAdmin>
 		<chkStopIfBeforeFails>Don't sync if it fails</chkStopIfBeforeFails>
+		<chkStopIfWriterFails>Shadow copies: don't sync if an application can't prepare its data</chkStopIfWriterFails>
+		<StopIfWriterFailsToolTip>Before a snapshot, Windows asks applications such as SQL Server, Exchange or Hyper-V to flush their data and pause writes, so their files are consistent in the snapshot. If one of them fails, its files are only crash-consistent (as if the power had been cut). On: the sync doesn't run, exit code 1. Off: the sync runs and the failure is noted in the run log. Either way the run log lists every application and how it did.</StopIfWriterFailsToolTip>
+		<WriterFailedStop>An application could not prepare its data for the shadow copy, so no job was started (Profile options: "don't sync if an application can't prepare its data"):</WriterFailedStop>
+		<WriterFailedContinue>Copying anyway: the files of the application(s) above are crash-consistent in the snapshot, not flushed and paused.</WriterFailedContinue>
 		<JobTabsHint>With many jobs, tabs are shown only for running jobs and jobs with problems. Double-click a job in the list to open its tab.</JobTabsHint>
 		<StopIfBeforeFailsToolTip>Skip the sync when the program can't be started or exits with a code other than 0 (a drive it mounts isn't there, say). The run then counts as failed: exit code 1, and the program on errors runs.</StopIfBeforeFailsToolTip>
 		<BeforeProgramFailed>The program before the sync failed, so no job was started (Profile options: "Don't sync if it fails").</BeforeProgramFailed>
@@ -423,6 +427,10 @@
 		<ArgumentsToolTip>Argumente</ArgumentsToolTip>
 		<chkAdmin>Als Administrator ausführen</chkAdmin>
 		<chkStopIfBeforeFails>Bei Fehler nicht synchronisieren</chkStopIfBeforeFails>
+		<chkStopIfWriterFails>Schattenkopien: nicht synchronisieren, wenn eine Anwendung scheitert</chkStopIfWriterFails>
+		<StopIfWriterFailsToolTip>Vor einem Snapshot bittet Windows Anwendungen wie SQL Server, Exchange oder Hyper-V, ihre Daten zu schreiben und Schreibvorgänge kurz anzuhalten, damit ihre Dateien im Snapshot konsistent sind. Schlägt das bei einer fehl, sind ihre Dateien nur absturzkonsistent (wie nach einem Stromausfall). Ein: Die Synchronisation entfällt, Exitcode 1. Aus: Die Synchronisation läuft, der Fehler steht im Protokoll. In beiden Fällen listet das Protokoll jede Anwendung und ihr Ergebnis.</StopIfWriterFailsToolTip>
+		<WriterFailedStop>Eine Anwendung konnte ihre Daten nicht für die Schattenkopie vorbereiten, daher wurde kein Auftrag gestartet (Profiloptionen: "nicht synchronisieren, wenn eine Anwendung scheitert"):</WriterFailedStop>
+		<WriterFailedContinue>Copying anyway: the files of the application(s) above are crash-consistent in the snapshot, not flushed and paused.</WriterFailedContinue>
 		<JobTabsHint>Bei vielen Aufträgen werden nur laufende Aufträge und Aufträge mit Problemen als Registerkarte angezeigt. Doppelklick auf einen Auftrag in der Liste öffnet seine Registerkarte.</JobTabsHint>
 		<StopIfBeforeFailsToolTip>Die Synchronisation entfällt, wenn das Programm nicht startet oder mit einem anderen Code als 0 endet (z. B. weil ein Laufwerk nicht eingebunden wurde). Der Lauf gilt dann als fehlgeschlagen: Exitcode 1, und das Programm bei Fehlern wird ausgeführt.</StopIfBeforeFailsToolTip>
 		<BeforeProgramFailed>Das Programm vor der Synchronisation ist fehlgeschlagen, daher wurde kein Auftrag gestartet (Profiloptionen: "Bei Fehler nicht synchronisieren").</BeforeProgramFailed>
@@ -768,6 +776,10 @@
 		<ArgumentsToolTip>Arguments</ArgumentsToolTip>
 		<chkAdmin>Exécuter en tant qu'administrateur</chkAdmin>
 		<chkStopIfBeforeFails>Ne pas synchroniser en cas d'échec</chkStopIfBeforeFails>
+		<chkStopIfWriterFails>Clichés : ne pas synchroniser si une application échoue</chkStopIfWriterFails>
+		<StopIfWriterFailsToolTip>Avant un cliché, Windows demande aux applications comme SQL Server, Exchange ou Hyper-V d'écrire leurs données et de suspendre les écritures, pour que leurs fichiers soient cohérents dans le cliché. Si l'une échoue, ses fichiers ne sont cohérents qu'au sens d'une panne (comme une coupure de courant). Activé : la synchronisation n'a pas lieu, code de sortie 1. Désactivé : la synchronisation a lieu et l'échec est noté dans le journal. Dans les deux cas, le journal liste chaque application et son résultat.</StopIfWriterFailsToolTip>
+		<WriterFailedStop>Une application n'a pas pu préparer ses données pour le cliché, aucune tâche n'a donc été lancée (Options du profil : « ne pas synchroniser si une application échoue ») :</WriterFailedStop>
+		<WriterFailedContinue>Copying anyway: the files of the application(s) above are crash-consistent in the snapshot, not flushed and paused.</WriterFailedContinue>
 		<JobTabsHint>Avec de nombreuses tâches, seuls les onglets des tâches en cours et des tâches en erreur sont affichés. Double-cliquez sur une tâche dans la liste pour ouvrir son onglet.</JobTabsHint>
 		<StopIfBeforeFailsToolTip>La synchronisation n'a pas lieu si le programme ne démarre pas ou se termine avec un code autre que 0 (un lecteur qu'il monte est absent, par exemple). L'exécution compte alors comme échouée : code de sortie 1, et le programme en cas d'erreurs est lancé.</StopIfBeforeFailsToolTip>
 		<BeforeProgramFailed>Le programme avant la synchronisation a échoué, aucune tâche n'a donc été lancée (Options du profil : « Ne pas synchroniser en cas d'échec »).</BeforeProgramFailed>
