@@ -69,6 +69,7 @@ namespace RoboG
 			this.chkM = new System.Windows.Forms.CheckBox();
 			this.lblBInfo1 = new System.Windows.Forms.Label();
 			this.chkB = new System.Windows.Forms.CheckBox();
+			this.chkEfsRaw = new System.Windows.Forms.CheckBox();
 			this.lstExcludedFiles = new System.Windows.Forms.ListBox();
 			this.gbExcludeFiles = new System.Windows.Forms.GroupBox();
 			this.lblLADINFO = new System.Windows.Forms.Label();
@@ -308,6 +309,16 @@ namespace RoboG
 			this.toolTip.SetToolTip(this.chkB, "Backup files you otherwise wouldn\'t have access to. To use this, make the backup " +
 					"user a member of the group \"Backup Operators\".");
 			this.chkB.UseVisualStyleBackColor = true;
+			// 
+			// chkEfsRaw
+			// 
+			this.chkEfsRaw.AutoSize = true;
+			this.chkEfsRaw.Location = new System.Drawing.Point(239, 142);
+			this.chkEfsRaw.Name = "chkEfsRaw";
+			this.chkEfsRaw.Size = new System.Drawing.Size(230, 17);
+			this.chkEfsRaw.TabIndex = 10;
+			this.chkEfsRaw.Text = "Copy EFS-encrypted files in raw mode";
+			this.chkEfsRaw.UseVisualStyleBackColor = true;
 			// 
 			// lstExcludedFiles
 			// 
@@ -935,6 +946,7 @@ namespace RoboG
 			this.gbFileOptions.Controls.Add(this.chkCOPY_U);
 			this.gbFileOptions.Controls.Add(this.chkCOPY_O);
 			this.gbFileOptions.Controls.Add(this.chkB);
+			this.gbFileOptions.Controls.Add(this.chkEfsRaw);
 			this.gbFileOptions.Controls.Add(this.chkIT);
 			this.gbFileOptions.Controls.Add(this.chkXC);
 			this.gbFileOptions.Controls.Add(this.chkXL);
@@ -1101,6 +1113,7 @@ namespace RoboG
         private System.Windows.Forms.CheckBox chkCOPY_U;
         private System.Windows.Forms.CheckBox chkCOPY_O;
         private System.Windows.Forms.CheckBox chkB;
+        private System.Windows.Forms.CheckBox chkEfsRaw;
         private System.Windows.Forms.CheckBox chkCOPY_S;
         private System.Windows.Forms.Label lblLADINFO;
         private System.Windows.Forms.GroupBox gbRemoveAttributes;

@@ -145,6 +145,8 @@ namespace RoboG
 				chkB.Text = Translations.Get("chkB");
 				this.toolTip.SetToolTip(this.chkB, Translations.Get("chkBToolTip"));
 				lblBInfo1.Text = Translations.Get("lblBInfo1");
+				Translations.Set(chkEfsRaw, "chkEfsRaw");
+				this.toolTip.SetToolTip(this.chkEfsRaw, Translations.Get("chkEfsRawToolTip"));
 				lblBInfo2.Text = Translations.Get("lblBInfo2");
 
 				bnCancel.Text = Translations.Get("Cancel");
@@ -235,6 +237,7 @@ namespace RoboG
 				if (_BackupSource.CopyFlags.HasFlag(BackupSource.CopyFlag.OwnerInfo)) chkCOPY_O.Checked = true;
 				if (_BackupSource.CopyFlags.HasFlag(BackupSource.CopyFlag.AuditingInfo)) chkCOPY_U.Checked = true;
 				chkB.Checked = _BackupSource.BackupMode;
+				chkEfsRaw.Checked = _BackupSource.EfsRaw;
 			}
 			catch (Exception ex)
 			{
@@ -369,6 +372,7 @@ namespace RoboG
 				if (chkCOPY_O.Checked) _BackupSource.CopyFlags |= BackupSource.CopyFlag.OwnerInfo;
 				if (chkCOPY_U.Checked) _BackupSource.CopyFlags |= BackupSource.CopyFlag.AuditingInfo;
 				_BackupSource.BackupMode = chkB.Checked;
+				_BackupSource.EfsRaw = chkEfsRaw.Checked;
 				this.DialogResult = System.Windows.Forms.DialogResult.OK;
 				this.Close();
 			}

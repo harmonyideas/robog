@@ -861,6 +861,11 @@ namespace RoboG {
 		private bool _BackupMode = false;
 		public bool BackupMode { get { return _BackupMode; } set { _BackupMode = value; } }
 
+		// Copy EFS-encrypted files in raw (still encrypted) form: /EFSRAW. robocopy can't combine it with /MT, so
+		// this job copies one file at a time; other jobs keep their copy threads.
+		private bool _EfsRaw = false;
+		public bool EfsRaw { get { return _EfsRaw; } set { _EfsRaw = value; } }
+
 		private bool _M = false;
 		public bool M { get { return _M; } set { _M = value; } }
 
@@ -981,8 +986,8 @@ namespace RoboG {
 		{
 			String Parameters = "";
 
-			// XP026 (Vista) has no /MT.
-			if (GlobalData.RobocopyVersion != "XP026") Parameters += " /MT:" + Math.Max(1, Threads).ToString();
+			// XP026 (Vista) has neither /MT nor /EFSRAW. /EFSRAW can't be combined with /MT.
+			if (GlobalData.RobocopyVersion != "XP026") Parameters += _EfsRaw ? " /EFSRAW" : " /MT:" + Math.Max(1, Threads).ToString();
 			try
 			{
 				if ((int)AP > 0)

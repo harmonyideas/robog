@@ -102,7 +102,7 @@ namespace RoboG
 				if (Settings.Sources != null)
 				{
 					dgvSources.DataSource = Settings.Sources;
-					string[] hideColumns = new string[] { "Volume", "AM", "IA", "XA", "XC", "XL", "AP", "XN", "IT", "DisplayMember", "CopyFlags", "BackupMode", "M", "MAX", "MIN", "MAXAGE", "MINAGE", "MAXLAD", "MINLAD", "NoChanges", "Mount" };
+					string[] hideColumns = new string[] { "Volume", "AM", "IA", "XA", "XC", "XL", "AP", "XN", "IT", "DisplayMember", "CopyFlags", "BackupMode", "EfsRaw", "M", "MAX", "MIN", "MAXAGE", "MINAGE", "MAXLAD", "MINLAD", "NoChanges", "Mount" };
 					foreach (string col in hideColumns)
 					{
 						dgvSources.Columns[col].Visible = false;

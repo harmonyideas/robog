@@ -56,6 +56,7 @@ RoboG is a Windows front end for **robocopy**. You define sync jobs (a source fo
 | Age and size limits | `/MAXAGE` `/MINAGE` `/MAXLAD` `/MINLAD` `/MAX` `/MIN` | |
 | NTFS security, owner, auditing | `/COPY:S` `O` `U` | |
 | Backup mode | `/ZB` | Needs the "Back up files and directories" privilege. |
+| EFS raw mode | `/EFSRAW` | Copies EFS-encrypted files still encrypted, without needing the key. The target must support EFS (NTFS or a Windows share). That job copies one file at a time, since robocopy can't combine it with `/MT`; other jobs keep their threads. |
 | Disable job | — | The job is skipped when the profile runs. |
 
 **Mirror**, **VSS**, **Log only** (test run) and **Disabled** can also be switched on and off directly in the jobs list: click the box, or press Space on it. Turning on VSS checks the source drive the same way the job dialog does.

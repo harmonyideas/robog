@@ -159,6 +159,8 @@
 		<chkB>Use backup mode (/ZB)</chkB>
 		<chkBToolTip>Backup files you otherwise wouldn't have access to. To use this, make the backup user a member of the group "Backup Operators".</chkBToolTip>
 		<lblBInfo1>(needs the "Back up files and</lblBInfo1>
+		<chkEfsRaw>Copy EFS-encrypted files in raw mode</chkEfsRaw>
+		<chkEfsRawToolTip>Copies files encrypted with Windows EFS as they are, still encrypted (robocopy /EFSRAW): no key needed, and they stay encrypted on the target. The target must support EFS (an NTFS drive or a Windows share). robocopy can't combine this with several copy threads, so this job copies one file at a time; other jobs are not affected.</chkEfsRawToolTip>
 		<lblBInfo2>directories" privilege)</lblBInfo2>
 		<SelectDirectoryToExclude>Select directory to exclude</SelectDirectoryToExclude>
 		<!--frmSelectDate-->
@@ -500,6 +502,8 @@
 		<chkB>Nutze "Sicherungsmodus"</chkB>
 		<chkBToolTip>Dateien Sichern, auf die der sichernde Benutzer keinen Zugriff besitzt. Machen Sie für diese Option den Benutzer zu einem Mitglied der Gruppe "Sicherungsoperatoren".</chkBToolTip>
 		<lblBInfo1>(benötigt Berechtigung "Sichern von</lblBInfo1>
+		<chkEfsRaw>EFS-verschlüsselte Dateien im Rohformat kopieren</chkEfsRaw>
+		<chkEfsRawToolTip>Kopiert mit Windows-EFS verschlüsselte Dateien unverändert, also weiterhin verschlüsselt (robocopy /EFSRAW): Es wird kein Schlüssel benötigt, und sie bleiben auf dem Ziel verschlüsselt. Das Ziel muss EFS unterstützen (NTFS-Laufwerk oder Windows-Freigabe). robocopy kann das nicht mit mehreren Kopier-Threads kombinieren, daher kopiert dieser Auftrag eine Datei nach der anderen; andere Aufträge sind nicht betroffen.</chkEfsRawToolTip>
 		<lblBInfo2> Dateien und Verzeichnissen")</lblBInfo2>
 		<SelectDirectoryToExclude>Wählen Sie ein Verzeichnis aus, das ausgeschlossen werden soll</SelectDirectoryToExclude>
 		<!--frmSelectDate-->
@@ -848,6 +852,8 @@
 		<chkB>Utilser "backup mode"</chkB>
 		<chkBToolTip>Sauvegarde les fichiers dont vous n'avez pas l'accès. Pour utiliser cette option, l'utilisateur qui réalise la sauvegarde doit être membre du groupe "Backup Operators".</chkBToolTip>
 		<lblBInfo1>(nécessite "back up files and directories"</lblBInfo1>
+		<chkEfsRaw>Copier les fichiers chiffrés EFS en mode brut</chkEfsRaw>
+		<chkEfsRawToolTip>Copie les fichiers chiffrés avec EFS tels quels, toujours chiffrés (robocopy /EFSRAW) : aucune clé n'est nécessaire et ils restent chiffrés sur la cible. La cible doit prendre en charge EFS (disque NTFS ou partage Windows). robocopy ne peut pas combiner cela avec plusieurs threads de copie : cette tâche copie donc un fichier à la fois ; les autres tâches ne sont pas concernées.</chkEfsRawToolTip>
 		<lblBInfo2> comme privilège)</lblBInfo2>
 		<SelectDirectoryToExclude>Sélection du répertoire à exclure</SelectDirectoryToExclude>
 		<!--frmSelectDate-->
