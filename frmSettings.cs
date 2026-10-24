@@ -478,7 +478,7 @@ namespace RoboG
 		{
 			try
 			{
-				Settings.LoadSettings(true, true);
+				if (!Settings.LoadSettings(true, true)) return; // Cancelled: the current jobs stay.
 				InitializeControls();
 				((CurrencyManager)dgvSources.BindingContext[Settings.Sources]).Refresh();
 				if (dgvSources.RowCount > 0)

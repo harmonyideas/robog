@@ -511,24 +511,33 @@ namespace RoboG {
 			try
 			{
 				bool ReadOnly = false;
-				_Sources.Clear();
-				_Subfolder = "";
-				_Path = GlobalData.SystemXMLFile;
+				String Chosen = null;
 
 				if (loadFile)
 				{
-
-					OpenFileDialog FB = new OpenFileDialog();
-					FB.Title = Translations.Get("SelectDirectoryToBackup");
-					FB.Filter = Translations.Get("XmlFileFilter");
-					FB.FilterIndex = 0;
-					FB.DefaultExt = "xml";
-					if (FB.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					// Ask first: cancelling must leave the current jobs as they are.
+					using (OpenFileDialog FB = new OpenFileDialog())
 					{
-						_Path = FB.FileName;
+						FB.Title = Translations.Get("SelectDirectoryToBackup");
+						FB.Filter = Translations.Get("XmlFileFilter");
+						FB.FilterIndex = 0;
+						FB.DefaultExt = "xml";
+						try
+						{
+							String Current = System.IO.Path.GetDirectoryName(_Path ?? "");
+							if (!String.IsNullOrEmpty(Current) && System.IO.Directory.Exists(Current)) FB.InitialDirectory = Current;
+						}
+						catch {}
+						if (FB.ShowDialog() != System.Windows.Forms.DialogResult.OK) return false;
+						Chosen = FB.FileName;
 					}
 				}
-				else
+
+				_Sources.Clear();
+				_Subfolder = "";
+				_Path = Chosen ?? GlobalData.SystemXMLFile;
+
+				if (!loadFile)
 				{
 
 					// Get the current configuration associated 
