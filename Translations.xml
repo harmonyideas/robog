@@ -254,11 +254,10 @@
 		<lblThreads>Copy threads:</lblThreads>
 		<lblParallelJobs>Parallel jobs:</lblParallelJobs>
 		<ThreadsToolTip1>Number of files copied at once (robocopy /MT) for the whole sync. Jobs running at the same time share them:</ThreadsToolTip1>
-		<ThreadsToolTip2>16 threads give 1 job 16, 2 jobs 8 each, 4 jobs 4 each.</ThreadsToolTip2>
-		<ThreadsToolTip3>16 suits most targets; a fast SSD or server can take more, a single NAS with hard disks often does best with 8 to 16.</ThreadsToolTip3>
-		<ThreadsToolTip4>Set to 1 to copy EFS-encrypted files in raw mode (/EFSRAW cannot be combined with /MT).</ThreadsToolTip4>
+		<ThreadsToolTip2>32 threads give 1 job 32, 4 jobs 8 each, 8 jobs 4 each.</ThreadsToolTip2>
+		<ThreadsToolTip3>32 suits most targets. 16 for a single NAS with hard disks; 128 for fast SSDs or servers with many parallel jobs.</ThreadsToolTip3>
 		<ParallelJobsToolTip1>Number of jobs that sync at the same time, each with its own robocopy and its own tab in the progress window. Others wait and start as soon as one finishes. The copy threads are shared between the jobs running at the same time.</ParallelJobsToolTip1>
-		<ParallelJobsToolTip2>2 to 4 suits jobs on different disks or servers. Use 1 when the jobs share one hard disk, so they run one after the other.</ParallelJobsToolTip2>
+		<ParallelJobsToolTip2>Up to 16. 8 suits most setups; use 1 when the jobs share one hard disk, so they run one after the other.</ParallelJobsToolTip2>
 		<ProgressStarting>Starting...</ProgressStarting>
 		<TileFiles>Files</TileFiles>
 		<TileSpeed>Speed</TileSpeed>
@@ -603,11 +602,10 @@
 		<lblThreads>Threads:</lblThreads>
 		<lblParallelJobs>Gleichzeitig:</lblParallelJobs>
 		<ThreadsToolTip1>Anzahl der gleichzeitig kopierten Dateien (robocopy /MT) für die ganze Synchronisierung. Gleichzeitig laufende Aufträge teilen sie sich:</ThreadsToolTip1>
-		<ThreadsToolTip2>16 Threads ergeben 1 Auftrag 16, 2 Aufträgen je 8, 4 Aufträgen je 4.</ThreadsToolTip2>
-		<ThreadsToolTip3>16 passt für die meisten Ziele; eine schnelle SSD oder ein Server verträgt mehr, ein einzelnes NAS mit Festplatten läuft oft mit 8 bis 16 am besten.</ThreadsToolTip3>
-		<ThreadsToolTip4>1 wählen, um EFS-verschlüsselte Dateien im Rohformat zu kopieren (/EFSRAW lässt sich nicht mit /MT kombinieren).</ThreadsToolTip4>
+		<ThreadsToolTip2>32 Threads ergeben 1 Auftrag 32, 4 Aufträgen je 8, 8 Aufträgen je 4.</ThreadsToolTip2>
+		<ThreadsToolTip3>32 passt für die meisten Ziele. 16 für ein einzelnes NAS mit Festplatten; 128 für schnelle SSDs oder Server mit vielen parallelen Aufträgen.</ThreadsToolTip3>
 		<ParallelJobsToolTip1>Anzahl der Aufträge, die gleichzeitig synchronisieren, jeder mit eigenem robocopy und eigener Registerkarte im Fortschrittsfenster. Die übrigen warten und starten, sobald einer fertig ist. Die Kopier-Threads werden zwischen den gleichzeitig laufenden Aufträgen geteilt.</ParallelJobsToolTip1>
-		<ParallelJobsToolTip2>2 bis 4 passt für Aufträge auf verschiedenen Datenträgern oder Servern. Wählen Sie 1, wenn die Aufträge eine Festplatte teilen, damit sie nacheinander laufen.</ParallelJobsToolTip2>
+		<ParallelJobsToolTip2>Bis zu 16. 8 passt für die meisten Fälle; wählen Sie 1, wenn die Aufträge eine Festplatte teilen, damit sie nacheinander laufen.</ParallelJobsToolTip2>
 		<ProgressStarting>Starte...</ProgressStarting>
 		<TileFiles>Dateien</TileFiles>
 		<TileSpeed>Geschwindigkeit</TileSpeed>
@@ -952,11 +950,10 @@
 		<lblThreads>Threads :</lblThreads>
 		<lblParallelJobs>En parallèle :</lblParallelJobs>
 		<ThreadsToolTip1>Nombre de fichiers copiés en même temps (robocopy /MT) pour toute la synchronisation. Les tâches simultanées se les partagent :</ThreadsToolTip1>
-		<ThreadsToolTip2>16 threads donnent 16 à 1 tâche, 8 chacune à 2 tâches, 4 chacune à 4 tâches.</ThreadsToolTip2>
-		<ThreadsToolTip3>16 convient à la plupart des cibles ; un SSD rapide ou un serveur en accepte plus, un NAS à disques durs fonctionne souvent mieux avec 8 à 16.</ThreadsToolTip3>
-		<ThreadsToolTip4>Choisir 1 pour copier les fichiers chiffrés EFS en mode brut (/EFSRAW n'est pas compatible avec /MT).</ThreadsToolTip4>
+		<ThreadsToolTip2>32 threads donnent 32 à 1 tâche, 8 chacune à 4 tâches, 4 chacune à 8 tâches.</ThreadsToolTip2>
+		<ThreadsToolTip3>32 convient à la plupart des cibles. 16 pour un NAS à disques durs ; 128 pour des SSD rapides ou des serveurs avec de nombreuses tâches parallèles.</ThreadsToolTip3>
 		<ParallelJobsToolTip1>Nombre de tâches synchronisées en même temps, chacune avec son propre robocopy et son propre onglet dans la fenêtre de progression. Les autres attendent et démarrent dès qu'une tâche se termine. Les threads de copie sont partagés entre les tâches simultanées.</ParallelJobsToolTip1>
-		<ParallelJobsToolTip2>2 à 4 convient aux tâches sur des disques ou serveurs différents. Choisissez 1 si les tâches partagent un même disque dur, pour qu'elles s'exécutent l'une après l'autre.</ParallelJobsToolTip2>
+		<ParallelJobsToolTip2>Jusqu'à 16. 8 convient à la plupart des cas ; choisissez 1 si les tâches partagent un même disque dur, pour qu'elles s'exécutent l'une après l'autre.</ParallelJobsToolTip2>
 		<ProgressStarting>Démarrage...</ProgressStarting>
 		<TileFiles>Fichiers</TileFiles>
 		<TileSpeed>Vitesse</TileSpeed>

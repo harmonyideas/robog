@@ -69,8 +69,8 @@ RoboG always adds `/FFT /DST /XJ /NP /BYTES`. These give 2-second timestamp tole
 | Option | Default | Notes |
 |---|---|---|
 | Retries / wait time | 3 / 3 s | `/R` `/W`. Applies to problems with individual files, such as locked files or access denied. Network outages are handled separately (see below), so these can stay low. |
-| Copy threads | 16 | `/MT`. This is the total for the whole run, shared by the jobs running at the same time: 16 threads give 1 job 16, 2 jobs 8 each, 4 jobs 4 each. 1 = EFS raw mode (`/EFSRAW`). |
-| Parallel jobs | 4 | How many jobs run at once. The rest queue. Jobs whose targets overlap always run one after the other. |
+| Copy threads | 32 | `/MT`: 16, 32 or 128. This is the total for the whole run, shared by the jobs running at the same time: 32 threads give 1 job 32, 4 jobs 8 each, 8 jobs 4 each. 16 suits a single NAS with hard disks; 128 suits fast SSDs or servers with many parallel jobs. |
+| Parallel jobs | 8 | How many jobs run at once (1 to 16). The rest queue. Jobs whose targets overlap always run one after the other. |
 | Scan first | on | A list-only pass gives an exact progress bar and time estimate, but walks the tree twice. Turn it off for very large trees. |
 | Show live progress | on | Lists every file. Off (`/NFL /NDL`) is fastest. Totals still appear when each job finishes. |
 | Close automatically | off | Close when the run succeeds, or always. |
@@ -154,7 +154,7 @@ For large files, speed is limited by the disks and the network. For small files,
 
 **Settings**
 - Turn off **Scan first** and **Show live progress** for very large runs. With live progress on and **List every copied file** on, every copied file adds a line of about 100 bytes to the job's log (about 100 MB per million files, 100 GB for a billion). Turn off **List every copied file** to keep live progress with small logs. Writing the log is rarely what limits speed; the target usually is. robocopy's own progress reaches RoboG through a pipe in memory, so it uses no disk space either way.
-- Several jobs writing to one NAS with hard disks: total copy threads around 8–16, and fewer parallel jobs.
+- Several jobs writing to one NAS with hard disks: 16 copy threads and fewer parallel jobs.
 - Jobs on different disks or servers: more parallel jobs.
 
 **Samba (Linux) targets**

@@ -84,7 +84,7 @@ namespace RoboG
 			this.chkScan = new System.Windows.Forms.CheckBox();
 			this.chkLogFiles = new System.Windows.Forms.CheckBox();
 			this.lblThreads = new System.Windows.Forms.Label();
-			this.numThreads = new System.Windows.Forms.NumericUpDown();
+			this.numThreads = new System.Windows.Forms.ComboBox();
 			this.lblThreadsHint = new System.Windows.Forms.Label();
 			this.lblParallelJobs = new System.Windows.Forms.Label();
 			this.gbLogs = new System.Windows.Forms.GroupBox();
@@ -97,7 +97,6 @@ namespace RoboG
 			this.numKeepRuns = new System.Windows.Forms.NumericUpDown();
 			this.lblKeepRunsUnit = new System.Windows.Forms.Label();
 			this.numParallelJobs = new System.Windows.Forms.NumericUpDown();
-			((System.ComponentModel.ISupportInitialize)(this.numThreads)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numParallelJobs)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numKeepRuns)).BeginInit();
 			this.gbLogs.SuspendLayout();
@@ -430,24 +429,10 @@ namespace RoboG
 			// numThreads
 			// 
 			this.numThreads.Location = new System.Drawing.Point(400, 22);
-			this.numThreads.Maximum = new decimal(new int[] {
-            128,
-            0,
-            0,
-            0});
-			this.numThreads.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+			this.numThreads.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.numThreads.Name = "numThreads";
-			this.numThreads.Size = new System.Drawing.Size(50, 20);
+			this.numThreads.Size = new System.Drawing.Size(56, 21);
 			this.numThreads.TabIndex = 16;
-			this.numThreads.Value = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
 			// 
 			// lblThreadsHint
 			// 
@@ -571,7 +556,7 @@ namespace RoboG
 			// 
 			this.numParallelJobs.Location = new System.Drawing.Point(400, 48);
 			this.numParallelJobs.Maximum = new decimal(new int[] {
-            32,
+            16,
             0,
             0,
             0});
@@ -584,7 +569,7 @@ namespace RoboG
 			this.numParallelJobs.Size = new System.Drawing.Size(50, 20);
 			this.numParallelJobs.TabIndex = 19;
 			this.numParallelJobs.Value = new decimal(new int[] {
-            4,
+            8,
             0,
             0,
             0});
@@ -684,7 +669,6 @@ namespace RoboG
 			this.gbProgramAfterBackup.PerformLayout();
 			this.gbProgramOnError.ResumeLayout(false);
 			this.gbProgramOnError.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numThreads)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numParallelJobs)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numKeepRuns)).EndInit();
 			this.gbLogs.ResumeLayout(false);
@@ -732,7 +716,7 @@ namespace RoboG
 		private System.Windows.Forms.CheckBox chkScan;
 		private System.Windows.Forms.CheckBox chkLogFiles;
 		private System.Windows.Forms.Label lblThreads;
-		private System.Windows.Forms.NumericUpDown numThreads;
+		private System.Windows.Forms.ComboBox numThreads;
 		private System.Windows.Forms.Label lblThreadsHint;
 		private System.Windows.Forms.Label lblParallelJobs;
 		private System.Windows.Forms.NumericUpDown numParallelJobs;

@@ -35,7 +35,7 @@ namespace RoboG
 		{
 			InitializeComponent();
 			Theme.Apply(this);
-			ThreadsTip.SetToolTip(numThreads, String.Join("\r\n", new String[] { Translations.Get("ThreadsToolTip1"), Translations.Get("ThreadsToolTip2"), Translations.Get("ThreadsToolTip3"), Translations.Get("ThreadsToolTip4") }));
+			ThreadsTip.SetToolTip(numThreads, String.Join("\r\n", new String[] { Translations.Get("ThreadsToolTip1"), Translations.Get("ThreadsToolTip2"), Translations.Get("ThreadsToolTip3") }));
 			ThreadsTip.SetToolTip(lblThreadsHint, ThreadsTip.GetToolTip(numThreads));
 			ThreadsTip.SetToolTip(lblThreads, ThreadsTip.GetToolTip(numThreads));
 			ThreadsTip.SetToolTip(numParallelJobs, Translations.Get("ParallelJobsToolTip1") + "\r\n" + Translations.Get("ParallelJobsToolTip2"));
@@ -152,7 +152,9 @@ namespace RoboG
 				// Without live progress robocopy doesn't report copied files, so there is nothing to list.
 				chkLogCopiedFiles.Enabled = chkLogFiles.Checked;
 				chkLogFiles.CheckedChanged += delegate { chkLogCopiedFiles.Enabled = chkLogFiles.Checked; };
-				numThreads.Value = Settings.Threads;
+				numThreads.Items.Clear();
+				foreach (int Choice in Settings.ThreadChoices) numThreads.Items.Add(Choice.ToString());
+				numThreads.SelectedItem = Settings.Threads.ToString();
 				numParallelJobs.Value = Settings.ParallelJobs;
 				// The folder actually used is shown; the default is stored as "" so it follows the user's AppData.
 				txtLogFolder.Text = Settings.LogFolder == "" ? LogFolders.DefaultFolder : Settings.LogFolder;
@@ -194,7 +196,7 @@ namespace RoboG
 				Settings.LogFiles = chkLogFiles.Checked;
 				Settings.LogCopiedFiles = chkLogCopiedFiles.Checked;
 				Settings.StopIfWriterFails = chkStopIfWriterFails.Checked;
-				Settings.Threads = (int)numThreads.Value;
+				Settings.Threads = int.Parse((String)numThreads.SelectedItem);
 				Settings.ParallelJobs = (int)numParallelJobs.Value;
 				String LogFolder = txtLogFolder.Text.Trim().TrimEnd('\\');
 				Settings.LogFolder = String.Equals(LogFolder, LogFolders.DefaultFolder, StringComparison.OrdinalIgnoreCase) ? "" : LogFolder;

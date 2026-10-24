@@ -161,10 +161,19 @@ namespace RoboG {
 		public static bool Scan { get { return _Scan; } set { _Scan = value; } }
 
 		// Number of robocopy copy threads (/MT:n) for the whole run, shared by the jobs running at the same time
-		// (see ThreadsPerJob). 1 = single-threaded, which keeps /EFSRAW for EFS-encrypted files.
+		// (see ThreadsPerJob). Only a few choices are offered; a profile with another number (from an older
+		// version) gets the nearest one.
+		public static readonly int[] ThreadChoices = { 16, 32, 128 };
 		public const int MaxThreads = 128;
-		private static int _Threads = 16;
-		public static int Threads { get { return _Threads; } set { _Threads = Math.Max(1, Math.Min(MaxThreads, value)); } }
+		private static int _Threads = 32;
+		public static int Threads { get { return _Threads; } set { _Threads = NearestThreadChoice(value); } }
+
+		private static int NearestThreadChoice(int Value)
+		{
+			int Best = ThreadChoices[0];
+			foreach (int Choice in ThreadChoices) if (Math.Abs(Choice - Value) < Math.Abs(Best - Value)) Best = Choice;
+			return Best;
+		}
 
 		/// <summary>
 		/// Copy threads each job gets when <paramref name="RunningJobs"/> jobs run at the same time: the total is
@@ -177,8 +186,8 @@ namespace RoboG {
 		}
 
 		// Number of jobs that run at the same time, each with its own robocopy process. 1 = one after the other.
-		public const int MaxParallelJobs = 32;
-		private static int _ParallelJobs = 4;
+		public const int MaxParallelJobs = 16;
+		private static int _ParallelJobs = 8;
 		public static int ParallelJobs { get { return _ParallelJobs; } set { _ParallelJobs = Math.Max(1, Math.Min(MaxParallelJobs, value)); } }
 
 		// Where this profile's logs go ("" = %AppData%\RoboG), and how many runs' logs to keep (0 = all). See LogFolders.
@@ -967,18 +976,13 @@ namespace RoboG {
 			return GetRobocopyParameters(Settings.Threads);
 		}
 
-		/// <param name="Threads">Copy threads for this job (/MT). EFS raw mode is used only when the profile is set to 1 thread.</param>
+		/// <param name="Threads">Copy threads for this job (/MT).</param>
 		public String GetRobocopyParameters(int Threads)
 		{
 			String Parameters = "";
 
-			// /MT cannot be combined with /EFSRAW, so EFS raw mode is only used for single-threaded copies.
-			// XP026 (Vista) has neither switch.
-			if (GlobalData.RobocopyVersion != "XP026")
-			{
-				if (Settings.Threads > 1) Parameters += " /MT:" + Math.Max(1, Threads).ToString();
-				else Parameters += " /EFSRAW";
-			}
+			// XP026 (Vista) has no /MT.
+			if (GlobalData.RobocopyVersion != "XP026") Parameters += " /MT:" + Math.Max(1, Threads).ToString();
 			try
 			{
 				if ((int)AP > 0)
